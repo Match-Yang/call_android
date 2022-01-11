@@ -3,4 +3,17 @@
   <string name="welcome">Welcome to try ZEGO Call</string>
   <string name="login_username_hint">Please enter your user name</string>
   <string name="log_in">Log in</string>
+  <string name="zego_call">ZEGO Call</string>
+  <string name="banner_call_desc">Real-time voice and video calls that make the world no longer distance</string>
+  <string name="entry_contact_us">Contact us</string>
+  <string name="entry_get_more">Get more</string>
+  <string name="express_sdk_version">Express SDK Version</string>
+  <string name="zim_sdk_version">ZIM SDK Version</string>
+  <string name="app_version">App Version</string>
+  <string name="terms_of_service">Terms of service</string>
+  <string name="privacy_policy">Privacy Policy</string>
+  <string name="upload_log">Upload Log</string>
+  <string name="log_out">Log out</string>
+  <string name="upload_log_success">Uploaded successfully</string>
+  <string name="upload_log_fail">Failed to upload the log</string>
 </resources>

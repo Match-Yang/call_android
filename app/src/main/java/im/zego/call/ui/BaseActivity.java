@@ -22,7 +22,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
 
     protected T binding;
     private static final Handler tipsHandler = new Handler(Looper.getMainLooper());
-    public static final int TIPS_TIME = 30 * 1000;
+    public static final int TIPS_TIME = 3 * 1000;
     protected Tips tips;
 
     @Override
@@ -42,9 +42,9 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
         }
 
         ImmersionBar.with(this)
-            .statusBarColor(android.R.color.transparent)
+            .statusBarColor(android.R.color.white)
             .fitsSystemWindows(true)
-            .statusBarDarkFont(false)
+            .statusBarDarkFont(true)
             .init();
     }
 

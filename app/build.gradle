@@ -61,5 +61,8 @@ dependencies {
     // Immersive status bar
     implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
 
+    // webView
+    implementation 'com.github.Justson.AgentWeb:agentweb-core:v5.0.0-alpha.1-androidx'
+
     api project(path: ':callsdk')
 }

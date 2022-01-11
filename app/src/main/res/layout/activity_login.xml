@@ -19,7 +19,7 @@
     android:layout_width="204dp"
     android:layout_height="80dp"
     android:layout_marginStart="18dp"
-    android:layout_marginTop="52dp"
+    android:layout_marginTop="74dp"
     android:text="@string/welcome"
     android:textColor="@color/white"
     android:textSize="28sp"
@@ -29,7 +29,7 @@
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="0dp"
-    android:layout_marginTop="168dp"
+    android:layout_marginTop="190dp"
     android:background="@drawable/round_rect_bg_login"
     android:orientation="vertical"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -47,12 +47,20 @@
       android:paddingStart="17dp"
       android:textSize="16sp" />
 
+    <TextView
+      android:id="@+id/login_input_tips"
+      android:layout_width="301dp"
+      android:layout_height="28dp"
+      android:layout_gravity="center"
+      android:gravity="center_vertical"
+      android:textColor="#FF4A50"
+      android:textSize="12sp" />
+
     <Button
       android:id="@+id/login_button"
       android:layout_width="301dp"
       android:layout_height="50dp"
       android:layout_gravity="center_horizontal"
-      android:layout_marginTop="28dp"
       android:background="@drawable/selector_submit_button"
       android:text="@string/log_in"
       android:textColor="@color/white"
