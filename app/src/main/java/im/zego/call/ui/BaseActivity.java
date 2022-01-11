@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 
 public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
 
-    private T binding;
+    protected T binding;
     private static final Handler tipsHandler = new Handler(Looper.getMainLooper());
     public static final int TIPS_TIME = 30 * 1000;
     protected Tips tips;
@@ -78,8 +78,14 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
         if (!AppUtils.isAppForeground() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             tipsHandler.post(() -> Toast.makeText(Utils.getApp(), message, Toast.LENGTH_SHORT).show());
         }
+        if (tips == null) {
+            tips = new Tips(this);
+        }
         tipsHandler.post(() -> {
             tips.showColorToast(type, message);
+            if (!tips.isShowing()) {
+                tips.show();
+            }
         });
         if (time != 0) {
             tipsHandler.postDelayed(() -> {
