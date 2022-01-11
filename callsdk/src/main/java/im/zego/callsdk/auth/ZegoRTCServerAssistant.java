@@ -1,9 +1,8 @@
-package im.zego.call.auth;
+package im.zego.callsdk.auth;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -11,8 +10,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class TokenServerAssistant {
-    static final private String VERSION_FLAG = "04";
+public class ZegoRTCServerAssistant {
+    static final private String VERSION_FLAG = "03";
     static final private int IV_LENGTH = 16;
     static final private String TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
@@ -76,11 +75,12 @@ public class TokenServerAssistant {
         }
     }
 
-    private TokenServerAssistant() {
+    private ZegoRTCServerAssistant() {
     }
 
-    static public TokenInfo generateToken(long appId, String userId, String secret,
-                                          int effectiveTimeInSeconds) throws JSONException {
+    @SuppressWarnings("unchecked")
+    static public TokenInfo generateToken(long appId, String roomId, String userId, Privileges privilege, String secret, int effectiveTimeInSeconds)
+        throws JSONException {
         TokenInfo token = new TokenInfo();
 
         // check the appId
@@ -91,8 +91,16 @@ public class TokenServerAssistant {
             return token;
         }
 
+        // check the roomId
+        if (roomId == null || roomId == "" || roomId.length() > 64) {
+            token.error.code = ErrorCode.ILLEGAL_ROOM_ID;
+            token.error.message = "illegal roomId";
+            debugInfo("roomId can't empty and must no more than 64 characters");
+            return token;
+        }
+
         // check the userId
-        if (userId == null || userId.equals("") || userId.length() > 64) {
+        if (userId == null || userId == "" || userId.length() > 64) {
             token.error.code = ErrorCode.ILLEGAL_USER_ID;
             token.error.message = "illegal userId";
             debugInfo("userId can't empty and must no more than 64 characters");
@@ -100,7 +108,7 @@ public class TokenServerAssistant {
         }
 
         // check the secret
-        if (secret == null || secret.equals("") || secret.length() != 32) {
+        if (secret == null || secret == "" || secret.length() != 32) {
             token.error.code = ErrorCode.ILLEGAL_SECRET;
             token.error.message = "illegal secret";
             debugInfo("secret must 32 characters");
@@ -115,23 +123,34 @@ public class TokenServerAssistant {
             return token;
         }
 
+        // check the privilege
+        if (privilege == null) {
+            token.error.code = ErrorCode.ILLEGAL_PRIVILEGE;
+            token.error.message = "privilege can't be null";
+            debugInfo("privilege can't be null");
+            return token;
+        }
+
         debugInfo("generate random IV ...");
         byte[] ivBytes = new byte[IV_LENGTH];
-        String iv = "cceutxv9vrhfnx0r";
-        ivBytes = iv.getBytes();
         ThreadLocalRandom.current().nextBytes(ivBytes);
+
+        JSONObject _privilege_json = new JSONObject();
+        _privilege_json.put("1", privilege.canLoginRoom ? 1 : 0);
+        _privilege_json.put("2", privilege.canPublishStream ? 1 : 0);
 
         JSONObject json = new JSONObject();
         json.put("app_id", appId);
+        json.put("room_id", roomId);
         json.put("user_id", userId);
+        json.put("privilege", _privilege_json);
 
         long nowTime = System.currentTimeMillis() / 1000;
         long expire_time = nowTime + effectiveTimeInSeconds;
-        json.put("ctime", nowTime);
-        json.put("expire", expire_time);
-        int nonce = new Random().nextInt();
-        json.put("nonce", nonce);
-        json.put("payload", "");
+        json.put("create_time", nowTime);
+        json.put("expire_time", expire_time);
+        json.put("nonce", ThreadLocalRandom.current().nextLong());
+
         String content = json.toString();
 
         try {
@@ -157,8 +176,7 @@ public class TokenServerAssistant {
         return token;
     }
 
-    static private byte[] encrypt(byte[] content, byte[] secretKey, byte[] ivBytes)
-            throws Exception {
+    static private byte[] encrypt(byte[] content, byte[] secretKey, byte[] ivBytes) throws Exception {
         if (secretKey == null || secretKey.length != 32) {
             throw new IllegalArgumentException("secret key's length must be 32 bytes");
         }

@@ -23,7 +23,7 @@
  * questions.
  */
 
-package im.zego.call.auth;
+package im.zego.callsdk.auth;
 
 import android.os.Build;
 import androidx.annotation.RequiresApi;
