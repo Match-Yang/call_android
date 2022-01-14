@@ -16,4 +16,11 @@
   <string name="log_out">Log out</string>
   <string name="upload_log_success">Uploaded successfully</string>
   <string name="upload_log_fail">Failed to upload the log</string>
+  <string name="back">Back</string>
+  <string name="online">Online</string>
+  <string name="no_online_user">No Online User</string>
+  <string name="accept">Accept</string>
+  <string name="decline">Decline</string>
+  <string name="net_quality_is_poor">The call quality is poor…</string>
+  <string name="calling">Calling</string>
 </resources>

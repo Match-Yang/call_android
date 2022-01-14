@@ -6,7 +6,9 @@ import android.view.View.OnClickListener;
 import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.call.ui.BaseActivity;
+import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.setting.SettingActivity;
+import im.zego.call.ui.user.OnlineUserActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 
 public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
@@ -34,6 +36,12 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             @Override
             public void onClick(View v) {
                 WebViewActivity.startWebViewActivity(URL_GET_MORE);
+            }
+        });
+        binding.entryBannerCall.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CallActivity.startCallActivity(CallActivity.TYPE_CONNECTED_VIDEO);
             }
         });
     }

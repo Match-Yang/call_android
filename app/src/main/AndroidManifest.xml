@@ -11,6 +11,12 @@
     android:supportsRtl="true"
     android:theme="@style/Theme.ZegoCallDemo">
     <activity
+      android:name=".ui.call.CallActivity"
+      android:exported="true" />
+    <activity
+      android:name=".ui.user.OnlineUserActivity"
+      android:exported="true" />
+    <activity
       android:name=".ui.webview.WebViewActivity"
       android:exported="true" />
     <activity

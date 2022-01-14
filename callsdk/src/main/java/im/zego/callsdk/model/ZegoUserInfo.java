@@ -11,28 +11,16 @@ public class ZegoUserInfo {
     /**
      * User ID, refers to the user unique ID, can only contains numbers and letters.
      */
-    private String userID;
+    public String userID;
 
     /**
      * User name, cannot be null.
      */
-    private String userName;
+    public String userName;
 
-    public String getUserID() {
-        return userID;
-    }
+    public boolean mic;
 
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+    public boolean camera;
 
 
     @Override

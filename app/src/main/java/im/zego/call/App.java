@@ -3,7 +3,7 @@ package im.zego.call;
 import android.app.Application;
 import com.blankj.utilcode.util.Utils;
 import im.zego.call.auth.AuthInfoManager;
-import im.zego.callsdk.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoRoomManager;
 
 public class App extends Application {
 
