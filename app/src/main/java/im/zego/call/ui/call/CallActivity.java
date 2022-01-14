@@ -87,21 +87,21 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 binding.layoutIncomingCall.setVisibility(View.VISIBLE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
                 binding.layoutIncomingCall.updateUI(type == TYPE_INCOMING_CALLING_VIDEO);
-                binding.layoutConnectedVodeoCall.setVisibility(View.GONE);
+                binding.layoutConnectedVideoCall.setVisibility(View.GONE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.GONE);
                 break;
             case TYPE_CONNECTED_VOICE:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
-                binding.layoutConnectedVodeoCall.setVisibility(View.GONE);
+                binding.layoutConnectedVideoCall.setVisibility(View.GONE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.VISIBLE);
                 binding.callTime.setVisibility(View.VISIBLE);
                 break;
             case TYPE_CONNECTED_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
-                binding.layoutConnectedVodeoCall.setVisibility(View.VISIBLE);
+                binding.layoutConnectedVideoCall.setVisibility(View.VISIBLE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.VISIBLE);
                 break;
@@ -109,7 +109,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             case TYPE_OUTGOING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.VISIBLE);
-                binding.layoutConnectedVodeoCall.setVisibility(View.VISIBLE);
+                binding.layoutConnectedVideoCall.setVisibility(View.VISIBLE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.GONE);
                 break;

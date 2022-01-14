@@ -23,7 +23,7 @@
     android:layout_height="match_parent" />
 
   <im.zego.call.ui.call.view.ConnectedVideoCallView
-    android:id="@+id/layout_connected_vodeo_call"
+    android:id="@+id/layout_connected_video_call"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
