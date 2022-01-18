@@ -23,4 +23,5 @@
   <string name="decline">Decline</string>
   <string name="net_quality_is_poor">The call quality is poor…</string>
   <string name="calling">Calling</string>
+  <string name="name_format_error">The username should be English characters or number.</string>
 </resources>

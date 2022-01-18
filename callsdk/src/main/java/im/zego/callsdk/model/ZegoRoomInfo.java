@@ -6,26 +6,16 @@ public class ZegoRoomInfo {
 
     // room ID
     @SerializedName("id")
-    private String roomID;
+    public String roomID;
     // room name
     @SerializedName("name")
-    private String roomName;
+    public String roomName;
 
-    public String getRoomID() {
-        return roomID;
-    }
+    @SerializedName("mic")
+    public String mic;
 
-    public void setRoomID(String roomID) {
-        this.roomID = roomID;
-    }
-
-    public String getRoomName() {
-        return roomName;
-    }
-
-    public void setRoomName(String roomName) {
-        this.roomName = roomName;
-    }
+    @SerializedName("camera")
+    public String camera;
 
     @Override
     public String toString() {
