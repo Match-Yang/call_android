@@ -1,8 +1,8 @@
-package im.zego.callsdk;
+package im.zego.callsdk.service;
 
 import android.app.Application;
+import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoRoomCallback;
-import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoScenario;

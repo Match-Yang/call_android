@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <ImageView
+    android:id="@+id/call_user_icon"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_marginTop="92dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <TextView
+    android:id="@+id/call_user_name"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:singleLine="true"
+    android:text="User name"
+    android:textColor="#FFFFFF"
+    android:textSize="21sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/call_user_icon" />
+
+  <TextView
+    android:id="@+id/call_state_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:text="@string/calling"
+    android:textColor="#B2FFFFFF"
+    android:textSize="16sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/call_user_name" />
+
+  <ImageView
+    android:id="@+id/calling_hang_up"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    android:layout_marginBottom="52dp"
+    android:src="@drawable/selector_activity_hangup_button"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
+</merge>

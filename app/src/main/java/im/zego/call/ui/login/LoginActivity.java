@@ -1,17 +1,37 @@
 package im.zego.call.ui.login;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.DeviceUtils;
 import com.gyf.immersionbar.ImmersionBar;
+import com.tencent.mmkv.MMKV;
+import im.zego.call.R;
+import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityLoginBinding;
+import im.zego.call.http.CallApi;
+import im.zego.call.http.IAsyncGetCallback;
+import im.zego.call.http.WebClientManager;
+import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.entry.EntryActivity;
+import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoUserService;
+import java.util.Random;
 
 public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
+
+    private static final String TAG = "LoginActivity";
+    private boolean isRequestUserID = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +59,67 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         binding.loginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityUtils.startActivity(EntryActivity.class);
+                String userName = binding.loginUsername.getText().toString();
+                if (TextUtils.isEmpty(userName)) {
+                    TextView inputTips = binding.loginInputTips;
+                    inputTips.setText(R.string.name_format_error);
+                    inputTips.setVisibility(View.VISIBLE);
+                    Handler rootHandler = binding.getRoot().getHandler();
+                    rootHandler.removeCallbacksAndMessages(null);
+                    rootHandler.postDelayed(() -> {
+                        inputTips.setVisibility(View.INVISIBLE);
+                    }, 2000);
+                    return;
+                }
+                MMKV kv = MMKV.defaultMMKV();
+                String userID = kv.decodeString("userID");
+                if (!isRequestUserID && !TextUtils.isEmpty(userID)) {
+                    CallApi.login(userName, userID, new IAsyncGetCallback<UserBean>() {
+                        @Override
+                        public void onResponse(int errorCode, @NonNull String message, UserBean response) {
+                            Log.d(TAG,
+                                "login() called with: errorCode = [" + errorCode + "], message = [" + message
+                                    + "], response = [" + response + "]");
+                            if (errorCode == 0) {
+                                WebClientManager.getInstance().startHeartBeat(userID);
+                                ZegoUserInfo userInfo = new ZegoUserInfo();
+                                userInfo.userName = userName;
+                                userInfo.userID = userID;
+                                String token = AuthInfoManager.getInstance().generateLoginToken(userID);
+                                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                                userService.login(userInfo, token, code -> {
+                                    if (code == 0) {
+                                        ActivityUtils.startActivity(EntryActivity.class);
+                                    } else {
+                                        WebClientManager.getInstance().stopHeartBeat();
+                                    }
+                                });
+                            } else {
+                                CallApi.logout(userID, null);
+                                WebClientManager.getInstance().stopHeartBeat();
+                                showWarnTips("login error,errorCode :" + errorCode);
+                            }
+                        }
+                    });
+                } else {
+                    isRequestUserID = true;
+                    CallApi.createUser(new IAsyncGetCallback<String>() {
+                        @Override
+                        public void onResponse(int errorCode, @NonNull String message, String id) {
+                            Log.d(TAG,
+                                "createUser() called with: errorCode = [" + errorCode + "], message = [" + message
+                                    + "], id = [" + id + "]");
+                            isRequestUserID = false;
+                            if (errorCode == 0) {
+                                kv.encode("userID", id);
+                            }
+                        }
+                    });
+                }
             }
         });
+        int nextInt = Math.abs(new Random().nextInt());
+        String manufacturer = DeviceUtils.getManufacturer();
+        binding.loginUsername.setText(manufacturer + nextInt);
     }
 }

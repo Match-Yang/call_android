@@ -43,6 +43,7 @@
       android:layout_marginTop="48dp"
       android:background="@drawable/round_rect_bg_input_button"
       android:gravity="center_vertical"
+      android:digits="1234567890qwertyuiopasdfghjklzxcvbnm"
       android:hint="@string/login_username_hint"
       android:paddingStart="17dp"
       android:textSize="16sp" />

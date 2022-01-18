@@ -4,6 +4,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="@color/white"
   tools:context=".ui.entry.EntryActivity">
 
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,7 +51,7 @@
       android:layout_marginTop="24dp"
       android:layout_marginEnd="18dp"
       android:scaleType="fitXY"
-      android:src="@drawable/icon_setting"
+      android:src="@drawable/selector_entry_setting"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
   </androidx.constraintlayout.widget.ConstraintLayout>
@@ -67,7 +68,8 @@
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
       android:layout_marginEnd="16dp"
-      android:background="@drawable/entry_banner_bg"
+      android:scaleType="fitXY"
+      android:src="@drawable/entry_banner_bg"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
@@ -113,7 +115,7 @@
     android:layout_height="49dp"
     android:layout_marginEnd="5dp"
     android:layout_marginBottom="48dp"
-    android:background="@drawable/round_rect_bg_entry_button"
+    android:background="@drawable/selector_entry_button"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toStartOf="@+id/entry_get_more"
     app:layout_constraintHorizontal_bias="0.5"
@@ -155,7 +157,7 @@
     android:layout_height="49dp"
     android:layout_marginStart="5dp"
     android:layout_marginBottom="48dp"
-    android:background="@drawable/round_rect_bg_entry_button"
+    android:background="@drawable/selector_entry_button"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.5"

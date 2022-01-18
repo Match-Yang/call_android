@@ -12,16 +12,16 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.Utils;
 import im.zego.call.R;
 
-public class Tips extends Dialog {
+public class TipsDialog extends Dialog {
 
     private TextView textView;
 
-    public Tips(@NonNull Context context) {
+    public TipsDialog(@NonNull Context context) {
         this(context, 0);
         initDialog(context);
     }
 
-    public Tips(@NonNull Context context, int themeResId) {
+    public TipsDialog(@NonNull Context context, int themeResId) {
         super(context, themeResId == 0 ? R.style.TipsStyle : themeResId);
         initDialog(context);
     }
@@ -41,7 +41,7 @@ public class Tips extends Dialog {
         window.setGravity(Gravity.TOP);
     }
 
-    public void showColorToast(TipsMessageType type, String text) {
+    public void showColorTips(TipsMessageType type, String text) {
         textView.setText(text);
         if (type == TipsMessageType.NORMAL) {
             textView.setBackgroundColor(Utils.getApp().getResources().getColor(R.color.light_green));

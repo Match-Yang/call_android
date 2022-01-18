@@ -7,10 +7,13 @@ import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.call.BuildConfig;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivitySettingBinding;
+import im.zego.call.http.WebClientManager;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.ZegoZIMManager;
+import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zim.ZIM;
 import im.zego.zim.callback.ZIMLogUploadedCallback;
@@ -68,7 +71,10 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         binding.logOut.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActivityUtils.finishToActivity(LoginActivity.class,false);
+                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                userService.logout();
+                WebClientManager.getInstance().stopHeartBeat();
+                ActivityUtils.finishToActivity(LoginActivity.class, false);
             }
         });
     }
