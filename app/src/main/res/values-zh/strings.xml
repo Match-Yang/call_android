@@ -24,4 +24,6 @@
   <string name="net_quality_is_poor">The call quality is poor…</string>
   <string name="calling">Calling</string>
   <string name="name_format_error">The username should be English characters or number.</string>
+  <string name="zego_voice_call">Zego Voice Call</string>
+  <string name="zego_video_call">Zego Video Call</string>
 </resources>

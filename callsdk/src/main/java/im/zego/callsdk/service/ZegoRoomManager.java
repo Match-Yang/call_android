@@ -167,7 +167,9 @@ public class ZegoRoomManager {
             @Override
             public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
                 super.onRoomAttributesUpdated(zim, info, roomID);
-
+                if (userService != null) {
+                    userService.onRoomAttributesUpdated(zim, info, roomID);
+                }
             }
 
             @Override

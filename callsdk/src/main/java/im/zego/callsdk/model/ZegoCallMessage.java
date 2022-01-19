@@ -36,11 +36,11 @@ public class ZegoCallMessage {
         @SerializedName("id")
         public String userID;
         @SerializedName("name")
-        public String name;
+        public String userName;
 
-        public UserInfoBean(String userID, String name) {
+        public UserInfoBean(String userID, String userName) {
             this.userID = userID;
-            this.name = name;
+            this.userName = userName;
         }
     }
 }

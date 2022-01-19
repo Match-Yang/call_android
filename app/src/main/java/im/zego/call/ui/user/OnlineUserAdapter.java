@@ -79,6 +79,10 @@ public class OnlineUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
+    public UserBean getUserBean(int index) {
+        return userInfoList.get(index);
+    }
+
     public void updateList(List<UserBean> list) {
         this.userInfoList.clear();
         this.userInfoList.addAll(list);

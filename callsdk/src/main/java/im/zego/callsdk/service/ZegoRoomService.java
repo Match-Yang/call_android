@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class ZegoRoomService {
 
     private ZegoRoomServiceListener listener;
-    public ZegoRoomInfo roomInfo;
+    public ZegoRoomInfo roomInfo = new ZegoRoomInfo();
 
     public static final String KEY_ROOM_INFO = "room_info";
     private static final String TAG = "RoomService";
@@ -93,5 +93,9 @@ public class ZegoRoomService {
 
     public void setListener(ZegoRoomServiceListener listener) {
         this.listener = listener;
+    }
+
+    public void updateRoomInfo(ZegoRoomInfo roomInfo) {
+        this.roomInfo = roomInfo;
     }
 }
