@@ -68,13 +68,17 @@ public class WebClientManager {
                 CallApi.heartBeat(userID, null);
             }
         };
+        if (timer != null) {
+            timer.cancel();
+        }
         timer = new Timer();
-        timer.schedule(task, 0, 30 * 1000);
+        timer.schedule(task, 0, 15 * 1000);
     }
 
     public void stopHeartBeat() {
         if (timer != null) {
             timer.cancel();
         }
+        timer = null;
     }
 }

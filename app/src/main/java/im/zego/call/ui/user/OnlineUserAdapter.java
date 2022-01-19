@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -19,11 +18,11 @@ import java.util.List;
 
 public class OnlineUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<UserBean> userInfoList;
+    private List<ZegoUserInfo> userInfoList;
     private static final int USER = 0;
     private static final int NONE = 1;
 
-    public OnlineUserAdapter(List<UserBean> list) {
+    public OnlineUserAdapter(List<ZegoUserInfo> list) {
         if (list == null) {
             this.userInfoList = new ArrayList<>();
         } else {
@@ -49,7 +48,7 @@ public class OnlineUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         View itemView = holder.itemView;
         int viewType = getItemViewType(position);
         if (viewType == USER) {
-            UserBean userInfo = userInfoList.get(position);
+            ZegoUserInfo userInfo = userInfoList.get(position);
             TextView userIDTextView = itemView.findViewById(R.id.item_online_user_id);
             TextView userNameTextView = itemView.findViewById(R.id.item_online_user_name);
             ImageView userIconIv = itemView.findViewById(R.id.item_online_user_icon);
@@ -79,7 +78,11 @@ public class OnlineUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
     }
 
-    public void updateList(List<UserBean> list) {
+    public ZegoUserInfo getUserInfo(int index) {
+        return userInfoList.get(index);
+    }
+
+    public void updateList(List<ZegoUserInfo> list) {
         this.userInfoList.clear();
         this.userInfoList.addAll(list);
         notifyDataSetChanged();

@@ -1,6 +1,7 @@
 package im.zego.call.ui.call.view;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,10 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import im.zego.call.databinding.LayoutIncomingCallBinding;
+import im.zego.call.utils.AvatarHelper;
+import im.zego.callsdk.model.ZegoUserInfo;
 
 public class IncomingCallView extends ConstraintLayout {
 
     private LayoutIncomingCallBinding binding;
+    private ZegoUserInfo userInfo;
 
     public IncomingCallView(@NonNull Context context) {
         super(context);
@@ -62,10 +66,17 @@ public class IncomingCallView extends ConstraintLayout {
         });
     }
 
-    public void updateUI(boolean isVideoCall) {
+    public void updateUi(boolean isVideoCall) {
         binding.callAcceptVoice.setVisibility(isVideoCall ? GONE : VISIBLE);
         binding.callAcceptVideo.setVisibility(isVideoCall ? VISIBLE : GONE);
         binding.callCameraSwitchSmall.setVisibility(isVideoCall ? VISIBLE : GONE);
     }
 
+    public void setUserInfo(ZegoUserInfo userInfo) {
+        this.userInfo = userInfo;
+        String userName = userInfo.userName;
+        binding.callUserName.setText(userName);
+        Drawable drawable = AvatarHelper.getAvatarByUserName(userName);
+        binding.callUserIcon.setImageDrawable(drawable);
+    }
 }

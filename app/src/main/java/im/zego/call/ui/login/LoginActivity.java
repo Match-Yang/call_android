@@ -88,6 +88,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                                 String token = AuthInfoManager.getInstance().generateLoginToken(userID);
                                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                                 userService.login(userInfo, token, code -> {
+                                    Log.d(TAG, "login: " + code);
                                     if (code == 0) {
                                         ActivityUtils.startActivity(EntryActivity.class);
                                     } else {

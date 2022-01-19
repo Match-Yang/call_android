@@ -16,7 +16,7 @@ public interface ZegoUserServiceListener {
 
     void onCallReceived(ZegoUserInfo userInfo, ZegoCallType type);
 
-    void onCancelCallReceive(ZegoUserInfo userInfo);
+    void onCancelCallReceived(ZegoUserInfo userInfo);
 
     void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type);
 

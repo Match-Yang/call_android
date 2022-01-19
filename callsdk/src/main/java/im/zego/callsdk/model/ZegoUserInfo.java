@@ -1,12 +1,13 @@
 package im.zego.callsdk.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Class user information.
  * <p>Description: This class contains the user related information.</>
  */
-public class ZegoUserInfo {
+public class ZegoUserInfo implements java.io.Serializable {
 
     /**
      * User ID, refers to the user unique ID, can only contains numbers and letters.
