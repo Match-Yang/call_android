@@ -126,6 +126,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips("Failed to call,errorCode :" + errorCode);
+                    handler.postDelayed(cancelCallRunnable,1000);
                 }
             });
         } else if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VIDEO) {
@@ -134,6 +135,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips("Failed to call,errorCode :" + errorCode);
+                    handler.postDelayed(cancelCallRunnable,1000);
                 }
             });
         }
@@ -261,5 +263,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }

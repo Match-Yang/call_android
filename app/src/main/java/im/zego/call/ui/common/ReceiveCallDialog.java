@@ -47,7 +47,7 @@ public class ReceiveCallDialog extends Dialog {
             acceptVideo.setVisibility(View.GONE);
         } else {
             acceptVoice.setVisibility(View.GONE);
-            acceptVoice.setVisibility(View.VISIBLE);
+            acceptVideo.setVisibility(View.VISIBLE);
         }
         setCanceledOnTouchOutside(false);
         setCancelable(true);

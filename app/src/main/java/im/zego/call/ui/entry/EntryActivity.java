@@ -124,10 +124,6 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.logout();
-        WebClientManager.getInstance().stopHeartBeat();
-        ActivityUtils.finishToActivity(LoginActivity.class, false);
+
     }
 }
