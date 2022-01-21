@@ -26,4 +26,14 @@
   <string name="name_format_error">The username should be English characters or number.</string>
   <string name="zego_voice_call">Zego Voice Call</string>
   <string name="zego_video_call">Zego Video Call</string>
+
+  <string name="dialog_room_page_mic_cant_open">The Mic is off.</string>
+  <string name="dialog_room_page_mic_permission">Please allow access to your microphone to continue.</string>
+  <string name="dialog_room_page_go_to_settings">Go to Settings</string>
+  <string name="dialog_room_page_title_cannot_use_camera">The Camera is off.</string>
+  <string name="dialog_room_page_massage_cannot_use_camera">Please allow access to your camera to continue.</string>
+
+  <string name="dialog_room_page_cancel">Cancel</string>
+  <string name="dialog_room_page_ok">OK</string>
+
 </resources>

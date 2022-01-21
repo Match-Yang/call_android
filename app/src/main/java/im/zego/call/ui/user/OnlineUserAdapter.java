@@ -15,6 +15,7 @@ import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class OnlineUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -52,7 +53,7 @@ public class OnlineUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             TextView userIDTextView = itemView.findViewById(R.id.item_online_user_id);
             TextView userNameTextView = itemView.findViewById(R.id.item_online_user_name);
             ImageView userIconIv = itemView.findViewById(R.id.item_online_user_icon);
-            userIDTextView.setText(userInfo.userID);
+            userIDTextView.setText("ID:" + userInfo.userID);
             userNameTextView.setText(userInfo.userName);
             Drawable userIcon = AvatarHelper.getAvatarByUserName(userInfo.userName);
             userIconIv.setImageDrawable(userIcon);

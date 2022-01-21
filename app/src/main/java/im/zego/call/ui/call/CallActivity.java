@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
 import com.blankj.utilcode.util.ActivityUtils;
@@ -17,6 +18,7 @@ import com.gyf.immersionbar.ImmersionBar;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityCallBinding;
 import im.zego.call.ui.BaseActivity;
+import im.zego.call.ui.call.view.ConnectedVideoCallView.ConnectedVideoCallLister;
 import im.zego.call.ui.call.view.ConnectedVoiceCallView.ConnectedVoiceCallLister;
 import im.zego.call.ui.call.view.OutgoingCallView.OutgoingCallLister;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
@@ -117,29 +119,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void initView() {
         updateUi(typeOfCall);
 
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        String userID = userService.localUserInfo.userID;
-        String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
-        if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VOICE) {
-            userService.callToUser(userInfo.userID, ZegoCallType.Audio, token, errorCode -> {
-                if (errorCode == 0) {
-                    handler.postDelayed(cancelCallRunnable, 60 * 1000);
-                } else {
-                    showWarnTips("Failed to call,errorCode :" + errorCode);
-                    handler.postDelayed(cancelCallRunnable,1000);
-                }
-            });
-        } else if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VIDEO) {
-            userService.callToUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
-                if (errorCode == 0) {
-                    handler.postDelayed(cancelCallRunnable, 60 * 1000);
-                } else {
-                    showWarnTips("Failed to call,errorCode :" + errorCode);
-                    handler.postDelayed(cancelCallRunnable,1000);
-                }
-            });
-        }
-
         binding.layoutOutgoingCall.setLister(new OutgoingCallLister() {
             @Override
             public void onCancelCall(int errorCode) {
@@ -147,6 +126,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             }
         });
         binding.layoutConnectedVoiceCall.setListener(new ConnectedVoiceCallLister() {
+            @Override
+            public void onEndCall(int errorCode) {
+                finish();
+            }
+        });
+        binding.layoutConnectedVideoCall.setListener(new ConnectedVideoCallLister() {
             @Override
             public void onEndCall(int errorCode) {
                 finish();
@@ -206,13 +191,69 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             }
         };
 
-        if (typeOfCall == TYPE_CONNECTED_VOICE || typeOfCall == TYPE_CONNECTED_VIDEO) {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        String userID = userService.localUserInfo.userID;
+        String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
+        if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VOICE) {
+            userService.callToUser(userInfo.userID, ZegoCallType.Audio, token, errorCode -> {
+                if (errorCode == 0) {
+                    userService.micOperate(true, errorCode1 -> {
+                        Log.d("TAG", "micOperate() called with: errorCode1 = [" + errorCode1 + "]");
+                        if (errorCode1 == 0) {
+                            onLocalUserChanged();
+                        }
+                    });
+                    handler.postDelayed(cancelCallRunnable, 60 * 1000);
+                } else {
+                    showWarnTips("Failed to call,errorCode :" + errorCode);
+                    handler.postDelayed(cancelCallRunnable, 1000);
+                }
+            });
+        } else if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VIDEO) {
+            userService.callToUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
+                if (errorCode == 0) {
+                    TextureView textureView = binding.layoutOutgoingCall.getTextureView();
+                    userService.cameraOperate(true, errorCode1 -> {
+                        Log.d("TAG", "cameraOperate() called with: errorCode = [" + errorCode1 + "]");
+                        if (errorCode1 == 0) {
+                            userService.micOperate(true, errorCode2 -> {
+                                if (errorCode2 == 0) {
+                                    onLocalUserChanged();
+                                }
+                            });
+                        }
+                        userService.startPlayingUserMedia(userService.localUserInfo.userID, textureView);
+                    });
+                    handler.postDelayed(cancelCallRunnable, 60 * 1000);
+                } else {
+                    showWarnTips("Failed to call,errorCode :" + errorCode);
+                    handler.postDelayed(cancelCallRunnable, 1000);
+                }
+            });
+        } else if (typeOfCall == TYPE_CONNECTED_VOICE) {
             handler.postDelayed(timeCountRunnable, 1000);
+            userService.micOperate(true, errorCode -> {
+                if (errorCode == 0) {
+                    onLocalUserChanged();
+                }
+            });
+        } else if (typeOfCall == TYPE_CONNECTED_VIDEO) {
+            handler.postDelayed(timeCountRunnable, 1000);
+            userService.micOperate(true, errorCode -> {
+                if (errorCode == 0) {
+                    userService.cameraOperate(true, errorCode1 -> {
+                        if (errorCode1 == 0) {
+                            onLocalUserChanged();
+                        }
+                    });
+                }
+            });
         }
     }
 
     private void updateUi(int type) {
         binding.layoutOutgoingCall.setUserInfo(userInfo);
+        binding.layoutOutgoingCall.setCallType(typeOfCall);
         binding.layoutIncomingCall.setUserInfo(userInfo);
         binding.layoutConnectedVoiceCall.setUserInfo(userInfo);
         binding.layoutConnectedVideoCall.setUserInfo(userInfo);
@@ -245,11 +286,19 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             case TYPE_OUTGOING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.VISIBLE);
-                binding.layoutConnectedVideoCall.setVisibility(View.VISIBLE);
+                binding.layoutConnectedVideoCall.setVisibility(View.GONE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.GONE);
                 break;
         }
+    }
+
+    private void onLocalUserChanged() {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        binding.layoutOutgoingCall.onLocalUserChanged(userService.localUserInfo);
+        binding.layoutIncomingCall.onLocalUserChanged(userService.localUserInfo);
+        binding.layoutConnectedVoiceCall.onLocalUserChanged(userService.localUserInfo);
+        binding.layoutConnectedVideoCall.onLocalUserChanged(userService.localUserInfo);
     }
 
     @Override

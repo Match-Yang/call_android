@@ -43,10 +43,10 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
 
     private void initView() {
         binding = LayoutConnectedVoiceCallBinding.inflate(LayoutInflater.from(getContext()), this);
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         binding.callVoiceHangUp.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                 userService.endCall(errorCode -> {
                     if (listener != null) {
                         listener.onEndCall(errorCode);
@@ -54,6 +54,32 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
                 });
             }
         });
+        ZegoUserInfo localUserInfo = userService.localUserInfo;
+        binding.callVoiceMic.setSelected(localUserInfo.mic);
+        binding.callVoiceMic.setOnClickListener(v -> {
+            boolean selected = v.isSelected();
+            v.setSelected(!selected);
+            userService.micOperate(!selected, errorCode -> {
+
+            });
+        });
+        binding.callVoiceSpeaker.setSelected(true);
+        binding.callVoiceSpeaker.setOnClickListener(v -> {
+            boolean selected = v.isSelected();
+            v.setSelected(!selected);
+            userService.speakerOperate(!selected);
+        });
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (changedView == this) {
+            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+            if (visibility == View.VISIBLE) {
+                userService.startPlayingUserMedia(userInfo.userID, null);
+            }
+        }
     }
 
     public void setListener(ConnectedVoiceCallLister listener) {
@@ -66,6 +92,10 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callUserName.setText(userName);
         Drawable drawable = AvatarHelper.getAvatarByUserName(userName);
         binding.callUserIcon.setImageDrawable(drawable);
+    }
+
+    public void onLocalUserChanged(ZegoUserInfo localUserInfo) {
+        binding.callVoiceMic.setSelected(localUserInfo.mic);
     }
 
     public interface ConnectedVoiceCallLister {

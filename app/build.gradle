@@ -69,5 +69,9 @@ dependencies {
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
+    // refresh
+    implementation 'com.scwang.smart:refresh-layout-kernel:2.0.3'
+    implementation 'com.scwang.smart:refresh-header-material:2.0.3'
+
     api project(path: ':callsdk')
 }

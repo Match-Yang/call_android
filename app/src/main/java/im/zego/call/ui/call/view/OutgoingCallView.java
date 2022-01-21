@@ -5,14 +5,18 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.TextureView;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import im.zego.call.ui.call.CallActivity;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.call.databinding.LayoutOutgoingCallBinding;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
+import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zim.enums.ZIMErrorCode;
 
 public class OutgoingCallView extends ConstraintLayout {
@@ -20,6 +24,7 @@ public class OutgoingCallView extends ConstraintLayout {
     private LayoutOutgoingCallBinding binding;
     private ZegoUserInfo userInfo;
     private OutgoingCallLister lister;
+    private int typeOfCall;
 
     public OutgoingCallView(@NonNull Context context) {
         super(context);
@@ -63,6 +68,31 @@ public class OutgoingCallView extends ConstraintLayout {
         binding.callUserName.setText(userName);
         Drawable drawable = AvatarHelper.getAvatarByUserName(userName);
         binding.callUserIcon.setImageDrawable(drawable);
+    }
+
+    public void setCallType(int typeOfCall) {
+        this.typeOfCall = typeOfCall;
+        if (isVideoCall()) {
+            binding.textureView.setVisibility(View.VISIBLE);
+        } else {
+            binding.textureView.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isVideoCall() {
+        return typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VIDEO;
+    }
+
+    private boolean isAudioCall() {
+        return typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VOICE;
+    }
+
+    public TextureView getTextureView() {
+        return binding.textureView;
+    }
+
+    public void onLocalUserChanged(ZegoUserInfo localUserInfo) {
+
     }
 
     public interface OutgoingCallLister {

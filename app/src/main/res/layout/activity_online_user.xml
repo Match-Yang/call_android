@@ -38,16 +38,25 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/user_top" />
 
-  <FrameLayout
+  <com.scwang.smart.refresh.layout.SmartRefreshLayout
+    android:id="@+id/smart_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_marginTop="8dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintTop_toBottomOf="@id/user_title">
 
-    <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/user_recyclerview"
+    <FrameLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent" />
-  </FrameLayout>
+      android:layout_height="match_parent"
+      android:layout_marginTop="8dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/user_title">
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/user_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    </FrameLayout>
+  </com.scwang.smart.refresh.layout.SmartRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
