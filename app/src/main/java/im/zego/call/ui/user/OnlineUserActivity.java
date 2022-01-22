@@ -32,7 +32,6 @@ import java.util.Objects;
 public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> {
 
     private OnlineUserAdapter onlineUserAdapter;
-    private ZegoUserServiceListener userServiceListener;
     private ReceiveCallDialog callDialog;
 
     @Override
@@ -75,43 +74,6 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                 }
             }
         });
-
-        userServiceListener = new ZegoUserServiceListener() {
-            @Override
-            public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-
-            }
-
-            @Override
-            public void onCallReceived(ZegoUserInfo userInfo, ZegoCallType type) {
-                callDialog = new ReceiveCallDialog(ActivityUtils.getTopActivity(), userInfo, type);
-                if (!callDialog.isShowing()) {
-                    callDialog.show();
-                }
-            }
-
-            @Override
-            public void onCancelCallReceived(ZegoUserInfo userInfo) {
-                if (callDialog != null) {
-                    callDialog.dismiss();
-                }
-            }
-
-            @Override
-            public void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type) {
-
-            }
-
-            @Override
-            public void onEndCallReceived() {
-
-            }
-
-            @Override
-            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-
-            }
-        };
     }
 
     private void getUserList(ZegoRoomCallback callback) {
@@ -132,12 +94,5 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
             }
             onlineUserAdapter.updateList(userInfoList);
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.setListener(userServiceListener);
     }
 }

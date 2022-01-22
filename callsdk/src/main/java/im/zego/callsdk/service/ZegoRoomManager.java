@@ -84,9 +84,6 @@ public class ZegoRoomManager {
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
                 ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-                Log.d("TAG",
-                    "onNetworkQuality() called with: userID = [" + userID + "], upstreamQuality = [" + upstreamQuality.value()
-                        + "], downstreamQuality = [" + downstreamQuality.value() + "]");
             }
 
             @Override

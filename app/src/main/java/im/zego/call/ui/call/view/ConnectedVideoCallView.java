@@ -86,11 +86,11 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoViewSmallLayout.setOnClickListener(v -> {
             isSelfCenter = !isSelfCenter;
             if (isSelfCenter) {
-                binding.callVideoViewSmallName.setText("");
+                binding.callVideoViewSmallName.setText(userInfo.userName);
                 userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.textureViewBig);
                 userService.startPlayingUserMedia(userInfo.userID, binding.textureViewSmall);
             } else {
-                binding.callVideoViewSmallName.setText(userInfo.userName);
+                binding.callVideoViewSmallName.setText("");
                 userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.textureViewSmall);
                 userService.startPlayingUserMedia(userInfo.userID, binding.textureViewBig);
             }
@@ -120,6 +120,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
 
     public void setUserInfo(ZegoUserInfo userInfo) {
         this.userInfo = userInfo;
+        binding.callVideoViewSmallName.setText(userInfo.userName);
     }
 
     public void onLocalUserChanged(ZegoUserInfo localUserInfo) {
