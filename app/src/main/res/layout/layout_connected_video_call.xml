@@ -5,12 +5,12 @@
   android:layout_height="match_parent">
 
   <TextureView
-    android:id="@+id/call_video_view_big_texture"
+    android:id="@+id/call_video_view_center_texture"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
   <ImageView
-    android:id="@+id/call_video_view_big_icon"
+    android:id="@+id/call_video_view_center_icon"
     android:scaleType="centerCrop"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />

@@ -298,8 +298,14 @@ public class ZegoUserService {
                     userInfo.userID = callMessage.content.userInfo.userID;
                     userInfo.userName = callMessage.content.userInfo.userName;
                     if (callMessage.actionType == ZegoCallMessage.CALL) {
+                        // when received call ,we assume that user mic and camera is open
+                        ZegoCallType callType = callMessage.content.callType;
+                        if (callType == ZegoCallType.Video) {
+                            userInfo.camera = true;
+                        }
+                        userInfo.mic = true;
                         if (listener != null) {
-                            listener.onCallReceived(userInfo, callMessage.content.callType);
+                            listener.onCallReceived(userInfo, callType);
                         }
                     } else if (callMessage.actionType == ZegoCallMessage.CANCEL_CALL) {
                         if (listener != null) {

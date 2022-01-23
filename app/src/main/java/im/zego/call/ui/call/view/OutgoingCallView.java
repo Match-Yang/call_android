@@ -105,9 +105,8 @@ public class OutgoingCallView extends ConstraintLayout {
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        if (Objects.equals(userService.localUserInfo, userInfo)) {
-
+        if (Objects.equals(this.userInfo, userInfo)) {
+            setUserInfo(userInfo);
         }
     }
 }

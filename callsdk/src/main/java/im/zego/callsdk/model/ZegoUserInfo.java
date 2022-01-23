@@ -40,10 +40,7 @@ public class ZegoUserInfo implements java.io.Serializable {
 
         ZegoUserInfo that = (ZegoUserInfo) o;
 
-        if (!Objects.equals(userID, that.userID)) {
-            return false;
-        }
-        return Objects.equals(userName, that.userName);
+        return Objects.equals(userID, that.userID);
     }
 
     @Override

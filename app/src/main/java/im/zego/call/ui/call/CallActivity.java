@@ -26,6 +26,7 @@ import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import java.util.Locale;
+import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
@@ -120,7 +121,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips("Failed to call,errorCode :" + errorCode);
-                    handler.postDelayed(cancelCallRunnable, 1000);
+                    finishActivityDelayed();
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
@@ -141,7 +142,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips("Failed to call,errorCode :" + errorCode);
-                    handler.postDelayed(cancelCallRunnable, 1000);
+                    finishActivityDelayed();
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
@@ -259,6 +260,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        if (Objects.equals(this.userInfo, userInfo)) {
+            this.userInfo = userInfo;
+        }
         binding.layoutOutgoingCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVideoCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVoiceCall.onUserInfoUpdated(userInfo);

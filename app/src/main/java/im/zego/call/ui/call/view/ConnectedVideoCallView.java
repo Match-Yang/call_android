@@ -93,13 +93,15 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             isSelfCenter = !isSelfCenter;
             if (isSelfCenter) {
                 binding.callVideoViewSmallName.setText(userInfo.userName);
-                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewBigTexture);
+                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
                 userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
                 binding.callVideoViewSmallName.setText("");
                 userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-                userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewBigTexture);
+                userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewCenterTexture);
             }
+            onUserInfoUpdated(userInfo);
+            onUserInfoUpdated(localUserInfo);
         });
     }
 
@@ -111,12 +113,12 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             if (visibility == View.VISIBLE) {
                 if (isSelfCenter) {
                     userService
-                        .startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewBigTexture);
+                        .startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
                     userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewSmallTexture);
                 } else {
                     userService
                         .startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-                    userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewBigTexture);
+                    userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewCenterTexture);
                 }
             }
         }
@@ -128,17 +130,18 @@ public class ConnectedVideoCallView extends ConstraintLayout {
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        Log.d("userInfo", "onUserInfoUpdated() called with: userInfo = [" + userInfo + "]");
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         if (Objects.equals(userService.localUserInfo, userInfo)) {
             binding.callVideoMic.setSelected(userInfo.mic);
             binding.callVideoCamera.setSelected(userInfo.camera);
             if (isSelfCenter) {
                 if (userInfo.camera) {
-                    binding.callVideoViewBigIcon.setVisibility(View.GONE);
+                    binding.callVideoViewCenterIcon.setVisibility(View.GONE);
                 } else {
                     Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
-                    binding.callVideoViewBigIcon.setImageDrawable(fullAvatar);
-                    binding.callVideoViewBigIcon.setVisibility(View.VISIBLE);
+                    binding.callVideoViewCenterIcon.setImageDrawable(fullAvatar);
+                    binding.callVideoViewCenterIcon.setVisibility(View.VISIBLE);
                 }
             } else {
                 if (userInfo.camera) {
@@ -150,6 +153,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
                 }
             }
         } else if (Objects.equals(this.userInfo, userInfo)) {
+            this.userInfo = userInfo;
             if (isSelfCenter) {
                 if (userInfo.camera) {
                     binding.callVideoViewSmallIcon.setVisibility(View.GONE);
@@ -160,11 +164,11 @@ public class ConnectedVideoCallView extends ConstraintLayout {
                 }
             } else {
                 if (userInfo.camera) {
-                    binding.callVideoViewBigIcon.setVisibility(View.GONE);
+                    binding.callVideoViewCenterIcon.setVisibility(View.GONE);
                 } else {
                     Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
-                    binding.callVideoViewBigIcon.setImageDrawable(fullAvatar);
-                    binding.callVideoViewBigIcon.setVisibility(View.VISIBLE);
+                    binding.callVideoViewCenterIcon.setImageDrawable(fullAvatar);
+                    binding.callVideoViewCenterIcon.setVisibility(View.VISIBLE);
                 }
             }
         }

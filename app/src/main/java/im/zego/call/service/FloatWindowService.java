@@ -109,7 +109,6 @@ public class FloatWindowService extends Service {
 
                     });
                 }
-
                 receiveCallView.updateData(userInfo, type);
                 int state;
                 if (type == ZegoCallType.Audio) {
