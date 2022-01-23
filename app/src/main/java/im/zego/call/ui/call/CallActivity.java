@@ -3,64 +3,42 @@ package im.zego.call.ui.call;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.Utils;
-import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
+import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityCallBinding;
 import im.zego.call.ui.BaseActivity;
-import im.zego.call.ui.call.view.ConnectedVideoCallView.ConnectedVideoCallLister;
-import im.zego.call.ui.call.view.ConnectedVoiceCallView.ConnectedVoiceCallLister;
-import im.zego.call.ui.call.view.OutgoingCallView.OutgoingCallLister;
-import im.zego.call.ui.login.LoginActivity;
-import im.zego.callsdk.listener.ZegoUserServiceListener;
+import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
-import im.zego.zim.enums.ZIMConnectionEvent;
-import im.zego.zim.enums.ZIMConnectionState;
 import java.util.Locale;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private static final String TAG = "CallActivity";
 
-    public static final int TYPE_INCOMING_CALLING_VOICE = 0;
-    public static final int TYPE_INCOMING_CALLING_VIDEO = 1;
-    public static final int TYPE_CONNECTED_VOICE = 2;
-    public static final int TYPE_CONNECTED_VIDEO = 3;
-    public static final int TYPE_OUTGOING_CALLING_VOICE = 4;
-    public static final int TYPE_OUTGOING_CALLING_VIDEO = 5;
-    private static final String CALL_TYPE = "call_type";
     private static final String USER_INFO = "user_info";
 
-    private int typeOfCall;
     private ZegoUserInfo userInfo;
+    private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable cancelCallRunnable = () -> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.cancelCallToUser(userInfo.userID, errorCode -> {
-            finish();
+            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
         });
     };
     private Runnable timeCountRunnable = new Runnable() {
@@ -72,24 +50,21 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             handler.postDelayed(timeCountRunnable, 1000);
         }
     };
-    private Handler handler = new Handler(Looper.getMainLooper());
-    private long time;
 
-    public static void startCallActivity(int type, ZegoUserInfo userInfo) {
-        Log.d(TAG, "startCallActivity() called with: type = [" + type + "], userInfo = [" + userInfo + "]");
+    private long time;
+    private CallStateChangedListener callStateChangedListener;
+
+    public static void startCallActivity(ZegoUserInfo userInfo) {
+        Log.d(TAG, "startCallActivity() called with: userInfo = [" + userInfo + "]");
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent intent = new Intent(topActivity, CallActivity.class);
-        intent.putExtra(CALL_TYPE, type);
         intent.putExtra(USER_INFO, userInfo);
         topActivity.startActivity(intent);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        typeOfCall = getIntent().getIntExtra(CALL_TYPE, 0);
         userInfo = (ZegoUserInfo) getIntent().getSerializableExtra(USER_INFO);
-        Log.d(TAG,
-            "onCreate() called with: Build.VERSION.SDK_INT = [" + Build.VERSION.SDK_INT + "],type:" + typeOfCall);
         if (Build.VERSION.SDK_INT >= 27) {
             setShowWhenLocked(true);
             setTurnScreenOn(true);
@@ -127,46 +102,28 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     private void initView() {
+        int typeOfCall = CallStateManager.getInstance().getCallState();
         updateUi(typeOfCall);
-
-        binding.layoutOutgoingCall.setLister(new OutgoingCallLister() {
-            @Override
-            public void onCancelCall(int errorCode) {
-                finish();
-            }
-        });
-        binding.layoutConnectedVoiceCall.setListener(new ConnectedVoiceCallLister() {
-            @Override
-            public void onEndCall(int errorCode) {
-                finish();
-            }
-        });
-        binding.layoutConnectedVideoCall.setListener(new ConnectedVideoCallLister() {
-            @Override
-            public void onEndCall(int errorCode) {
-                finish();
-            }
-        });
 
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
-        if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VOICE) {
+        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             userService.callToUser(userInfo.userID, ZegoCallType.Audio, token, errorCode -> {
                 if (errorCode == 0) {
                     userService.micOperate(true, errorCode1 -> {
                         Log.d("TAG", "micOperate() called with: errorCode1 = [" + errorCode1 + "]");
                         if (errorCode1 == 0) {
-                            onLocalUserChanged();
                         }
                     });
+                    userService.speakerOperate(true);
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips("Failed to call,errorCode :" + errorCode);
                     handler.postDelayed(cancelCallRunnable, 1000);
                 }
             });
-        } else if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VIDEO) {
+        } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
             userService.callToUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
                 if (errorCode == 0) {
                     TextureView textureView = binding.layoutOutgoingCall.getTextureView();
@@ -175,155 +132,105 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         if (errorCode1 == 0) {
                             userService.micOperate(true, errorCode2 -> {
                                 if (errorCode2 == 0) {
-                                    onLocalUserChanged();
                                 }
                             });
                         }
                         userService.startPlayingUserMedia(userService.localUserInfo.userID, textureView);
                     });
+                    userService.speakerOperate(true);
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips("Failed to call,errorCode :" + errorCode);
                     handler.postDelayed(cancelCallRunnable, 1000);
                 }
             });
-        } else if (typeOfCall == TYPE_CONNECTED_VOICE) {
+        } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.micOperate(true, errorCode -> {
                 if (errorCode == 0) {
-                    onLocalUserChanged();
                 }
             });
-        } else if (typeOfCall == TYPE_CONNECTED_VIDEO) {
+            userService.speakerOperate(true);
+        } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.micOperate(true, errorCode -> {
                 if (errorCode == 0) {
                     userService.cameraOperate(true, errorCode1 -> {
                         if (errorCode1 == 0) {
-                            onLocalUserChanged();
                         }
                     });
                 }
             });
+            userService.speakerOperate(true);
         }
 
-        createNotificationChannel();
-        AppUtils.registerAppStatusChangedListener(new OnAppStatusChangedListener() {
+        callStateChangedListener = new CallStateChangedListener() {
             @Override
-            public void onForeground(Activity activity) {
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallActivity.this);
-                notificationManager.cancel(notificationId);
+            public void onCallStateChanged(int before, int after) {
+                Log.d(TAG, "onCallStateChanged() called with: before = [" + before + "], after = [" + after + "]");
+                updateUi(after);
+                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
+                    (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
+                boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
+                    (after == CallStateManager.TYPE_CONNECTED_VIDEO);
+                if (beforeIsOutgoing && afterIsAccept) {
+                    time = 0;
+                    handler.postDelayed(timeCountRunnable, 1000);
+                    handler.removeCallbacks(cancelCallRunnable);
+                } else if (beforeIsOutgoing && after == CallStateManager.TYPE_CALL_CANCELED) {
+                    ToastUtils.showShort(R.string.state_canceled);
+                    binding.layoutOutgoingCall.updateStateText(R.string.state_canceled);
+                    finishActivityDelayed();
+                } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
+                    ToastUtils.showShort(R.string.state_complete);
+                    finishActivityDelayed();
+                } else if (after == CallStateManager.TYPE_CALL_MISSED) {
+                    ToastUtils.showShort(R.string.state_missed);
+                    binding.layoutOutgoingCall.updateStateText(R.string.state_missed);
+                    finishActivityDelayed();
+                } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
+                    ToastUtils.showShort(R.string.state_declined);
+                    binding.layoutOutgoingCall.updateStateText(R.string.state_declined);
+                    finishActivityDelayed();
+                }
             }
-
-            @Override
-            public void onBackground(Activity activity) {
-                showNotification();
-            }
-        });
-    }
-
-    public void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type) {
-        Log.d(TAG,
-            "onCallResponseReceived() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
-        if (type == ZegoResponseType.Decline) {
-            handler.removeCallbacks(cancelCallRunnable);
-            handler.post(cancelCallRunnable);
-        } else {
-            handler.removeCallbacks(cancelCallRunnable);
-            if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VOICE) {
-                typeOfCall = CallActivity.TYPE_CONNECTED_VOICE;
-                time = 0;
-                updateUi(typeOfCall);
-                handler.postDelayed(timeCountRunnable, 1000);
-            } else if (typeOfCall == CallActivity.TYPE_OUTGOING_CALLING_VIDEO) {
-                typeOfCall = CallActivity.TYPE_CONNECTED_VIDEO;
-                time = 0;
-                updateUi(typeOfCall);
-                handler.postDelayed(timeCountRunnable, 1000);
-            }
-        }
-    }
-
-    public void onEndCallReceived() {
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.endCall(errorCode -> {
-            finish();
-        });
-    }
-
-    private String CHANNEL_ID = "channel 1";
-    private String CHANNEL_NAME = "channel name";
-    private String CHANNEL_DESC = "channel desc";
-    private int notificationId = 999;
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = CHANNEL_NAME;
-            String description = CHANNEL_DESC;
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-
-    private void showNotification() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setAction(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.icon_setting_pressed)
-            .setContentTitle("Call Demo")
-            .setContentText("Call Demo 已经切换到后台")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(notificationId, builder.build());
+        };
+        CallStateManager.getInstance().addListener(callStateChangedListener);
     }
 
     private void updateUi(int type) {
         binding.layoutOutgoingCall.setUserInfo(userInfo);
-        binding.layoutOutgoingCall.setCallType(typeOfCall);
+        binding.layoutOutgoingCall.setCallType(type);
         binding.layoutIncomingCall.setUserInfo(userInfo);
         binding.layoutConnectedVoiceCall.setUserInfo(userInfo);
         binding.layoutConnectedVideoCall.setUserInfo(userInfo);
 
         switch (type) {
-            case TYPE_INCOMING_CALLING_VOICE:
-            case TYPE_INCOMING_CALLING_VIDEO:
+            case CallStateManager.TYPE_INCOMING_CALLING_VOICE:
+            case CallStateManager.TYPE_INCOMING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.VISIBLE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
-                binding.layoutIncomingCall.updateUi(type == TYPE_INCOMING_CALLING_VIDEO);
+                binding.layoutIncomingCall.updateUi(type == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
                 binding.layoutConnectedVideoCall.setVisibility(View.GONE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.GONE);
                 break;
-            case TYPE_CONNECTED_VOICE:
+            case CallStateManager.TYPE_CONNECTED_VOICE:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
                 binding.layoutConnectedVideoCall.setVisibility(View.GONE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.VISIBLE);
                 binding.callTime.setVisibility(View.VISIBLE);
                 break;
-            case TYPE_CONNECTED_VIDEO:
+            case CallStateManager.TYPE_CONNECTED_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
                 binding.layoutConnectedVideoCall.setVisibility(View.VISIBLE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.VISIBLE);
                 break;
-            case TYPE_OUTGOING_CALLING_VOICE:
-            case TYPE_OUTGOING_CALLING_VIDEO:
+            case CallStateManager.TYPE_OUTGOING_CALLING_VOICE:
+            case CallStateManager.TYPE_OUTGOING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.VISIBLE);
                 binding.layoutConnectedVideoCall.setVisibility(View.GONE);
@@ -333,21 +240,27 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
     }
 
-    private void onLocalUserChanged() {
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        binding.layoutOutgoingCall.onLocalUserChanged(userService.localUserInfo);
-        binding.layoutIncomingCall.onLocalUserChanged(userService.localUserInfo);
-        binding.layoutConnectedVoiceCall.onLocalUserChanged(userService.localUserInfo);
-        binding.layoutConnectedVideoCall.onLocalUserChanged(userService.localUserInfo);
+    private void finishActivityDelayed() {
+        handler.postDelayed(() -> {
+            finish();
+        }, 1000);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_NO_CALL);
+        CallStateManager.getInstance().removeListener(callStateChangedListener);
     }
 
     @Override
     public void onBackPressed() {
+    }
+
+    public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        binding.layoutOutgoingCall.onUserInfoUpdated(userInfo);
+        binding.layoutConnectedVideoCall.onUserInfoUpdated(userInfo);
+        binding.layoutConnectedVoiceCall.onUserInfoUpdated(userInfo);
     }
 }

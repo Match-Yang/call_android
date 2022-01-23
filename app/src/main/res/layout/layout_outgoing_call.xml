@@ -10,6 +10,16 @@
     android:layout_height="match_parent" />
 
   <ImageView
+    android:id="@+id/camera_switch"
+    android:layout_width="26dp"
+    android:layout_height="26dp"
+    android:layout_marginTop="36dp"
+    android:layout_marginEnd="20dp"
+    android:src="@drawable/selector_activity_camera_switch_button"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <ImageView
     android:id="@+id/call_user_icon"
     android:layout_width="100dp"
     android:layout_height="100dp"

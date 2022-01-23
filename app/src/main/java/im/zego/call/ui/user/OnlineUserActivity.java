@@ -6,7 +6,6 @@ import android.view.View.OnClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import com.blankj.utilcode.util.ActivityUtils;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
@@ -14,17 +13,12 @@ import im.zego.call.http.WebClientManager;
 import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallDialog;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoRoomCallback;
-import im.zego.callsdk.listener.ZegoUserServiceListener;
-import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
-import im.zego.callsdk.service.ZegoUserService;
-import im.zego.zim.enums.ZIMConnectionEvent;
-import im.zego.zim.enums.ZIMConnectionState;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -66,11 +60,18 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                     return;
                 }
                 ZegoUserInfo userInfo = onlineUserAdapter.getUserInfo(adapterPosition);
+                int callState = CallStateManager.getInstance().getCallState();
+                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE ||
+                    callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+                    return;
+                }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    CallActivity.startCallActivity(CallActivity.TYPE_OUTGOING_CALLING_VOICE, userInfo);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
+                    CallActivity.startCallActivity(userInfo);
 
                 } else if (itemChild.getId() == R.id.item_online_user_video) {
-                    CallActivity.startCallActivity(CallActivity.TYPE_OUTGOING_CALLING_VIDEO, userInfo);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
+                    CallActivity.startCallActivity(userInfo);
                 }
             }
         });

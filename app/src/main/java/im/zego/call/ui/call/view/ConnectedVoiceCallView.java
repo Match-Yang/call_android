@@ -8,17 +8,19 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.blankj.utilcode.util.ToastUtils;
 import im.zego.call.databinding.LayoutConnectedVoiceCallBinding;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
+import java.util.Objects;
 
 public class ConnectedVoiceCallView extends ConstraintLayout {
 
     private LayoutConnectedVoiceCallBinding binding;
     private ZegoUserInfo userInfo;
-    private ConnectedVoiceCallLister listener;
 
     public ConnectedVoiceCallView(@NonNull Context context) {
         super(context);
@@ -48,8 +50,10 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
             @Override
             public void onClick(View v) {
                 userService.endCall(errorCode -> {
-                    if (listener != null) {
-                        listener.onEndCall(errorCode);
+                    if (errorCode == 0) {
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
+                    } else {
+                        ToastUtils.showShort("End call Failed,errorCode:" + errorCode);
                     }
                 });
             }
@@ -82,10 +86,6 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         }
     }
 
-    public void setListener(ConnectedVoiceCallLister listener) {
-        this.listener = listener;
-    }
-
     public void setUserInfo(ZegoUserInfo userInfo) {
         this.userInfo = userInfo;
         String userName = userInfo.userName;
@@ -94,12 +94,10 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callUserIcon.setImageDrawable(drawable);
     }
 
-    public void onLocalUserChanged(ZegoUserInfo localUserInfo) {
-        binding.callVoiceMic.setSelected(localUserInfo.mic);
-    }
-
-    public interface ConnectedVoiceCallLister {
-
-        void onEndCall(int errorCode);
+    public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        if (Objects.equals(userService.localUserInfo, userInfo)) {
+            binding.callVoiceMic.setSelected(userInfo.mic);
+        }
     }
 }

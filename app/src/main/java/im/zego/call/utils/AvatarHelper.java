@@ -11,17 +11,28 @@ public final class AvatarHelper {
     private static final int MAX_INDEX = 6;
 
     public static Drawable getAvatarByUserName(String userName) {
-        return ResourceUtils.getDrawable(getAvatarIdByUserName(userName));
+        return ResourceUtils.getDrawable(getAvatarIdByUserName(userName, false));
     }
 
-    private static int getAvatarIdByUserName(String userName) {
+    public static Drawable getFullAvatarByUserName(String userName) {
+        return ResourceUtils.getDrawable(getAvatarIdByUserName(userName, true));
+    }
+
+    private static int getAvatarIdByUserName(String userName, boolean full) {
         int index = getIndex(userName);
-        Log.d("getIndex", "getAvatarIdByUserName() called with: index = [" + index + "]");
-        return getUserAvatarId(index);
+        int userAvatarId = getUserAvatarResourceId(index, full);
+        return userAvatarId;
     }
 
-    private static int getUserAvatarId(int position) {
-        return ResourceUtils.getDrawableIdByName("user_icon_" + (position % MAX_INDEX + 1));
+    private static int getUserAvatarResourceId(int position, boolean full) {
+        String name;
+        if (full) {
+            name = "user_icon_" + (position % MAX_INDEX + 1) + "_big";
+        } else {
+            name = "user_icon_" + (position % MAX_INDEX + 1);
+        }
+        Log.d("getUserAvatarId", "getUserAvatarResourceId() returned: " + name);
+        return ResourceUtils.getDrawableIdByName(name);
     }
 
     private static int getIndex(String userName) {

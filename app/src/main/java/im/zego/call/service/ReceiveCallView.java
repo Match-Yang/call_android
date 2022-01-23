@@ -5,10 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.ToastUtils;
@@ -16,6 +13,7 @@ import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.LayoutReceiveCallBinding;
 import im.zego.call.ui.call.CallActivity;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoResponseType;
@@ -78,7 +76,8 @@ public class ReceiveCallView extends FrameLayout {
             String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
             userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                    CallActivity.startCallActivity(CallActivity.TYPE_CONNECTED_VOICE, userInfo);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
+                    CallActivity.startCallActivity(userInfo);
                 } else {
                     ToastUtils.showShort("responseCall " + errorCode);
                 }
@@ -92,7 +91,8 @@ public class ReceiveCallView extends FrameLayout {
             String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
             userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                    CallActivity.startCallActivity(CallActivity.TYPE_CONNECTED_VIDEO, userInfo);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
+                    CallActivity.startCallActivity(userInfo);
                 } else {
                     ToastUtils.showShort("responseCall " + errorCode);
                 }
@@ -105,7 +105,7 @@ public class ReceiveCallView extends FrameLayout {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                 } else {
                     ToastUtils.showShort("Decline Call" + errorCode);
                 }

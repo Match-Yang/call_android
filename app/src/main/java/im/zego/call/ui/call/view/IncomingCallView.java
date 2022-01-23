@@ -79,8 +79,4 @@ public class IncomingCallView extends ConstraintLayout {
         Drawable drawable = AvatarHelper.getAvatarByUserName(userName);
         binding.callUserIcon.setImageDrawable(drawable);
     }
-
-    public void onLocalUserChanged(ZegoUserInfo localUserInfo) {
-
-    }
 }

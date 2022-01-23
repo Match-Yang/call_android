@@ -35,5 +35,12 @@
 
   <string name="dialog_room_page_cancel">Cancel</string>
   <string name="dialog_room_page_ok">OK</string>
+  <string name="float_permission_tips">to show call on desktop we need overlay permission,or you may miss some call</string>
+  <string name="create_id_failed">create userID failed,errorCode :%d</string>
+  <string name="state_canceled">Canceled</string>
+  <string name="call_notification">calling with %s,click to back to app</string>
+  <string name="state_complete">Complete</string>
+  <string name="state_missed">Missed</string>
+  <string name="state_declined">Declined</string>
 
 </resources>

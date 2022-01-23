@@ -1,14 +1,24 @@
 package im.zego.call.ui.entry;
 
+import android.app.Activity;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
+import com.blankj.utilcode.util.Utils;
+import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
+import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
@@ -62,7 +72,6 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
         });
 
-
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         ZegoUserInfo localUserInfo = userService.localUserInfo;
 
@@ -72,13 +81,39 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         binding.entryUserAvatar.setImageDrawable(userIcon);
 
         startService(new Intent(this, FloatWindowService.class));
+
+        checkFloatWindowPermission();
+    }
+
+    private void checkFloatWindowPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!PermissionUtils.isGrantedDrawOverlays()) {
+                Builder builder = new Builder(this);
+                builder.setMessage(R.string.float_permission_tips);
+                builder.setPositiveButton(R.string.dialog_room_page_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        PermissionUtils.requestDrawOverlays(new SimpleCallback() {
+                            @Override
+                            public void onGranted() {
+
+                            }
+
+                            @Override
+                            public void onDenied() {
+
+                            }
+                        });
+                    }
+                });
+                builder.create().show();
+            }
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.setListener(null);
         stopService(new Intent(this, FloatWindowService.class));
     }
 

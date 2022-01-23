@@ -1,6 +1,7 @@
 package im.zego.call.ui.call.view;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,16 +9,19 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.blankj.utilcode.util.ToastUtils;
 import im.zego.call.databinding.LayoutConnectedVideoCallBinding;
+import im.zego.call.ui.call.CallStateManager;
+import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
+import java.util.Objects;
 
 public class ConnectedVideoCallView extends ConstraintLayout {
 
     private LayoutConnectedVideoCallBinding binding;
     private ZegoUserInfo userInfo;
-    private ConnectedVideoCallLister listener;
     private boolean isSelfCenter = true;
 
     public ConnectedVideoCallView(@NonNull Context context) {
@@ -49,8 +53,10 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             @Override
             public void onClick(View v) {
                 userService.endCall(errorCode -> {
-                    if (listener != null) {
-                        listener.onEndCall(errorCode);
+                    if (errorCode == 0) {
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
+                    } else {
+                        ToastUtils.showShort("End call Failed,errorCode:" + errorCode);
                     }
                 });
             }
@@ -87,12 +93,12 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             isSelfCenter = !isSelfCenter;
             if (isSelfCenter) {
                 binding.callVideoViewSmallName.setText(userInfo.userName);
-                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.textureViewBig);
-                userService.startPlayingUserMedia(userInfo.userID, binding.textureViewSmall);
+                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewBigTexture);
+                userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
                 binding.callVideoViewSmallName.setText("");
-                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.textureViewSmall);
-                userService.startPlayingUserMedia(userInfo.userID, binding.textureViewBig);
+                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewBigTexture);
             }
         });
     }
@@ -104,18 +110,16 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             if (visibility == View.VISIBLE) {
                 if (isSelfCenter) {
-                    userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.textureViewBig);
-                    userService.startPlayingUserMedia(userInfo.userID, binding.textureViewSmall);
+                    userService
+                        .startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewBigTexture);
+                    userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewSmallTexture);
                 } else {
-                    userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.textureViewSmall);
-                    userService.startPlayingUserMedia(userInfo.userID, binding.textureViewBig);
+                    userService
+                        .startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                    userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewBigTexture);
                 }
             }
         }
-    }
-
-    public void setListener(ConnectedVideoCallLister lister) {
-        this.listener = lister;
     }
 
     public void setUserInfo(ZegoUserInfo userInfo) {
@@ -123,14 +127,46 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoViewSmallName.setText(userInfo.userName);
     }
 
-    public void onLocalUserChanged(ZegoUserInfo localUserInfo) {
-        Log.d("TAG", "onLocalUserChanged() called with: localUserInfo = [" + localUserInfo + "]");
-        binding.callVideoMic.setSelected(localUserInfo.mic);
-        binding.callVideoCamera.setSelected(localUserInfo.camera);
-    }
-
-    public interface ConnectedVideoCallLister {
-
-        void onEndCall(int errorCode);
+    public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        if (Objects.equals(userService.localUserInfo, userInfo)) {
+            binding.callVideoMic.setSelected(userInfo.mic);
+            binding.callVideoCamera.setSelected(userInfo.camera);
+            if (isSelfCenter) {
+                if (userInfo.camera) {
+                    binding.callVideoViewBigIcon.setVisibility(View.GONE);
+                } else {
+                    Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
+                    binding.callVideoViewBigIcon.setImageDrawable(fullAvatar);
+                    binding.callVideoViewBigIcon.setVisibility(View.VISIBLE);
+                }
+            } else {
+                if (userInfo.camera) {
+                    binding.callVideoViewSmallIcon.setVisibility(View.GONE);
+                } else {
+                    Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
+                    binding.callVideoViewSmallIcon.setImageDrawable(fullAvatar);
+                    binding.callVideoViewSmallIcon.setVisibility(View.VISIBLE);
+                }
+            }
+        } else if (Objects.equals(this.userInfo, userInfo)) {
+            if (isSelfCenter) {
+                if (userInfo.camera) {
+                    binding.callVideoViewSmallIcon.setVisibility(View.GONE);
+                } else {
+                    Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
+                    binding.callVideoViewSmallIcon.setImageDrawable(fullAvatar);
+                    binding.callVideoViewSmallIcon.setVisibility(View.VISIBLE);
+                }
+            } else {
+                if (userInfo.camera) {
+                    binding.callVideoViewBigIcon.setVisibility(View.GONE);
+                } else {
+                    Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
+                    binding.callVideoViewBigIcon.setImageDrawable(fullAvatar);
+                    binding.callVideoViewBigIcon.setVisibility(View.VISIBLE);
+                }
+            }
+        }
     }
 }

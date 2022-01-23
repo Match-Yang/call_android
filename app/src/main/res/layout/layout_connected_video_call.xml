@@ -5,7 +5,13 @@
   android:layout_height="match_parent">
 
   <TextureView
-    android:id="@+id/texture_view_big"
+    android:id="@+id/call_video_view_big_texture"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <ImageView
+    android:id="@+id/call_video_view_big_icon"
+    android:scaleType="centerCrop"
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
@@ -85,7 +91,12 @@
     app:layout_constraintTop_toTopOf="parent">
 
     <TextureView
-      android:id="@+id/texture_view_small"
+      android:id="@+id/call_video_view_small_texture"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+    <ImageView
+      android:id="@+id/call_video_view_small_icon"
       android:layout_width="match_parent"
       android:layout_height="match_parent" />
 
@@ -97,10 +108,10 @@
       android:layout_centerHorizontal="true"
       android:layout_marginBottom="3dp"
       android:ellipsize="end"
-      android:textSize="13sp"
-      android:textColor="@color/white"
       android:maxLines="1"
-      android:singleLine="true" />
+      android:singleLine="true"
+      android:textColor="@color/white"
+      android:textSize="13sp" />
   </RelativeLayout>
 
 </merge>

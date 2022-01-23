@@ -204,6 +204,7 @@ public class ZegoUserService {
     }
 
     public void endCall(ZegoRoomCallback callback) {
+        Log.d(TAG, "endCall() called with: callback = [" + callback + "]");
         roomService.leaveRoom(errorCode -> {
             if (callback != null) {
                 callback.onRoomCallback(errorCode);
@@ -213,6 +214,10 @@ public class ZegoUserService {
 
     public void micOperate(boolean open, ZegoRoomCallback callback) {
         boolean micState = localUserInfo.mic;
+        if (micState == open) {
+            callback.onRoomCallback(0);
+            return;
+        }
         localUserInfo.mic = open;
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(localUserInfo.userID, mGson.toJson(localUserInfo));
@@ -227,6 +232,9 @@ public class ZegoUserService {
         ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig, errorInfo -> {
             Log.d(TAG, "micOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
             if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
+                if (listener != null) {
+                    listener.onUserInfoUpdated(localUserInfo);
+                }
             } else {
                 localUserInfo.mic = micState;
             }
@@ -237,6 +245,10 @@ public class ZegoUserService {
 
     public void cameraOperate(boolean open, ZegoRoomCallback callback) {
         boolean cameraState = localUserInfo.camera;
+        if (cameraState == open) {
+            callback.onRoomCallback(0);
+            return;
+        }
         localUserInfo.camera = open;
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(localUserInfo.userID, mGson.toJson(localUserInfo));
@@ -251,7 +263,9 @@ public class ZegoUserService {
         ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig, errorInfo -> {
             Log.d(TAG, "cameraOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
             if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
-
+                if (listener != null) {
+                    listener.onUserInfoUpdated(localUserInfo);
+                }
             } else {
                 localUserInfo.camera = cameraState;
             }
@@ -323,6 +337,7 @@ public class ZegoUserService {
             stopPlayingMedia(leaveUser.userID);
             userList.remove(leaveUser);
         }
+        Log.d(TAG, "onRoomMemberLeft: " + userList.size());
         if (userList.size() <= 1 && listener != null) {
             // only self left
             listener.onEndCallReceived();
@@ -371,9 +386,17 @@ public class ZegoUserService {
                         }
                         if (Objects.equals(userInfo.userID, attrUserInfo.userID)) {
                             // update user state
+                            final boolean nameChanged = Objects.equals(userInfo.userName, attrUserInfo.userName);
+                            final boolean micChanged = Objects.equals(userInfo.mic, attrUserInfo.mic);
+                            final boolean cameraChanged = Objects.equals(userInfo.camera, attrUserInfo.camera);
                             userInfo.userName = attrUserInfo.userName;
                             userInfo.mic = attrUserInfo.mic;
                             userInfo.camera = attrUserInfo.camera;
+                            if (nameChanged || micChanged || cameraChanged) {
+                                if (listener != null) {
+                                    listener.onUserInfoUpdated(userInfo);
+                                }
+                            }
                             break;
                         }
                     }
