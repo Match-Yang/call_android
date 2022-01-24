@@ -34,7 +34,7 @@
   <string name="dialog_room_page_massage_cannot_use_camera">你还未授权我们使用摄像头</string>
   <string name="dialog_room_page_cancel">取消</string>
   <string name="dialog_room_page_ok">确定</string>
-  <string name="float_permission_tips">to show call on desktop we need overlay permission,or you may miss some call</string>
+  <string name="float_permission_tips">请开启悬浮窗权限以正常使用接收通话呼叫，下拉通知栏也可以点击返回通话</string>
   <string name="create_id_failed">create userID failed,errorCode :%d</string>
   <string name="state_canceled">Canceled</string>
   <string name="call_notification">%s 通话中,点击返回</string>

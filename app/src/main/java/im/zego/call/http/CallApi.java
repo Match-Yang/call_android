@@ -14,7 +14,7 @@ import java.util.List;
 public class CallApi {
 
     private static final String TAG = "CallApi";
-    private static final String baseUrl = "http://192.168.100.44:3128";
+    private static final String baseUrl = "https://demo-server-api.zegocloud.com";
     private static Gson gson = new Gson();
 
     public static final int PARAM_ERROR = 4;
