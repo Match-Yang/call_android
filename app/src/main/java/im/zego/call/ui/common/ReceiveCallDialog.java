@@ -6,43 +6,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.DialogCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
-import com.blankj.utilcode.util.ToastUtils;
 import im.zego.call.R;
-import im.zego.call.auth.AuthInfoManager;
-import im.zego.call.ui.call.CallActivity;
-import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
 import im.zego.call.ui.login.LoginActivity;
-import im.zego.call.utils.AvatarHelper;
 import im.zego.call.utils.PermissionHelper;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoRoomManager;
-import im.zego.callsdk.service.ZegoUserService;
-import im.zego.zim.enums.ZIMErrorCode;
 
 public class ReceiveCallDialog {
 
@@ -52,6 +35,7 @@ public class ReceiveCallDialog {
     private WindowManager windowManager;
     private WindowManager.LayoutParams lp;
     private CallDialog callDialog;
+    private OnReceiveCallViewClickedListener listener;
 
     public ReceiveCallDialog() {
         Activity topActivity = ActivityUtils.getTopActivity();
@@ -77,18 +61,27 @@ public class ReceiveCallDialog {
             public void onAcceptAudioClicked() {
                 dismissReceiveCallWindow();
                 stopRingTone();
+                if (listener != null) {
+                    listener.onAcceptAudioClicked();
+                }
             }
 
             @Override
             public void onAcceptVideoClicked() {
                 dismissReceiveCallWindow();
                 stopRingTone();
+                if (listener != null) {
+                    listener.onAcceptVideoClicked();
+                }
             }
 
             @Override
             public void onDeclineClicked() {
                 dismissReceiveCallWindow();
                 stopRingTone();
+                if (listener != null) {
+                    listener.onDeclineClicked();
+                }
             }
         });
     }
@@ -170,6 +163,10 @@ public class ReceiveCallDialog {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+    }
+
+    public void setListener(OnReceiveCallViewClickedListener listener) {
+        this.listener = listener;
     }
 
     public void updateData(ZegoUserInfo userInfo, ZegoCallType type) {

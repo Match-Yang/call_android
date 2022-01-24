@@ -1,14 +1,15 @@
 package im.zego.call.ui.entry;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,13 +19,13 @@ import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
-import im.zego.call.App;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallDialog;
+import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
 import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.setting.SettingActivity;
 import im.zego.call.ui.user.OnlineUserActivity;
@@ -121,7 +122,12 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 CallStateManager.getInstance().setCallState(userInfo, state);
 
                 dialog.showReceiveCallWindow();
-                if (!AppUtils.isAppForeground() && !PermissionHelper.checkFloatWindowPermission()) {
+
+                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                boolean isScreenOff = !powerManager.isInteractive();
+                boolean isBackground = !AppUtils.isAppForeground();
+                boolean hasOverlayPermission = PermissionHelper.checkFloatWindowPermission();
+                if (isScreenOff || (isBackground && !hasOverlayPermission)) {
                     showNotification(userInfo);
                 }
             }
@@ -167,8 +173,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         AppUtils.registerAppStatusChangedListener(new OnAppStatusChangedListener() {
             @Override
             public void onForeground(Activity activity) {
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(activity);
-                notificationManager.cancel(notificationId);
+                dismissNotification(EntryActivity.this, notificationId);
             }
 
             @Override
@@ -178,6 +183,22 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 if (needNotification && userInfo != null) {
                     showNotification(userInfo);
                 }
+            }
+        });
+        dialog.setListener(new OnReceiveCallViewClickedListener() {
+            @Override
+            public void onAcceptAudioClicked() {
+                dismissNotification(EntryActivity.this, notificationId);
+            }
+
+            @Override
+            public void onAcceptVideoClicked() {
+                dismissNotification(EntryActivity.this, notificationId);
+            }
+
+            @Override
+            public void onDeclineClicked() {
+                dismissNotification(EntryActivity.this, notificationId);
             }
         });
     }
@@ -217,6 +238,11 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(topActivity);
         notificationManager.notify(notificationId, builder.build());
+    }
+
+    void dismissNotification(Context context, int notificationId) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancel(notificationId);
     }
 
     @Override

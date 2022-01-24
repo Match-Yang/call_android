@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.blankj.utilcode.util.ToastUtils;
+import im.zego.call.R;
 import im.zego.call.databinding.LayoutConnectedVoiceCallBinding;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
@@ -53,7 +54,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
                     if (errorCode == 0) {
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
                     } else {
-                        ToastUtils.showShort("End call Failed,errorCode:" + errorCode);
+                        ToastUtils.showShort(R.string.end_call_failed, errorCode);
                     }
                 });
             }
@@ -92,12 +93,21 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callUserName.setText(userName);
         Drawable drawable = AvatarHelper.getAvatarByUserName(userName);
         binding.callUserIcon.setImageDrawable(drawable);
+        if (Objects.equals(userInfo.userName, this.userInfo.userName)) {
+            Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
+            binding.callUserBg.setImageDrawable(fullAvatar);
+        }
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         if (Objects.equals(userService.localUserInfo, userInfo)) {
             binding.callVoiceMic.setSelected(userInfo.mic);
+        }
+
+        if (Objects.equals(userInfo.userName, this.userInfo.userName)) {
+            Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
+            binding.callUserBg.setImageDrawable(fullAvatar);
         }
     }
 }

@@ -116,14 +116,15 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             userService.callToUser(userInfo.userID, ZegoCallType.Audio, token, errorCode -> {
                 if (errorCode == 0) {
                     userService.micOperate(true, errorCode1 -> {
-                        Log.d("TAG", "micOperate() called with: errorCode1 = [" + errorCode1 + "]");
                         if (errorCode1 == 0) {
+                        } else {
+                            ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
                         }
                     });
                     userService.speakerOperate(true);
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
-                    showWarnTips("Failed to call,errorCode :" + errorCode);
+                    showWarnTips(getString(R.string.call_user_failed, errorCode));
                     finishActivityDelayed();
                 }
             });
@@ -132,19 +133,20 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 if (errorCode == 0) {
                     TextureView textureView = binding.layoutOutgoingCall.getTextureView();
                     userService.cameraOperate(true, errorCode1 -> {
-                        Log.d("TAG", "cameraOperate() called with: errorCode = [" + errorCode1 + "]");
                         if (errorCode1 == 0) {
                             userService.micOperate(true, errorCode2 -> {
                                 if (errorCode2 == 0) {
                                 }
                             });
+                        } else {
+                            ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
                         }
                         userService.startPlayingUserMedia(userService.localUserInfo.userID, textureView);
                     });
                     userService.speakerOperate(true);
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
-                    showWarnTips("Failed to call,errorCode :" + errorCode);
+                    showWarnTips(getString(R.string.call_user_failed, errorCode));
                     finishActivityDelayed();
                 }
             });

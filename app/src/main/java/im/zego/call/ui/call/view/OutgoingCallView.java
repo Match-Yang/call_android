@@ -55,7 +55,7 @@ public class OutgoingCallView extends ConstraintLayout {
                     binding.callStateText.setText(R.string.state_canceled);
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
-                    ToastUtils.showShort("Cancel call Failed,errorCode:" + errorCode);
+                    ToastUtils.showShort(R.string.cancel_call_failed, errorCode);
                 }
             });
         });

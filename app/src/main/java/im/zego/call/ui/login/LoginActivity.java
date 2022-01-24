@@ -1,15 +1,8 @@
 package im.zego.call.ui.login;
 
-import android.media.AudioAttributes;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
@@ -157,14 +149,14 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                         if (code == 0) {
                             ActivityUtils.startActivity(EntryActivity.class);
                         } else {
-                            showWarnTips("login failed,errorCode :" + code);
+                            showWarnTips(getString(R.string.login_failed, code));
                             WebClientManager.getInstance().stopHeartBeat();
                         }
                     });
                 } else {
                     CallApi.logout(userID, null);
                     WebClientManager.getInstance().stopHeartBeat();
-                    showWarnTips("login error,errorCode :" + errorCode);
+                    showWarnTips(getString(R.string.login_failed, errorCode));
                 }
             }
         });

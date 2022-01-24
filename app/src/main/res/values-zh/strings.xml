@@ -41,4 +41,10 @@
   <string name="state_complete">Complete</string>
   <string name="state_missed">Missed</string>
   <string name="state_declined">Declined</string>
+  <string name="call_user_failed">Failed to call,errorCode :%d</string>
+  <string name="mic_operate_failed">micOperate() called with: errorCode = [%d]</string>
+  <string name="camera_operate_failed">cameraOperate() called with: errorCode = [%d]</string>
+  <string name="login_failed">login failed,errorCode :%d</string>
+  <string name="cancel_call_failed">Cancel call Failed,errorCode:%d</string>
+  <string name="end_call_failed">End call Failed,errorCode:%d</string>
 </resources>
