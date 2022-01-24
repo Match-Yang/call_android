@@ -67,9 +67,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         userInfo = (ZegoUserInfo) getIntent().getSerializableExtra(USER_INFO);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+            | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         if (Build.VERSION.SDK_INT >= 27) {
             setShowWhenLocked(true);
-            setTurnScreenOn(true);
             KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
 
             keyguardManager.requestDismissKeyguard(this, new KeyguardDismissCallback() {

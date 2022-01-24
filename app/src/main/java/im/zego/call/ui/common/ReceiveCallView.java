@@ -1,4 +1,4 @@
-package im.zego.call.service;
+package im.zego.call.ui.common;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -145,7 +145,7 @@ public class ReceiveCallView extends FrameLayout {
         this.listener = listener;
     }
 
-    interface OnReceiveCallViewClickedListener {
+    public interface OnReceiveCallViewClickedListener {
 
         void onAcceptAudioClicked();
 
