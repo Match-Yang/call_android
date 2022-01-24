@@ -5,8 +5,13 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -20,6 +25,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import im.zego.call.R;
 import im.zego.call.service.ReceiveCallView.OnReceiveCallViewClickedListener;
@@ -27,6 +33,7 @@ import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallDialog;
 import im.zego.call.ui.login.LoginActivity;
+import im.zego.call.utils.PermissionHelper;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoResponseType;
@@ -35,6 +42,7 @@ import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
+import java.io.IOException;
 
 public class FloatWindowService extends Service {
 
@@ -48,6 +56,7 @@ public class FloatWindowService extends Service {
     private ReceiveCallView receiveCallView;
     private boolean isViewAddedToWindow;
     private OnAppStatusChangedListener appStatusChangedListener;
+    private MediaPlayer mediaPlayer;
 
     @Override
     public void onCreate() {
@@ -75,16 +84,19 @@ public class FloatWindowService extends Service {
             @Override
             public void onAcceptAudioClicked() {
                 dismissReceiveCallWindow();
+                stopRingTone();
             }
 
             @Override
             public void onAcceptVideoClicked() {
                 dismissReceiveCallWindow();
+                stopRingTone();
             }
 
             @Override
             public void onDeclineClicked() {
                 dismissReceiveCallWindow();
+                stopRingTone();
             }
         });
 
@@ -105,6 +117,7 @@ public class FloatWindowService extends Service {
                 Log.d(TAG, "onCallReceived() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 boolean needNotification = CallStateManager.getInstance().needNotification();
                 if (needNotification) {
+                    //needNotification means call is happening,reject other calls
                     userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
 
                     });
@@ -112,11 +125,12 @@ public class FloatWindowService extends Service {
                 receiveCallView.updateData(userInfo, type);
                 int state;
                 if (type == ZegoCallType.Audio) {
-                    state = CallStateManager.TYPE_CONNECTED_VOICE;
+                    state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
                 } else {
-                    state = CallStateManager.TYPE_CONNECTED_VIDEO;
+                    state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
                 }
                 CallStateManager.getInstance().setCallState(userInfo, state);
+
                 showReceiveCallWindow();
             }
 
@@ -177,6 +191,22 @@ public class FloatWindowService extends Service {
         AppUtils.registerAppStatusChangedListener(appStatusChangedListener);
     }
 
+    private void playRingTone() {
+        Activity topActivity = ActivityUtils.getTopActivity();
+        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
+        mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+
+    private void stopRingTone() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -197,22 +227,32 @@ public class FloatWindowService extends Service {
     }
 
     private void showReceiveCallWindow() {
+        playRingTone();
         if (AppUtils.isAppForeground()) {
             showAppDialog();
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!PermissionUtils.isGrantedDrawOverlays()) {
-                    //if app is background and receive call, no overlay permission
-                    // show app dialog android notification
-                    showAppDialog();
-                    ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
-                    if (userInfo != null) {
-                        showNotification(userInfo);
+            if (PermissionHelper.checkFloatWindowPermission()) {
+                showGlobalWindow();
+            } else {
+                //if app is background and receive call, no overlay permission
+                // show app dialog android notification
+                Activity topActivity = ActivityUtils.getTopActivity();
+                PermissionHelper.showFloatPermissionDialog(topActivity, new SimpleCallback() {
+                    @Override
+                    public void onGranted() {
+                        showGlobalWindow();
                     }
-                    return;
+
+                    @Override
+                    public void onDenied() {
+                        showAppDialog();
+                    }
+                });
+                ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
+                if (userInfo != null) {
+                    showNotification(userInfo);
                 }
             }
-            showGlobalWindow();
         }
     }
 
@@ -225,6 +265,12 @@ public class FloatWindowService extends Service {
         if (!callDialog.isShowing()) {
             callDialog.show();
         }
+        callDialog.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                stopRingTone();
+            }
+        });
     }
 
     private void showGlobalWindow() {
@@ -244,6 +290,7 @@ public class FloatWindowService extends Service {
         if (viewParent != null) {
             viewParent.removeView(receiveCallView);
         }
+        stopRingTone();
     }
 
     private String CHANNEL_ID = "channel 1";
@@ -275,7 +322,7 @@ public class FloatWindowService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.icon_setting_pressed)
+            .setSmallIcon(R.drawable.icon_dialog_voice_accept)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(getString(R.string.call_notification, userInfo.userName))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

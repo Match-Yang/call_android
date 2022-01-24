@@ -81,34 +81,6 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         binding.entryUserAvatar.setImageDrawable(userIcon);
 
         startService(new Intent(this, FloatWindowService.class));
-
-        checkFloatWindowPermission();
-    }
-
-    private void checkFloatWindowPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!PermissionUtils.isGrantedDrawOverlays()) {
-                Builder builder = new Builder(this);
-                builder.setMessage(R.string.float_permission_tips);
-                builder.setPositiveButton(R.string.dialog_room_page_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        PermissionUtils.requestDrawOverlays(new SimpleCallback() {
-                            @Override
-                            public void onGranted() {
-
-                            }
-
-                            @Override
-                            public void onDenied() {
-
-                            }
-                        });
-                    }
-                });
-                builder.create().show();
-            }
-        }
     }
 
     @Override
