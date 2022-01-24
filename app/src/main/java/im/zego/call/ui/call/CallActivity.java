@@ -5,6 +5,7 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -65,6 +66,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
         userInfo = (ZegoUserInfo) getIntent().getSerializableExtra(USER_INFO);
         if (Build.VERSION.SDK_INT >= 27) {
             setShowWhenLocked(true);
