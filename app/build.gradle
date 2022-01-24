@@ -32,6 +32,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 
@@ -68,6 +69,10 @@ dependencies {
     implementation 'com.tencent:mmkv:1.2.11'
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
+
+    // refresh
+    implementation 'com.scwang.smart:refresh-layout-kernel:2.0.3'
+    implementation 'com.scwang.smart:refresh-header-material:2.0.3'
 
     api project(path: ':callsdk')
 }

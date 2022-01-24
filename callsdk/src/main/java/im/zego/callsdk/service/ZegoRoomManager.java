@@ -1,6 +1,7 @@
 package im.zego.callsdk.service;
 
 import android.app.Application;
+import android.util.Log;
 import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoRoomCallback;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -83,7 +84,6 @@ public class ZegoRoomManager {
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
                 ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-
             }
 
             @Override
@@ -103,6 +103,9 @@ public class ZegoRoomManager {
             public void onRoomStreamUpdate(String roomID, ZegoUpdateType updateType, ArrayList<ZegoStream> streamList,
                 JSONObject extendedData) {
                 super.onRoomStreamUpdate(roomID, updateType, streamList, extendedData);
+                for (ZegoStream zegoStream : streamList) {
+                    Log.d("TAG", "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
+                }
             }
         });
 

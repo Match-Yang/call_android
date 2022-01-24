@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -28,32 +29,15 @@ import im.zego.zim.enums.ZIMErrorCode;
 
 public class ReceiveCallDialog extends Dialog {
 
-    private ZegoUserInfo userInfo;
-    private ZegoCallType callType;
-
-    public ReceiveCallDialog(@NonNull Context context, ZegoUserInfo userInfo, ZegoCallType callType) {
+    public ReceiveCallDialog(@NonNull Context context, View view) {
         super(context, R.style.TipsStyle);
-        this.userInfo = userInfo;
-        this.callType = callType;
-        initDialog(context);
+        initDialog(view);
     }
 
-    private void initDialog(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_dialog_call, null, false);
-        View acceptVoice = view.findViewById(R.id.dialog_call_accept_voice);
-        View acceptVideo = view.findViewById(R.id.dialog_call_accept_video);
-        if (callType == ZegoCallType.Audio) {
-            acceptVoice.setVisibility(View.VISIBLE);
-            acceptVideo.setVisibility(View.GONE);
-        } else {
-            acceptVoice.setVisibility(View.GONE);
-            acceptVideo.setVisibility(View.VISIBLE);
-        }
+    private void initDialog(View view) {
         setCanceledOnTouchOutside(false);
         setCancelable(true);
         setContentView(view);
-
-        view.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 
         Window window = getWindow();
         WindowManager.LayoutParams lp = window.getAttributes();
@@ -61,48 +45,5 @@ public class ReceiveCallDialog extends Dialog {
         lp.height = LayoutParams.WRAP_CONTENT;
         lp.gravity = Gravity.TOP;
         window.setAttributes(lp);
-
-        TextView nameTv = view.findViewById(R.id.dialog_call_name);
-        nameTv.setText(userInfo.userName);
-        ImageView iconIv = view.findViewById(R.id.dialog_call_icon);
-        Drawable userIcon = AvatarHelper.getAvatarByUserName(userInfo.userName);
-        iconIv.setImageDrawable(userIcon);
-        TextView callTypeTv = view.findViewById(R.id.dialog_call_type);
-        if (callType == ZegoCallType.Audio) {
-            callTypeTv.setText(R.string.zego_voice_call);
-        } else {
-            callTypeTv.setText(R.string.zego_video_call);
-        }
-
-        acceptVoice.setOnClickListener(v -> {
-            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-            userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
-                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                    CallActivity.startCallActivity(CallActivity.TYPE_CONNECTED_VOICE, userInfo);
-                } else {
-                    ToastUtils.showShort("responseCall " + errorCode);
-                }
-                dismiss();
-            });
-        });
-        acceptVideo.setOnClickListener(v -> {
-            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-            userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
-                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                    CallActivity.startCallActivity(CallActivity.TYPE_CONNECTED_VIDEO, userInfo);
-                } else {
-                    ToastUtils.showShort("responseCall " + errorCode);
-                }
-                dismiss();
-            });
-        });
-        view.findViewById(R.id.dialog_call_decline).setOnClickListener(v -> {
-            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
-                dismiss();
-            });
-        });
     }
 }

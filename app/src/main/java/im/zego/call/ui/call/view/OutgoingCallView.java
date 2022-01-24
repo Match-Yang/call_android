@@ -3,23 +3,28 @@ package im.zego.call.ui.call.view;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.TextureView;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.blankj.utilcode.util.ToastUtils;
+import im.zego.call.R;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.call.databinding.LayoutOutgoingCallBinding;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
-import im.zego.zim.enums.ZIMErrorCode;
+import java.util.Objects;
 
 public class OutgoingCallView extends ConstraintLayout {
 
     private LayoutOutgoingCallBinding binding;
     private ZegoUserInfo userInfo;
-    private OutgoingCallLister lister;
+    private int typeOfCall;
 
     public OutgoingCallView(@NonNull Context context) {
         super(context);
@@ -43,18 +48,25 @@ public class OutgoingCallView extends ConstraintLayout {
 
     private void initView() {
         binding = LayoutOutgoingCallBinding.inflate(LayoutInflater.from(getContext()), this);
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         binding.callingHangUp.setOnClickListener(v -> {
-            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             userService.cancelCallToUser(userInfo.userID, errorCode -> {
-                if (lister != null) {
-                    lister.onCancelCall(errorCode);
+                if (errorCode == 0) {
+                    binding.callStateText.setText(R.string.state_canceled);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+                } else {
+                    ToastUtils.showShort("Cancel call Failed,errorCode:" + errorCode);
                 }
             });
         });
-    }
-
-    public void setLister(OutgoingCallLister lister) {
-        this.lister = lister;
+        binding.cameraSwitch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean selected = v.isSelected();
+                v.setSelected(!selected);
+                userService.useFrontCamera(false);
+            }
+        });
     }
 
     public void setUserInfo(ZegoUserInfo userInfo) {
@@ -65,8 +77,36 @@ public class OutgoingCallView extends ConstraintLayout {
         binding.callUserIcon.setImageDrawable(drawable);
     }
 
-    public interface OutgoingCallLister {
+    public void setCallType(int typeOfCall) {
+        this.typeOfCall = typeOfCall;
+        if (isVideoCall()) {
+            binding.textureView.setVisibility(View.VISIBLE);
+            binding.cameraSwitch.setVisibility(View.VISIBLE);
+        } else {
+            binding.textureView.setVisibility(View.GONE);
+            binding.cameraSwitch.setVisibility(View.GONE);
+        }
+    }
 
-        void onCancelCall(int errorCode);
+    public void updateStateText(@StringRes int stateText) {
+        binding.callStateText.setText(stateText);
+    }
+
+    private boolean isVideoCall() {
+        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO;
+    }
+
+    private boolean isAudioCall() {
+        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE;
+    }
+
+    public TextureView getTextureView() {
+        return binding.textureView;
+    }
+
+    public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        if (Objects.equals(this.userInfo, userInfo)) {
+            setUserInfo(userInfo);
+        }
     }
 }

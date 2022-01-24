@@ -1,5 +1,6 @@
 package im.zego.callsdk.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -12,15 +13,19 @@ public class ZegoUserInfo implements java.io.Serializable {
     /**
      * User ID, refers to the user unique ID, can only contains numbers and letters.
      */
+    @SerializedName("id")
     public String userID;
 
     /**
      * User name, cannot be null.
      */
+    @SerializedName("name")
     public String userName;
 
+    @SerializedName("mic")
     public boolean mic;
 
+    @SerializedName("camera")
     public boolean camera;
 
 
@@ -35,10 +40,7 @@ public class ZegoUserInfo implements java.io.Serializable {
 
         ZegoUserInfo that = (ZegoUserInfo) o;
 
-        if (!Objects.equals(userID, that.userID)) {
-            return false;
-        }
-        return Objects.equals(userName, that.userName);
+        return Objects.equals(userID, that.userID);
     }
 
     @Override
@@ -53,6 +55,8 @@ public class ZegoUserInfo implements java.io.Serializable {
         return "ZegoUserInfo{" +
             "userID='" + userID + '\'' +
             ", userName='" + userName + '\'' +
+            ", mic=" + mic +
+            ", camera=" + camera +
             '}';
     }
 }

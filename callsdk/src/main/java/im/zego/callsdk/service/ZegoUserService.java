@@ -1,6 +1,7 @@
 package im.zego.callsdk.service;
 
 import android.util.Log;
+import android.view.TextureView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import im.zego.callsdk.ZegoZIMManager;
@@ -15,11 +16,15 @@ import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CustomTypeAdapterFactory;
 import im.zego.zegoexpress.ZegoExpressEngine;
+import im.zego.zegoexpress.constants.ZegoOrientation;
+import im.zego.zegoexpress.constants.ZegoViewMode;
+import im.zego.zegoexpress.entity.ZegoCanvas;
 import im.zego.zim.ZIM;
 import im.zego.zim.callback.ZIMLoggedInCallback;
 import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMError;
 import im.zego.zim.entity.ZIMMessage;
+import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.entity.ZIMUserInfo;
 import im.zego.zim.enums.ZIMConnectionEvent;
@@ -30,10 +35,12 @@ import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import org.json.JSONObject;
 
 public class ZegoUserService {
@@ -47,6 +54,7 @@ public class ZegoUserService {
     private ZegoUserServiceListener listener;
     private ZegoRoomService roomService;
     private static Gson mGson;
+    private Map<String, String> streamMap = new HashMap();
 
     public ZegoUserService() {
         roomService = new ZegoRoomService();
@@ -107,6 +115,7 @@ public class ZegoUserService {
                             callback.onRoomCallback(errorInfo.code.value());
                         }
                     });
+                    ZegoExpressEngine.getEngine().startPublishingStream(getStreamIDFromUser(localUserInfo.userID));
                 } else {
                     if (callback != null) {
                         callback.onRoomCallback(errorCode);
@@ -151,9 +160,8 @@ public class ZegoUserService {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         responseCallInner(type, userID, errorCode1 -> {
                             if (errorCode1 == ZIMErrorCode.SUCCESS.value()) {
-                                ZegoExpressEngine.getEngine().startPublishingStream(getSelfStreamID());
-                                ZegoExpressEngine.getEngine().enableCamera(true);
-                                ZegoExpressEngine.getEngine().muteMicrophone(false);
+                                ZegoExpressEngine.getEngine()
+                                    .startPublishingStream(getStreamIDFromUser(localUserInfo.userID));
                             }
                             if (callback != null) {
                                 callback.onRoomCallback(errorCode1);
@@ -196,6 +204,7 @@ public class ZegoUserService {
     }
 
     public void endCall(ZegoRoomCallback callback) {
+        Log.d(TAG, "endCall() called with: callback = [" + callback + "]");
         roomService.leaveRoom(errorCode -> {
             if (callback != null) {
                 callback.onRoomCallback(errorCode);
@@ -204,11 +213,65 @@ public class ZegoUserService {
     }
 
     public void micOperate(boolean open, ZegoRoomCallback callback) {
+        boolean micState = localUserInfo.mic;
+        if (micState == open) {
+            callback.onRoomCallback(0);
+            return;
+        }
+        localUserInfo.mic = open;
+        HashMap<String, String> seatAttributes = new HashMap<>();
+        seatAttributes.put(localUserInfo.userID, mGson.toJson(localUserInfo));
 
+        String roomID = roomService.roomInfo.roomID;
+        ZIMRoomAttributesSetConfig setConfig = new ZIMRoomAttributesSetConfig();
+        setConfig.isForce = true;
+        setConfig.isDeleteAfterOwnerLeft = true;
+
+        Log.d(TAG, "micOperate() called with: seatAttributes = [" + seatAttributes + "],roomID:" + roomID);
+
+        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig, errorInfo -> {
+            Log.d(TAG, "micOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
+            if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
+                if (listener != null) {
+                    listener.onUserInfoUpdated(localUserInfo);
+                }
+            } else {
+                localUserInfo.mic = micState;
+            }
+            ZegoExpressEngine.getEngine().muteMicrophone(!localUserInfo.mic);
+            callback.onRoomCallback(errorInfo.code.value());
+        });
     }
 
     public void cameraOperate(boolean open, ZegoRoomCallback callback) {
+        boolean cameraState = localUserInfo.camera;
+        if (cameraState == open) {
+            callback.onRoomCallback(0);
+            return;
+        }
+        localUserInfo.camera = open;
+        HashMap<String, String> seatAttributes = new HashMap<>();
+        seatAttributes.put(localUserInfo.userID, mGson.toJson(localUserInfo));
 
+        String roomID = roomService.roomInfo.roomID;
+        ZIMRoomAttributesSetConfig setConfig = new ZIMRoomAttributesSetConfig();
+        setConfig.isForce = true;
+        setConfig.isDeleteAfterOwnerLeft = true;
+
+        Log.d(TAG, "cameraOperate() called with: seatAttributes = [" + seatAttributes + "],roomID:" + roomID);
+
+        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig, errorInfo -> {
+            Log.d(TAG, "cameraOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
+            if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
+                if (listener != null) {
+                    listener.onUserInfoUpdated(localUserInfo);
+                }
+            } else {
+                localUserInfo.camera = cameraState;
+            }
+            ZegoExpressEngine.getEngine().enableCamera(localUserInfo.camera);
+            callback.onRoomCallback(errorInfo.code.value());
+        });
     }
 
     public void setListener(ZegoUserServiceListener listener) {
@@ -235,8 +298,14 @@ public class ZegoUserService {
                     userInfo.userID = callMessage.content.userInfo.userID;
                     userInfo.userName = callMessage.content.userInfo.userName;
                     if (callMessage.actionType == ZegoCallMessage.CALL) {
+                        // when received call ,we assume that user mic and camera is open
+                        ZegoCallType callType = callMessage.content.callType;
+                        if (callType == ZegoCallType.Video) {
+                            userInfo.camera = true;
+                        }
+                        userInfo.mic = true;
                         if (listener != null) {
-                            listener.onCallReceived(userInfo, callMessage.content.callType);
+                            listener.onCallReceived(userInfo, callType);
                         }
                     } else if (callMessage.actionType == ZegoCallMessage.CANCEL_CALL) {
                         if (listener != null) {
@@ -270,8 +339,11 @@ public class ZegoUserService {
 
     void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
         List<ZegoUserInfo> leaveUsers = generateRoomUsers(memberList);
-        userList.removeAll(leaveUsers);
-
+        for (ZegoUserInfo leaveUser : leaveUsers) {
+            stopPlayingMedia(leaveUser.userID);
+            userList.remove(leaveUser);
+        }
+        Log.d(TAG, "onRoomMemberLeft: " + userList.size());
         if (userList.size() <= 1 && listener != null) {
             // only self left
             listener.onEndCallReceived();
@@ -290,24 +362,49 @@ public class ZegoUserService {
         return roomUsers;
     }
 
-    private String getSelfStreamID() {
-        String selfUserID = localUserInfo.userID;
+    private String getStreamIDFromUser(String userID) {
         String roomID = roomService.roomInfo.roomID;
-        return String.format("%s_%s_%s", roomID, selfUserID, "main");
+        return String.format("%s_%s_%s", roomID, userID, "main");
     }
 
     void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
         Log.d(TAG,
             "onRoomAttributesUpdated() called with: zim = [" + zim + "], info = [" + info + "], roomID = [" + roomID
                 + "]");
+        HashMap<String, String> roomAttributes = info.roomAttributes;
         if (info.action == ZIMRoomAttributesUpdateAction.SET) {
-            Set<String> keys = info.roomAttributes.keySet();
-            for (String key : keys) {
-                if (key.equals(ZegoRoomService.KEY_ROOM_INFO)) {
-                    ZegoRoomInfo roomInfo = new Gson().fromJson(info.roomAttributes.get(key), ZegoRoomInfo.class);
+            for (Entry<String, String> entry : roomAttributes.entrySet()) {
+                Log.d(TAG, "onRoomAttributesUpdated,entry : " + entry);
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (Objects.equals(key, ZegoRoomService.KEY_ROOM_INFO)) {
+                    ZegoRoomInfo roomInfo = mGson.fromJson(roomAttributes.get(key), ZegoRoomInfo.class);
                     roomService.updateRoomInfo(roomInfo);
                     if (roomInfo == null && listener != null) {
                         listener.onEndCallReceived();
+                    }
+                } else {
+                    ZegoUserInfo attrUserInfo = mGson.fromJson(value, ZegoUserInfo.class);
+                    for (ZegoUserInfo userInfo : userList) {
+                        if (Objects.equals(userInfo.userID, localUserInfo.userID)) {
+                            // skip self
+                            continue;
+                        }
+                        if (Objects.equals(userInfo.userID, attrUserInfo.userID)) {
+                            // update user state
+                            final boolean nameChanged = Objects.equals(userInfo.userName, attrUserInfo.userName);
+                            final boolean micChanged = Objects.equals(userInfo.mic, attrUserInfo.mic);
+                            final boolean cameraChanged = Objects.equals(userInfo.camera, attrUserInfo.camera);
+                            userInfo.userName = attrUserInfo.userName;
+                            userInfo.mic = attrUserInfo.mic;
+                            userInfo.camera = attrUserInfo.camera;
+                            if (nameChanged || micChanged || cameraChanged) {
+                                if (listener != null) {
+                                    listener.onUserInfoUpdated(userInfo);
+                                }
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -316,5 +413,35 @@ public class ZegoUserService {
                 listener.onEndCallReceived();
             }
         }
+
+    }
+
+    public void speakerOperate(boolean open) {
+        ZegoExpressEngine.getEngine().muteSpeaker(!open);
+    }
+
+    public void startPlayingUserMedia(String userID, TextureView textureView) {
+        ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
+        zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
+
+        if (Objects.equals(localUserInfo.userID, userID)) {
+            ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
+            ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
+        } else {
+            ZegoExpressEngine.getEngine().startPlayingStream(getStreamIDFromUser(userID), zegoCanvas);
+        }
+    }
+
+    public void stopPlayingMedia(String userID) {
+        if (Objects.equals(localUserInfo.userID, userID)) {
+            ZegoExpressEngine.getEngine().stopPreview();
+        } else {
+            String streamID = streamMap.get(userID);
+            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
+        }
+    }
+
+    public void useFrontCamera(boolean enable) {
+        ZegoExpressEngine.getEngine().useFrontCamera(enable);
     }
 }

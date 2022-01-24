@@ -11,11 +11,6 @@ public class ZegoRoomInfo {
     @SerializedName("name")
     public String roomName;
 
-    @SerializedName("mic")
-    public String mic;
-
-    @SerializedName("camera")
-    public String camera;
 
     @Override
     public String toString() {

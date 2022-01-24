@@ -14,7 +14,7 @@ public class ZegoCallMessage {
     public static final int RESPONSE_CALL = 3;
     public static final int END_CALL = 4;
 
-    @SerializedName("actionType")
+    @SerializedName("action_type")
     public int actionType;
     @SerializedName("target")
     public List<String> target;

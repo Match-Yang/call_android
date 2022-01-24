@@ -4,6 +4,17 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
+  <TextureView
+    android:id="@+id/call_video_view_center_texture"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <ImageView
+    android:id="@+id/call_video_view_center_icon"
+    android:scaleType="centerCrop"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
   <ImageView
     android:id="@+id/call_video_camera"
     android:layout_width="47dp"
@@ -71,13 +82,23 @@
     app:layout_constraintStart_toEndOf="@+id/call_video_camera_switch" />
 
   <RelativeLayout
-    android:id="@+id/call_video_view_small"
+    android:id="@+id/call_video_view_small_layout"
     android:layout_width="95dp"
     android:layout_height="169dp"
     android:layout_marginTop="37dp"
     android:layout_marginEnd="8dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent">
+
+    <TextureView
+      android:id="@+id/call_video_view_small_texture"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+    <ImageView
+      android:id="@+id/call_video_view_small_icon"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
 
     <TextView
       android:id="@+id/call_video_view_small_name"
@@ -88,7 +109,9 @@
       android:layout_marginBottom="3dp"
       android:ellipsize="end"
       android:maxLines="1"
-      android:singleLine="true" />
+      android:singleLine="true"
+      android:textColor="@color/white"
+      android:textSize="13sp" />
   </RelativeLayout>
 
 </merge>

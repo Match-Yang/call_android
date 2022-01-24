@@ -1,16 +1,28 @@
 package im.zego.call.ui.entry;
 
+import android.app.Activity;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
+import com.blankj.utilcode.util.Utils;
+import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
+import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
-import im.zego.call.http.WebClientManager;
+import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.common.ReceiveCallDialog;
-import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.setting.SettingActivity;
 import im.zego.call.ui.user.OnlineUserActivity;
 import im.zego.call.ui.webview.WebViewActivity;
@@ -28,9 +40,8 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
     public static final String URL_GET_MORE = "https://www.zegocloud.com/";
     public static final String URL_CONTACT_US = "https://www.zegocloud.com/talk";
-    private ReceiveCallDialog callDialog;
+    private Dialog callDialog;
     private static final String TAG = "EntryActivity";
-    private ZegoUserServiceListener userServiceListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,65 +72,49 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
         });
 
-        userServiceListener = new ZegoUserServiceListener() {
-            @Override
-            public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-
-            }
-
-            @Override
-            public void onCallReceived(ZegoUserInfo userInfo, ZegoCallType type) {
-                Log.d(TAG, "onCallReceived() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
-                callDialog = new ReceiveCallDialog(ActivityUtils.getTopActivity(), userInfo, type);
-                if (!callDialog.isShowing()) {
-                    callDialog.show();
-                }
-            }
-
-            @Override
-            public void onCancelCallReceived(ZegoUserInfo userInfo) {
-                if (callDialog != null) {
-                    callDialog.dismiss();
-                }
-            }
-
-            @Override
-            public void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type) {
-
-            }
-
-            @Override
-            public void onEndCallReceived() {
-
-            }
-
-            @Override
-            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-
-            }
-        };
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.setListener(userServiceListener);
         ZegoUserInfo localUserInfo = userService.localUserInfo;
 
         binding.entryUserId.setText(localUserInfo.userID);
         binding.entryUserName.setText(localUserInfo.userName);
         Drawable userIcon = AvatarHelper.getAvatarByUserName(localUserInfo.userName);
         binding.entryUserAvatar.setImageDrawable(userIcon);
+
+        startService(new Intent(this, FloatWindowService.class));
+
+        checkFloatWindowPermission();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.setListener(userServiceListener);
+    private void checkFloatWindowPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!PermissionUtils.isGrantedDrawOverlays()) {
+                Builder builder = new Builder(this);
+                builder.setMessage(R.string.float_permission_tips);
+                builder.setPositiveButton(R.string.dialog_room_page_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        PermissionUtils.requestDrawOverlays(new SimpleCallback() {
+                            @Override
+                            public void onGranted() {
+
+                            }
+
+                            @Override
+                            public void onDenied() {
+
+                            }
+                        });
+                    }
+                });
+                builder.create().show();
+            }
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.setListener(null);
+        stopService(new Intent(this, FloatWindowService.class));
     }
 
     @Override

@@ -1,0 +1,156 @@
+package im.zego.call.service;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.blankj.utilcode.util.ToastUtils;
+import im.zego.call.R;
+import im.zego.call.auth.AuthInfoManager;
+import im.zego.call.databinding.LayoutReceiveCallBinding;
+import im.zego.call.ui.call.CallActivity;
+import im.zego.call.ui.call.CallStateManager;
+import im.zego.call.utils.AvatarHelper;
+import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoResponseType;
+import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoUserService;
+import im.zego.zim.enums.ZIMErrorCode;
+
+public class ReceiveCallView extends FrameLayout {
+
+    private LayoutReceiveCallBinding binding;
+    private OnReceiveCallViewClickedListener listener;
+    private ZegoUserInfo userInfo;
+    private ZegoCallType callType = ZegoCallType.Audio;
+
+    public ReceiveCallView(@NonNull Context context) {
+        super(context);
+        initView(context);
+    }
+
+    public ReceiveCallView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        initView(context);
+    }
+
+    public ReceiveCallView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initView(context);
+    }
+
+    public ReceiveCallView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
+        int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        initView(context);
+    }
+
+    private void initView(Context context) {
+        binding = LayoutReceiveCallBinding.inflate(LayoutInflater.from(context), this, true);
+        if (callType == ZegoCallType.Audio) {
+            binding.dialogCallAcceptVoice.setVisibility(View.VISIBLE);
+            binding.dialogCallAcceptVideo.setVisibility(View.GONE);
+        } else {
+            binding.dialogCallAcceptVoice.setVisibility(View.GONE);
+            binding.dialogCallAcceptVideo.setVisibility(View.VISIBLE);
+        }
+        if (userInfo != null) {
+            binding.dialogCallName.setText(userInfo.userName);
+            Drawable userIcon = AvatarHelper.getAvatarByUserName(userInfo.userName);
+            binding.dialogCallIcon.setImageDrawable(userIcon);
+        }
+
+        if (callType == ZegoCallType.Audio) {
+            binding.dialogCallType.setText(R.string.zego_voice_call);
+        } else {
+            binding.dialogCallType.setText(R.string.zego_video_call);
+        }
+
+        binding.dialogCallAcceptVoice.setOnClickListener(v -> {
+            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+            String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+            userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
+                    CallActivity.startCallActivity(userInfo);
+                } else {
+                    ToastUtils.showShort("responseCall " + errorCode);
+                }
+                if (listener != null) {
+                    listener.onAcceptAudioClicked();
+                }
+            });
+        });
+        binding.dialogCallAcceptVideo.setOnClickListener(v -> {
+            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+            String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+            userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
+                    CallActivity.startCallActivity(userInfo);
+                } else {
+                    ToastUtils.showShort("responseCall " + errorCode);
+                }
+                if (listener != null) {
+                    listener.onAcceptVideoClicked();
+                }
+            });
+        });
+        binding.dialogCallDecline.setOnClickListener(v -> {
+            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+            userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
+                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+                } else {
+                    ToastUtils.showShort("Decline Call" + errorCode);
+                }
+                if (listener != null) {
+                    listener.onDeclineClicked();
+                }
+            });
+        });
+
+        binding.getRoot().measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+    }
+
+    public void updateData(ZegoUserInfo userInfo, ZegoCallType callType) {
+        this.userInfo = userInfo;
+        this.callType = callType;
+        if (callType == ZegoCallType.Audio) {
+            binding.dialogCallAcceptVoice.setVisibility(View.VISIBLE);
+            binding.dialogCallAcceptVideo.setVisibility(View.GONE);
+        } else {
+            binding.dialogCallAcceptVoice.setVisibility(View.GONE);
+            binding.dialogCallAcceptVideo.setVisibility(View.VISIBLE);
+        }
+        if (userInfo != null) {
+            binding.dialogCallName.setText(userInfo.userName);
+            Drawable userIcon = AvatarHelper.getAvatarByUserName(userInfo.userName);
+            binding.dialogCallIcon.setImageDrawable(userIcon);
+        }
+
+        if (callType == ZegoCallType.Audio) {
+            binding.dialogCallType.setText(R.string.zego_voice_call);
+        } else {
+            binding.dialogCallType.setText(R.string.zego_video_call);
+        }
+    }
+
+    public void setListener(OnReceiveCallViewClickedListener listener) {
+        this.listener = listener;
+    }
+
+    interface OnReceiveCallViewClickedListener {
+
+        void onAcceptAudioClicked();
+
+        void onAcceptVideoClicked();
+
+        void onDeclineClicked();
+    }
+}

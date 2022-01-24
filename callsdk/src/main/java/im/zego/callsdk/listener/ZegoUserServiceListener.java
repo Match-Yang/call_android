@@ -18,8 +18,16 @@ public interface ZegoUserServiceListener {
 
     void onCancelCallReceived(ZegoUserInfo userInfo);
 
+    /**
+     * call end because of person decline request
+     * @param userInfo
+     * @param type
+     */
     void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type);
 
+    /**
+     * call end because of room destroy,people hangup(leave room),etc.
+     */
     void onEndCallReceived();
 
     /**
