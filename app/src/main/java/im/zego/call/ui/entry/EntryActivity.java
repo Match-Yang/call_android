@@ -7,9 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -118,7 +115,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 dialog.updateData(userInfo, type);
                 int state;
                 if (type == ZegoCallType.Audio) {
-                    state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
+                    state = CallStateManager.TYPE_INCOMING_CALLING_AUDIO;
                 } else {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
                 }
@@ -150,7 +147,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                     });
                 } else {
                     int callState = CallStateManager.getInstance().getCallState();
-                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) {
                         callState = CallStateManager.TYPE_CONNECTED_VOICE;
                     } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
                         callState = CallStateManager.TYPE_CONNECTED_VIDEO;

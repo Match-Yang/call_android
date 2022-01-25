@@ -4,7 +4,7 @@
   android:layout_width="match_parent"
   android:layout_height="74dp">
 
-  <ImageView
+  <com.google.android.material.imageview.ShapeableImageView
     android:id="@+id/item_online_user_icon"
     android:layout_width="42dp"
     android:layout_height="42dp"
@@ -12,7 +12,8 @@
     android:scaleType="fitXY"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+    app:layout_constraintTop_toTopOf="parent"
+    app:shapeAppearance="@style/CircleStyle" />
 
   <TextView
     android:id="@+id/item_online_user_name"
@@ -48,8 +49,8 @@
     android:layout_marginEnd="74dp"
     android:background="@drawable/circle_bg_voice_button"
     android:clickable="true"
-    android:scaleType="center"
     android:focusable="true"
+    android:scaleType="center"
     android:src="@drawable/icon_online_voice"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"

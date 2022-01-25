@@ -99,7 +99,10 @@ public class PermissionHelper {
                 PermissionUtils.requestDrawOverlays(callback);
             }
         });
-        builder.create().show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.show();
     }
 
     public interface IPermissionCallback {

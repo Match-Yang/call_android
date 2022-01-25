@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,7 +12,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.LayoutIncomingCallBinding;
-import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoResponseType;
@@ -112,16 +110,25 @@ public class IncomingCallView extends ConstraintLayout {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                 boolean selected = v.isSelected();
                 v.setSelected(!selected);
-                userService.useFrontCamera(false);
+                userService.useFrontCamera(selected);
             }
         });
     }
 
-    public void updateUi(boolean isVideoCall) {
-        binding.callAcceptVoice.setVisibility(isVideoCall ? GONE : VISIBLE);
-        binding.callAcceptVideo.setVisibility(isVideoCall ? VISIBLE : GONE);
-        binding.callCameraSwitchSmall.setVisibility(isVideoCall ? VISIBLE : GONE);
-        binding.callUserTexture.setVisibility(isVideoCall ? VISIBLE : GONE);
+    public void setCallType(int callType) {
+        boolean isVideoCall = callType == CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
+        boolean isAudioCall = callType == CallStateManager.TYPE_INCOMING_CALLING_AUDIO;
+        if (isVideoCall) {
+            binding.callAcceptVoice.setVisibility(GONE);
+            binding.callAcceptVideo.setVisibility(VISIBLE);
+            binding.callCameraSwitchSmall.setVisibility(VISIBLE);
+            binding.callUserTexture.setVisibility(VISIBLE);
+        } else if (isAudioCall) {
+            binding.callAcceptVoice.setVisibility(VISIBLE);
+            binding.callAcceptVideo.setVisibility(GONE);
+            binding.callCameraSwitchSmall.setVisibility(GONE);
+            binding.callUserTexture.setVisibility(GONE);
+        }
         if (isVideoCall) {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callUserTexture);

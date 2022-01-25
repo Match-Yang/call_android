@@ -5,7 +5,6 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -116,9 +115,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             public void onCallStateChanged(int before, int after) {
                 Log.d(TAG, "onCallStateChanged() called with: before = [" + before + "], after = [" + after + "]");
                 updateUi(after);
-                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
+                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) ||
                     (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
-                boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_VOICE) ||
+                boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_AUDIO) ||
                     (before == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
                 boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
                     (after == CallStateManager.TYPE_CONNECTED_VIDEO);
@@ -154,7 +153,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
-        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) {
             userService.callToUser(userInfo.userID, ZegoCallType.Audio, token, errorCode -> {
                 if (errorCode == 0) {
                     userService.micOperate(true, errorCode1 -> {
@@ -191,7 +190,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
-        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
+        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_AUDIO) {
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.micOperate(true, errorCode -> {
@@ -215,16 +214,16 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void updateUi(int type) {
         binding.layoutOutgoingCall.setUserInfo(userInfo);
         binding.layoutOutgoingCall.setCallType(type);
+        binding.layoutIncomingCall.setCallType(type);
         binding.layoutIncomingCall.setUserInfo(userInfo);
         binding.layoutConnectedVoiceCall.setUserInfo(userInfo);
         binding.layoutConnectedVideoCall.setUserInfo(userInfo);
 
         switch (type) {
-            case CallStateManager.TYPE_INCOMING_CALLING_VOICE:
+            case CallStateManager.TYPE_INCOMING_CALLING_AUDIO:
             case CallStateManager.TYPE_INCOMING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.VISIBLE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
-                binding.layoutIncomingCall.updateUi(type == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
                 binding.layoutConnectedVideoCall.setVisibility(View.GONE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.GONE);
@@ -243,7 +242,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.VISIBLE);
                 break;
-            case CallStateManager.TYPE_OUTGOING_CALLING_VOICE:
+            case CallStateManager.TYPE_OUTGOING_CALLING_AUDIO:
             case CallStateManager.TYPE_OUTGOING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.VISIBLE);

@@ -12,14 +12,15 @@
     android:layout_margin="8dp"
     android:background="@drawable/round_rect_bg_call">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
       android:id="@+id/dialog_call_icon"
       android:layout_width="42dp"
       android:layout_height="42dp"
       android:layout_marginStart="12dp"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toTopOf="parent"
+      app:shapeAppearance="@style/CircleStyle" />
 
 
     <TextView
