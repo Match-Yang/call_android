@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.util.Log;
 import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public class CallStateManager {
         this.callState = callState;
         if (beforeState != callState && listeners.size() > 0) {
             for (CallStateChangedListener listener : listeners) {
+                Log.d("sss", "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
                 listener.onCallStateChanged(beforeState, callState);
             }
         }

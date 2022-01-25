@@ -20,6 +20,7 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="37dp"
     android:layout_marginEnd="37dp"
+    android:gravity="center"
     android:layout_marginTop="5dp"
     android:ellipsize="end"
     android:maxLines="1"

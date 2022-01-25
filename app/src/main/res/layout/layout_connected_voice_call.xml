@@ -22,6 +22,7 @@
     android:layout_marginTop="5dp"
     android:layout_marginEnd="37dp"
     android:ellipsize="end"
+    android:gravity="center"
     android:maxLines="1"
     android:singleLine="true"
     android:text="User name"
@@ -39,6 +40,7 @@
     android:text="@string/calling"
     android:textColor="#B2FFFFFF"
     android:textSize="16sp"
+    android:visibility="gone"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/call_user_name" />

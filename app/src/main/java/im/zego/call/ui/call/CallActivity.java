@@ -5,6 +5,8 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,7 +18,9 @@ import android.view.View;
 import android.view.WindowManager;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.ViewUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
@@ -116,7 +120,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         callStateChangedListener = new CallStateChangedListener() {
             @Override
             public void onCallStateChanged(int before, int after) {
-                Log.d(TAG, "onCallStateChanged() called with: before = [" + before + "], after = [" + after + "]");
                 updateUi(after);
                 boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) ||
                     (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
@@ -128,10 +131,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     time = 0;
                     handler.postDelayed(timeCountRunnable, 1000);
                     handler.removeCallbacks(cancelCallRunnable);
-                } else if (beforeIsOutgoing && after == CallStateManager.TYPE_CALL_CANCELED) {
+                } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
                     updateStateText(R.string.state_canceled);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
+                    updateStateText(R.string.state_complete);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_MISSED) {
                     updateStateText(R.string.state_missed);
@@ -220,8 +224,10 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         binding.layoutIncomingCall.setUserInfo(userInfo);
         binding.layoutConnectedVoiceCall.setUserInfo(userInfo);
         binding.layoutConnectedVideoCall.setUserInfo(userInfo);
-        Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
-        binding.callUserBg.setImageDrawable(fullAvatar);
+        int resourceID = AvatarHelper.getAvatarIdByUserName(userInfo.userName, true);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceID);
+        Bitmap blurBitmap = ImageUtils.fastBlur(bitmap, 1f, 25f);
+        binding.callUserBg.setImageBitmap(blurBitmap);
 
         switch (type) {
             case CallStateManager.TYPE_INCOMING_CALLING_AUDIO:
