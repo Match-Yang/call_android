@@ -7,6 +7,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -123,6 +126,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
                 dialog.showReceiveCallWindow();
 
+                //show notification on lock-screen
                 PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 boolean isScreenOff = !powerManager.isInteractive();
                 boolean isBackground = !AppUtils.isAppForeground();
@@ -199,6 +203,11 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             @Override
             public void onDeclineClicked() {
                 dismissNotification(EntryActivity.this, notificationId);
+            }
+
+            @Override
+            public void onWindowClicked() {
+                CallActivity.startCallActivity(dialog.getUserInfo());
             }
         });
     }

@@ -31,7 +31,6 @@ public class ReceiveCallDialog {
 
     private ReceiveCallView receiveCallView;
     private boolean isViewAddedToWindow;
-    private MediaPlayer mediaPlayer;
     private WindowManager windowManager;
     private WindowManager.LayoutParams lp;
     private CallDialog callDialog;
@@ -60,7 +59,6 @@ public class ReceiveCallDialog {
             @Override
             public void onAcceptAudioClicked() {
                 dismissReceiveCallWindow();
-                stopRingTone();
                 if (listener != null) {
                     listener.onAcceptAudioClicked();
                 }
@@ -69,7 +67,6 @@ public class ReceiveCallDialog {
             @Override
             public void onAcceptVideoClicked() {
                 dismissReceiveCallWindow();
-                stopRingTone();
                 if (listener != null) {
                     listener.onAcceptVideoClicked();
                 }
@@ -78,16 +75,22 @@ public class ReceiveCallDialog {
             @Override
             public void onDeclineClicked() {
                 dismissReceiveCallWindow();
-                stopRingTone();
                 if (listener != null) {
                     listener.onDeclineClicked();
+                }
+            }
+
+            @Override
+            public void onWindowClicked() {
+                dismissReceiveCallWindow();
+                if (listener != null) {
+                    listener.onWindowClicked();
                 }
             }
         });
     }
 
     public void showReceiveCallWindow() {
-        playRingTone();
         if (AppUtils.isAppForeground()) {
             showAppDialog();
         } else {
@@ -121,12 +124,6 @@ public class ReceiveCallDialog {
         if (!callDialog.isShowing()) {
             callDialog.show();
         }
-        callDialog.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                stopRingTone();
-            }
-        });
     }
 
     private void showGlobalWindow() {
@@ -146,23 +143,6 @@ public class ReceiveCallDialog {
         if (viewParent != null) {
             viewParent.removeView(receiveCallView);
         }
-        stopRingTone();
-    }
-
-    private void playRingTone() {
-        Activity topActivity = ActivityUtils.getTopActivity();
-        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
-        mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
-    }
-
-    private void stopRingTone() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
     }
 
     public void setListener(OnReceiveCallViewClickedListener listener) {
@@ -171,6 +151,10 @@ public class ReceiveCallDialog {
 
     public void updateData(ZegoUserInfo userInfo, ZegoCallType type) {
         receiveCallView.updateData(userInfo, type);
+    }
+
+    public ZegoUserInfo getUserInfo() {
+        return receiveCallView.getUserInfo();
     }
 
 
@@ -183,7 +167,7 @@ public class ReceiveCallDialog {
 
         private void initDialog(View view) {
             setCanceledOnTouchOutside(false);
-            setCancelable(true);
+            setCancelable(false);
             setContentView(view);
 
             Window window = getWindow();

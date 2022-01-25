@@ -109,6 +109,48 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         int typeOfCall = CallStateManager.getInstance().getCallState();
         updateUi(typeOfCall);
 
+        initDeviceState(typeOfCall);
+
+        callStateChangedListener = new CallStateChangedListener() {
+            @Override
+            public void onCallStateChanged(int before, int after) {
+                Log.d(TAG, "onCallStateChanged() called with: before = [" + before + "], after = [" + after + "]");
+                updateUi(after);
+                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
+                    (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
+                boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_VOICE) ||
+                    (before == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
+                boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
+                    (after == CallStateManager.TYPE_CONNECTED_VIDEO);
+                if ((beforeIsOutgoing || beforeIsInComing) && afterIsAccept) {
+                    time = 0;
+                    handler.postDelayed(timeCountRunnable, 1000);
+                    handler.removeCallbacks(cancelCallRunnable);
+                } else if (beforeIsOutgoing && after == CallStateManager.TYPE_CALL_CANCELED) {
+                    ToastUtils.showShort(R.string.state_canceled);
+                    binding.layoutOutgoingCall.updateStateText(R.string.state_canceled);
+                    binding.layoutIncomingCall.updateStateText(R.string.state_canceled);
+                    finishActivityDelayed();
+                } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
+                    ToastUtils.showShort(R.string.state_complete);
+                    finishActivityDelayed();
+                } else if (after == CallStateManager.TYPE_CALL_MISSED) {
+                    ToastUtils.showShort(R.string.state_missed);
+                    binding.layoutOutgoingCall.updateStateText(R.string.state_missed);
+                    binding.layoutIncomingCall.updateStateText(R.string.state_missed);
+                    finishActivityDelayed();
+                } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
+                    ToastUtils.showShort(R.string.state_declined);
+                    binding.layoutOutgoingCall.updateStateText(R.string.state_declined);
+                    binding.layoutIncomingCall.updateStateText(R.string.state_declined);
+                    finishActivityDelayed();
+                }
+            }
+        };
+        CallStateManager.getInstance().addListener(callStateChangedListener);
+    }
+
+    private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
@@ -121,7 +163,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                             ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
                         }
                     });
-                    userService.speakerOperate(true);
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_user_failed, errorCode));
@@ -143,20 +184,20 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         }
                         userService.startPlayingUserMedia(userService.localUserInfo.userID, textureView);
                     });
-                    userService.speakerOperate(true);
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_user_failed, errorCode));
                     finishActivityDelayed();
                 }
             });
+        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
+        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.micOperate(true, errorCode -> {
                 if (errorCode == 0) {
                 }
             });
-            userService.speakerOperate(true);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.micOperate(true, errorCode -> {
@@ -167,41 +208,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     });
                 }
             });
-            userService.speakerOperate(true);
         }
-
-        callStateChangedListener = new CallStateChangedListener() {
-            @Override
-            public void onCallStateChanged(int before, int after) {
-                Log.d(TAG, "onCallStateChanged() called with: before = [" + before + "], after = [" + after + "]");
-                updateUi(after);
-                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
-                    (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
-                boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
-                    (after == CallStateManager.TYPE_CONNECTED_VIDEO);
-                if (beforeIsOutgoing && afterIsAccept) {
-                    time = 0;
-                    handler.postDelayed(timeCountRunnable, 1000);
-                    handler.removeCallbacks(cancelCallRunnable);
-                } else if (beforeIsOutgoing && after == CallStateManager.TYPE_CALL_CANCELED) {
-                    ToastUtils.showShort(R.string.state_canceled);
-                    binding.layoutOutgoingCall.updateStateText(R.string.state_canceled);
-                    finishActivityDelayed();
-                } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
-                    ToastUtils.showShort(R.string.state_complete);
-                    finishActivityDelayed();
-                } else if (after == CallStateManager.TYPE_CALL_MISSED) {
-                    ToastUtils.showShort(R.string.state_missed);
-                    binding.layoutOutgoingCall.updateStateText(R.string.state_missed);
-                    finishActivityDelayed();
-                } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
-                    ToastUtils.showShort(R.string.state_declined);
-                    binding.layoutOutgoingCall.updateStateText(R.string.state_declined);
-                    finishActivityDelayed();
-                }
-            }
-        };
-        CallStateManager.getInstance().addListener(callStateChangedListener);
+        userService.speakerOperate(true);
     }
 
     private void updateUi(int type) {
@@ -268,6 +276,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         if (Objects.equals(this.userInfo, userInfo)) {
             this.userInfo = userInfo;
         }
+        binding.layoutIncomingCall.onUserInfoUpdated(userInfo);
         binding.layoutOutgoingCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVideoCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVoiceCall.onUserInfoUpdated(userInfo);

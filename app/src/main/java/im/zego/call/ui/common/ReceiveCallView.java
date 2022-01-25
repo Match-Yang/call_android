@@ -114,7 +114,11 @@ public class ReceiveCallView extends FrameLayout {
                 }
             });
         });
-
+        binding.getRoot().setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onWindowClicked();
+            }
+        });
         binding.getRoot().measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
     }
 
@@ -141,6 +145,10 @@ public class ReceiveCallView extends FrameLayout {
         }
     }
 
+    public ZegoUserInfo getUserInfo() {
+        return this.userInfo;
+    }
+
     public void setListener(OnReceiveCallViewClickedListener listener) {
         this.listener = listener;
     }
@@ -152,5 +160,7 @@ public class ReceiveCallView extends FrameLayout {
         void onAcceptVideoClicked();
 
         void onDeclineClicked();
+
+        void onWindowClicked();
     }
 }

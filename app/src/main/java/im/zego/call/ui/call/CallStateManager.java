@@ -1,6 +1,11 @@
 package im.zego.call.ui.call;
 
 
+import android.app.Activity;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +65,29 @@ public class CallStateManager {
             for (CallStateChangedListener listener : listeners) {
                 listener.onCallStateChanged(beforeState, callState);
             }
+        }
+        if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_VOICE) {
+            playRingTone();
+        }else {
+            stopRingTone();
+        }
+    }
+
+    private MediaPlayer mediaPlayer;
+
+    private void playRingTone() {
+        Activity topActivity = ActivityUtils.getTopActivity();
+        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
+        mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+
+    public void stopRingTone() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 
