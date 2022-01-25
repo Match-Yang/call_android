@@ -9,8 +9,8 @@ import im.zego.call.BuildConfig;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.http.WebClientManager;
-import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.ZegoZIMManager;
@@ -76,7 +76,6 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                 userService.logout();
                 WebClientManager.getInstance().stopHeartBeat();
-                stopService(new Intent(SettingActivity.this, FloatWindowService.class));
                 ActivityUtils.finishToActivity(LoginActivity.class, false);
             }
         });

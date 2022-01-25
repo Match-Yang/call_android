@@ -1,32 +1,37 @@
 package im.zego.call.ui.entry;
 
 import android.app.Activity;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
-import android.content.DialogInterface;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.Builder;
+import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.PermissionUtils;
-import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
-import com.blankj.utilcode.util.Utils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
-import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
+import im.zego.call.ui.call.CallActivity;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallDialog;
+import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
+import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.setting.SettingActivity;
 import im.zego.call.ui.user.OnlineUserActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.call.utils.AvatarHelper;
+import im.zego.call.utils.PermissionHelper;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoResponseType;
@@ -40,8 +45,12 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
     public static final String URL_GET_MORE = "https://www.zegocloud.com/";
     public static final String URL_CONTACT_US = "https://www.zegocloud.com/talk";
-    private Dialog callDialog;
     private static final String TAG = "EntryActivity";
+    private ReceiveCallDialog dialog;
+    private String CHANNEL_ID = "channel 1";
+    private String CHANNEL_NAME = "channel name";
+    private String CHANNEL_DESC = "channel desc";
+    private int notificationId = 999;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,13 +89,173 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         Drawable userIcon = AvatarHelper.getAvatarByUserName(localUserInfo.userName);
         binding.entryUserAvatar.setImageDrawable(userIcon);
 
-        startService(new Intent(this, FloatWindowService.class));
+        dialog = new ReceiveCallDialog();
+        userService.setListener(new ZegoUserServiceListener() {
+            @Override
+            public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+                Log.d(TAG, "onUserInfoUpdated() called with: userInfo = [" + userInfo + "]");
+                Activity topActivity = ActivityUtils.getTopActivity();
+                if (topActivity instanceof CallActivity) {
+                    CallActivity callActivity = (CallActivity) topActivity;
+                    callActivity.onUserInfoUpdated(userInfo);
+                }
+            }
+
+            @Override
+            public void onCallReceived(ZegoUserInfo userInfo, ZegoCallType type) {
+                Log.d(TAG, "onCallReceived() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+                boolean needNotification = CallStateManager.getInstance().needNotification();
+                if (needNotification) {
+                    //needNotification means call is happening,reject other calls
+                    userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
+
+                    });
+                    return;
+                }
+                dialog.updateData(userInfo, type);
+                int state;
+                if (type == ZegoCallType.Audio) {
+                    state = CallStateManager.TYPE_INCOMING_CALLING_AUDIO;
+                } else {
+                    state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
+                }
+                CallStateManager.getInstance().setCallState(userInfo, state);
+
+                dialog.showReceiveCallWindow();
+
+                //show notification on lock-screen
+                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                boolean isScreenOff = !powerManager.isInteractive();
+                boolean isBackground = !AppUtils.isAppForeground();
+                boolean hasOverlayPermission = PermissionHelper.checkFloatWindowPermission();
+                if (isScreenOff || (isBackground && !hasOverlayPermission)) {
+                    showNotification(userInfo);
+                }
+            }
+
+            @Override
+            public void onCancelCallReceived(ZegoUserInfo userInfo) {
+                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+                dialog.dismissReceiveCallWindow();
+            }
+
+            @Override
+            public void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type) {
+                if (type == ZegoResponseType.Decline) {
+                    userService.endCall(errorCode -> {
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+                    });
+                } else {
+                    int callState = CallStateManager.getInstance().getCallState();
+                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) {
+                        callState = CallStateManager.TYPE_CONNECTED_VOICE;
+                    } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+                        callState = CallStateManager.TYPE_CONNECTED_VIDEO;
+                    }
+                    CallStateManager.getInstance().setCallState(userInfo, callState);
+                }
+            }
+
+            @Override
+            public void onEndCallReceived() {
+                Log.d(TAG, "onEndCallReceived() called");
+                userService.endCall(errorCode -> {
+                    CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
+                });
+            }
+
+            @Override
+            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
+
+            }
+        });
+
+        createNotificationChannel();
+        AppUtils.registerAppStatusChangedListener(new OnAppStatusChangedListener() {
+            @Override
+            public void onForeground(Activity activity) {
+                dismissNotification(EntryActivity.this, notificationId);
+            }
+
+            @Override
+            public void onBackground(Activity activity) {
+                boolean needNotification = CallStateManager.getInstance().needNotification();
+                ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
+                if (needNotification && userInfo != null) {
+                    showNotification(userInfo);
+                }
+            }
+        });
+        dialog.setListener(new OnReceiveCallViewClickedListener() {
+            @Override
+            public void onAcceptAudioClicked() {
+                dismissNotification(EntryActivity.this, notificationId);
+            }
+
+            @Override
+            public void onAcceptVideoClicked() {
+                dismissNotification(EntryActivity.this, notificationId);
+            }
+
+            @Override
+            public void onDeclineClicked() {
+                dismissNotification(EntryActivity.this, notificationId);
+            }
+
+            @Override
+            public void onWindowClicked() {
+                CallActivity.startCallActivity(dialog.getUserInfo());
+            }
+        });
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = CHANNEL_NAME;
+            String description = CHANNEL_DESC;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            Activity topActivity = ActivityUtils.getTopActivity();
+            NotificationManager notificationManager = topActivity.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+    void showNotification(ZegoUserInfo userInfo) {
+        Activity topActivity = ActivityUtils.getTopActivity();
+        Intent intent = new Intent(topActivity, LoginActivity.class);
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, 0);
+
+        NotificationCompat.Builder builder = new Builder(topActivity, CHANNEL_ID)
+            .setSmallIcon(R.drawable.icon_dialog_voice_accept)
+            .setContentTitle(topActivity.getString(R.string.app_name))
+            .setContentText(topActivity.getString(R.string.call_notification, userInfo.userName))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(topActivity);
+        notificationManager.notify(notificationId, builder.build());
+    }
+
+    void dismissNotification(Context context, int notificationId) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancel(notificationId);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(this, FloatWindowService.class));
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        userService.setListener(null);
     }
 
     @Override

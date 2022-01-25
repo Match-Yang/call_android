@@ -4,7 +4,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="#333333"
+  android:background="#CC333333"
   tools:context=".ui.call.CallActivity">
 
   <im.zego.call.ui.call.view.IncomingCallView

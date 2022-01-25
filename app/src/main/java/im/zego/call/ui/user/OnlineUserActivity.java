@@ -61,12 +61,12 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                 }
                 ZegoUserInfo userInfo = onlineUserAdapter.getUserInfo(adapterPosition);
                 int callState = CallStateManager.getInstance().getCallState();
-                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE ||
+                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO ||
                     callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_AUDIO);
                     CallActivity.startCallActivity(userInfo);
 
                 } else if (itemChild.getId() == R.id.item_online_user_video) {

@@ -1,6 +1,11 @@
 package im.zego.call.ui.call;
 
 
+import android.app.Activity;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +14,11 @@ public class CallStateManager {
 
     public static final int TYPE_NO_CALL = 0;
 
-    public static final int TYPE_INCOMING_CALLING_VOICE = 1;
+    public static final int TYPE_INCOMING_CALLING_AUDIO = 1;
     public static final int TYPE_INCOMING_CALLING_VIDEO = 2;
     public static final int TYPE_CONNECTED_VOICE = 3;
     public static final int TYPE_CONNECTED_VIDEO = 4;
-    public static final int TYPE_OUTGOING_CALLING_VOICE = 5;
+    public static final int TYPE_OUTGOING_CALLING_AUDIO = 5;
     public static final int TYPE_OUTGOING_CALLING_VIDEO = 6;
 
     public static final int TYPE_CALL_CANCELED = 7;
@@ -42,11 +47,11 @@ public class CallStateManager {
     }
 
     public boolean needNotification() {
-        return callState == TYPE_INCOMING_CALLING_VOICE ||
+        return callState == TYPE_INCOMING_CALLING_AUDIO ||
             callState == TYPE_INCOMING_CALLING_VIDEO ||
             callState == TYPE_CONNECTED_VOICE ||
             callState == TYPE_CONNECTED_VIDEO ||
-            callState == TYPE_OUTGOING_CALLING_VOICE ||
+            callState == TYPE_OUTGOING_CALLING_AUDIO ||
             callState == TYPE_OUTGOING_CALLING_VIDEO;
     }
 
@@ -60,6 +65,29 @@ public class CallStateManager {
             for (CallStateChangedListener listener : listeners) {
                 listener.onCallStateChanged(beforeState, callState);
             }
+        }
+        if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_AUDIO) {
+            playRingTone();
+        }else {
+            stopRingTone();
+        }
+    }
+
+    private MediaPlayer mediaPlayer;
+
+    private void playRingTone() {
+        Activity topActivity = ActivityUtils.getTopActivity();
+        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
+        mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+
+    public void stopRingTone() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 

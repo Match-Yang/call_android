@@ -55,7 +55,7 @@ public class OutgoingCallView extends ConstraintLayout {
                     binding.callStateText.setText(R.string.state_canceled);
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
-                    ToastUtils.showShort("Cancel call Failed,errorCode:" + errorCode);
+                    ToastUtils.showShort(R.string.cancel_call_failed, errorCode);
                 }
             });
         });
@@ -64,7 +64,7 @@ public class OutgoingCallView extends ConstraintLayout {
             public void onClick(View v) {
                 boolean selected = v.isSelected();
                 v.setSelected(!selected);
-                userService.useFrontCamera(false);
+                userService.useFrontCamera(selected);
             }
         });
     }
@@ -82,7 +82,7 @@ public class OutgoingCallView extends ConstraintLayout {
         if (isVideoCall()) {
             binding.textureView.setVisibility(View.VISIBLE);
             binding.cameraSwitch.setVisibility(View.VISIBLE);
-        } else {
+        } else if (isAudioCall()) {
             binding.textureView.setVisibility(View.GONE);
             binding.cameraSwitch.setVisibility(View.GONE);
         }
@@ -97,7 +97,7 @@ public class OutgoingCallView extends ConstraintLayout {
     }
 
     private boolean isAudioCall() {
-        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE;
+        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO;
     }
 
     public TextureView getTextureView() {
