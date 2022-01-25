@@ -47,4 +47,5 @@
   <string name="login_failed">login failed,errorCode :%d</string>
   <string name="cancel_call_failed">Cancel call Failed,errorCode:%d</string>
   <string name="end_call_failed">End call Failed,errorCode:%d</string>
+  <string name="me">我</string>
 </resources>

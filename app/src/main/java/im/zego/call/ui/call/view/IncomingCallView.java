@@ -104,15 +104,6 @@ public class IncomingCallView extends ConstraintLayout {
                 });
             }
         });
-        binding.callCameraSwitchSmall.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                boolean selected = v.isSelected();
-                v.setSelected(!selected);
-                userService.useFrontCamera(selected);
-            }
-        });
     }
 
     public void setCallType(int callType) {
@@ -121,17 +112,9 @@ public class IncomingCallView extends ConstraintLayout {
         if (isVideoCall) {
             binding.callAcceptVoice.setVisibility(GONE);
             binding.callAcceptVideo.setVisibility(VISIBLE);
-            binding.callCameraSwitchSmall.setVisibility(VISIBLE);
-            binding.callUserTexture.setVisibility(VISIBLE);
         } else if (isAudioCall) {
             binding.callAcceptVoice.setVisibility(VISIBLE);
             binding.callAcceptVideo.setVisibility(GONE);
-            binding.callCameraSwitchSmall.setVisibility(GONE);
-            binding.callUserTexture.setVisibility(GONE);
-        }
-        if (isVideoCall) {
-            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callUserTexture);
         }
     }
 
@@ -141,8 +124,6 @@ public class IncomingCallView extends ConstraintLayout {
         binding.callUserName.setText(userName);
         Drawable drawable = AvatarHelper.getAvatarByUserName(userName);
         binding.callUserIcon.setImageDrawable(drawable);
-        Drawable fullDrawable = AvatarHelper.getFullAvatarByUserName(userName);
-        binding.callUserBg.setImageDrawable(fullDrawable);
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {

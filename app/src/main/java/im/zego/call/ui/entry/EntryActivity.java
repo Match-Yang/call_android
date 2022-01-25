@@ -40,6 +40,7 @@ import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
+import java.util.Locale;
 
 public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
@@ -84,7 +85,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         ZegoUserInfo localUserInfo = userService.localUserInfo;
 
-        binding.entryUserId.setText(localUserInfo.userID);
+        binding.entryUserId.setText("ID:" + localUserInfo.userID);
         binding.entryUserName.setText(localUserInfo.userName);
         Drawable userIcon = AvatarHelper.getAvatarByUserName(localUserInfo.userName);
         binding.entryUserAvatar.setImageDrawable(userIcon);

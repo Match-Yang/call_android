@@ -5,6 +5,7 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
+import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
@@ -21,6 +23,7 @@ import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityCallBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
+import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
@@ -126,27 +129,26 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.postDelayed(timeCountRunnable, 1000);
                     handler.removeCallbacks(cancelCallRunnable);
                 } else if (beforeIsOutgoing && after == CallStateManager.TYPE_CALL_CANCELED) {
-                    ToastUtils.showShort(R.string.state_canceled);
-                    binding.layoutOutgoingCall.updateStateText(R.string.state_canceled);
-                    binding.layoutIncomingCall.updateStateText(R.string.state_canceled);
+                    updateStateText(R.string.state_canceled);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
-                    ToastUtils.showShort(R.string.state_complete);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_MISSED) {
-                    ToastUtils.showShort(R.string.state_missed);
-                    binding.layoutOutgoingCall.updateStateText(R.string.state_missed);
-                    binding.layoutIncomingCall.updateStateText(R.string.state_missed);
+                    updateStateText(R.string.state_missed);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
-                    ToastUtils.showShort(R.string.state_declined);
-                    binding.layoutOutgoingCall.updateStateText(R.string.state_declined);
-                    binding.layoutIncomingCall.updateStateText(R.string.state_declined);
+                    updateStateText(R.string.state_declined);
                     finishActivityDelayed();
                 }
             }
         };
         CallStateManager.getInstance().addListener(callStateChangedListener);
+    }
+
+    private void updateStateText(@StringRes int stringID) {
+        binding.layoutOutgoingCall.updateStateText(stringID);
+        binding.layoutIncomingCall.updateStateText(stringID);
+        binding.layoutConnectedVoiceCall.updateStateText(stringID);
     }
 
     private void initDeviceState(int typeOfCall) {
@@ -218,6 +220,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         binding.layoutIncomingCall.setUserInfo(userInfo);
         binding.layoutConnectedVoiceCall.setUserInfo(userInfo);
         binding.layoutConnectedVideoCall.setUserInfo(userInfo);
+        Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
+        binding.callUserBg.setImageDrawable(fullAvatar);
 
         switch (type) {
             case CallStateManager.TYPE_INCOMING_CALLING_AUDIO:

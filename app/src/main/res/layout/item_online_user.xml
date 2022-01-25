@@ -69,4 +69,12 @@
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
+
+  <View
+    android:layout_width="0dp"
+    android:layout_height="1px"
+    android:background="#E6E6E6"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="@id/item_online_user_name" />
 </androidx.constraintlayout.widget.ConstraintLayout>

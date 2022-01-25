@@ -15,7 +15,7 @@
     android:layout_height="26dp"
     android:layout_marginTop="36dp"
     android:layout_marginEnd="20dp"
-    android:src="@drawable/selector_activity_camera_switch_button"
+    android:src="@drawable/icon_camera_switch_small"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
