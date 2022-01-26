@@ -135,7 +135,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
 
             @Override
-            public void onReceiveCallCanceled(ZegoUserInfo userInfo,ZegoCancelType cancelType) {
+            public void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType) {
                 if (cancelType == ZegoCancelType.INTENT) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
@@ -239,10 +239,23 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, 0);
 
+        String notificationText = getString(R.string.call_notification, userInfo.userName);
+        int callState = CallStateManager.getInstance().getCallState();
+        if (callState == CallStateManager.TYPE_INCOMING_CALLING_VIDEO ||
+            callState == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
+            notificationText = getString(R.string.receive_call_notification, userInfo.userName);
+        } else if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
+            callState == CallStateManager.TYPE_CONNECTED_VOICE) {
+            notificationText = getString(R.string.call_notification, userInfo.userName);
+        } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO ||
+            callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+            notificationText = getString(R.string.request_call_notification, userInfo.userName);
+        }
+
         NotificationCompat.Builder builder = new Builder(topActivity, CHANNEL_ID)
             .setSmallIcon(R.drawable.icon_dialog_voice_accept)
             .setContentTitle(topActivity.getString(R.string.app_name))
-            .setContentText(topActivity.getString(R.string.call_notification, userInfo.userName))
+            .setContentText(notificationText)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true);

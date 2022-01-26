@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import im.zego.call.R;
@@ -223,10 +224,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         binding.layoutIncomingCall.setUserInfo(userInfo);
         binding.layoutConnectedVoiceCall.setUserInfo(userInfo);
         binding.layoutConnectedVideoCall.setUserInfo(userInfo);
-        int resourceID = AvatarHelper.getResourceIndex(userInfo.userName, true);
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceID);
-        Bitmap blurBitmap = ImageUtils.fastBlur(bitmap, 1f, 25f);
-        binding.callUserBg.setImageBitmap(blurBitmap);
+        int resourceID = AvatarHelper.getBlurResourceID(userInfo.userName);
+        binding.callUserBg.setImageDrawable(ResourceUtils.getDrawable(resourceID));
 
         switch (type) {
             case CallStateManager.TYPE_INCOMING_CALLING_VOICE:

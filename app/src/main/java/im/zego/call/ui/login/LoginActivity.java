@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
@@ -35,6 +36,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
     private static final String TAG = "LoginActivity";
     private boolean isRequestingUserID = false;
+    private boolean isLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +83,23 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             }
         });
 
-        int nextInt = Math.abs(new Random().nextInt(100));
-        String manufacturer = DeviceUtils.getManufacturer();
-        binding.loginUsername.setText(manufacturer + nextInt);
+        MMKV kv = MMKV.defaultMMKV();
+        String userName = kv.decodeString("userName");
+        if (TextUtils.isEmpty(userName)) {
+            int nextInt = Math.abs(new Random().nextInt(100));
+            String manufacturer = DeviceUtils.getManufacturer();
+            binding.loginUsername.setText(manufacturer + nextInt);
+        } else {
+            binding.loginUsername.setText(userName);
+            PermissionHelper.requestCameraAndAudio(LoginActivity.this, new IPermissionCallback() {
+                @Override
+                public void onRequestCallback(boolean isAllGranted) {
+                    if (isAllGranted) {
+                        onLoginButtonClicked();
+                    }
+                }
+            });
+        }
 
         systemPermissionCheck();
     }
@@ -100,7 +116,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     }
 
     private void onLoginButtonClicked() {
-        String userName = binding.loginUsername.getText().toString();
+        String userName = binding.loginUsername.getText().toString().trim();
         if (TextUtils.isEmpty(userName)) {
             TextView inputTips = binding.loginInputTips;
             inputTips.setText(R.string.login_page_input_user_name_tip);
@@ -139,14 +155,21 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     }
 
     private void login(String userName, String userID) {
+        if (isLogin) {
+            return;
+        }
+        isLogin = true;
         CallApi.login(userName, userID, new IAsyncGetCallback<UserBean>() {
             @Override
             public void onResponse(int errorCode, @NonNull String message, UserBean response) {
                 Log.d(TAG,
                     "login() called with: errorCode = [" + errorCode + "], message = [" + message
                         + "], response = [" + response + "]");
+                isLogin = false;
                 if (errorCode == 0) {
-                    WebClientManager.getInstance().startHeartBeat(userID);
+                    MMKV kv = MMKV.defaultMMKV();
+                    kv.encode("login", true);
+                    kv.encode("userName", userName);
                     ZegoUserInfo userInfo = new ZegoUserInfo();
                     userInfo.userName = userName;
                     userInfo.userID = userID;
@@ -158,12 +181,10 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                             ActivityUtils.startActivity(EntryActivity.class);
                         } else {
                             showWarnTips(getString(R.string.toast_login_fail, code));
-                            WebClientManager.getInstance().stopHeartBeat();
                         }
                     });
                 } else {
                     CallApi.logout(userID, null);
-                    WebClientManager.getInstance().stopHeartBeat();
                     showWarnTips(getString(R.string.toast_login_fail, errorCode));
                 }
             }

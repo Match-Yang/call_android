@@ -13,10 +13,7 @@
     android:layout_height="match_parent"
     android:scaleType="centerCrop" />
 
-  <View
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#E5333333" />
+
 
   <im.zego.call.ui.call.view.IncomingCallView
     android:id="@+id/layout_incoming_call"

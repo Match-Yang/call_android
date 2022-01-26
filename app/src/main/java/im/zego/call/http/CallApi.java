@@ -91,6 +91,11 @@ public class CallApi {
         String json = jsonObject.toString();
 
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
+            if (errorCode == 0) {
+                WebClientManager.getInstance().startHeartBeat(userID);
+            } else {
+                WebClientManager.getInstance().stopHeartBeat();
+            }
             UserBean userBean = gson.fromJson(response, UserBean.class);
             if (callback != null) {
                 callback.onResponse(errorCode, message, userBean);
@@ -109,6 +114,9 @@ public class CallApi {
         String json = jsonObject.toString();
 
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
+            if (errorCode == 0) {
+                WebClientManager.getInstance().stopHeartBeat();
+            }
             if (callback != null) {
                 callback.onResponse(errorCode, message, "");
             }
