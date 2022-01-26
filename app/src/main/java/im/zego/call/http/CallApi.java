@@ -41,7 +41,7 @@ public class CallApi {
                 }
             } else {
                 if (reqCallback != null) {
-                    reqCallback.onResponse(SYSTEM_ERROR, message, string);
+                    reqCallback.onResponse(ErrorcodeConstants.ErrorJSONFormatInvalid, message, string);
                 }
             }
         });
@@ -60,12 +60,19 @@ public class CallApi {
         String json = jsonObject.toString();
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
             if (response != null) {
-                JsonArray userArray = response.get("user_list").getAsJsonArray();
-                Type userListType = new TypeToken<ArrayList<UserBean>>() {
-                }.getType();
-                ArrayList<UserBean> userList = gson.fromJson(userArray, userListType);
-                if (callback != null) {
-                    callback.onResponse(errorCode, message, userList);
+                JsonElement element = response.get("user_list");
+                if (element != null) {
+                    JsonArray userArray = element.getAsJsonArray();
+                    Type userListType = new TypeToken<ArrayList<UserBean>>() {
+                    }.getType();
+                    ArrayList<UserBean> userList = gson.fromJson(userArray, userListType);
+                    if (callback != null) {
+                        callback.onResponse(errorCode, message, userList);
+                    }
+                } else {
+                    if (callback != null) {
+                        callback.onResponse(ErrorcodeConstants.ErrorJSONFormatInvalid, message, null);
+                    }
                 }
             }
         });
