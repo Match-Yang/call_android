@@ -103,7 +103,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         String userName = binding.loginUsername.getText().toString();
         if (TextUtils.isEmpty(userName)) {
             TextView inputTips = binding.loginInputTips;
-            inputTips.setText(R.string.name_format_error);
+            inputTips.setText(R.string.login_page_input_user_name_tip);
             inputTips.setVisibility(View.VISIBLE);
             Handler rootHandler = binding.getRoot().getHandler();
             rootHandler.removeCallbacksAndMessages(null);
@@ -128,7 +128,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                             kv.encode("userID", returnedID);
                             login(userName, returnedID);
                         } else {
-                            showWarnTips(getString(R.string.create_id_failed, errorCode));
+                            showWarnTips(getString(R.string.create_user_failed, errorCode));
                         }
                     }
                 });
@@ -157,14 +157,14 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                         if (code == 0) {
                             ActivityUtils.startActivity(EntryActivity.class);
                         } else {
-                            showWarnTips(getString(R.string.login_failed, code));
+                            showWarnTips(getString(R.string.toast_login_fail, code));
                             WebClientManager.getInstance().stopHeartBeat();
                         }
                     });
                 } else {
                     CallApi.logout(userID, null);
                     WebClientManager.getInstance().stopHeartBeat();
-                    showWarnTips(getString(R.string.login_failed, errorCode));
+                    showWarnTips(getString(R.string.toast_login_fail, errorCode));
                 }
             }
         });

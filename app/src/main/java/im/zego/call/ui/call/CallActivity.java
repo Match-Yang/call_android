@@ -120,9 +120,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             @Override
             public void onCallStateChanged(int before, int after) {
                 updateUi(after);
-                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) ||
+                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
                     (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
-                boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_AUDIO) ||
+                boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_VOICE) ||
                     (before == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
                 boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
                     (after == CallStateManager.TYPE_CONNECTED_VIDEO);
@@ -131,17 +131,17 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.postDelayed(timeCountRunnable, 1000);
                     handler.removeCallbacks(cancelCallRunnable);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
-                    updateStateText(R.string.state_canceled);
+                    updateStateText(R.string.call_page_status_canceled);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
-                    updateStateText(R.string.state_complete);
-                    ToastUtils.showShort(R.string.state_complete);
+                    updateStateText(R.string.call_page_status_completed);
+                    ToastUtils.showShort(R.string.call_page_status_completed);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_MISSED) {
-                    updateStateText(R.string.state_missed);
+                    updateStateText(R.string.call_page_status_missed);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
-                    updateStateText(R.string.state_declined);
+                    updateStateText(R.string.call_page_status_declined);
                     finishActivityDelayed();
                 }
             }
@@ -158,7 +158,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
-        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) {
+        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             userService.callUser(userInfo.userID, ZegoCallType.VOICE, token, errorCode -> {
                 if (errorCode == 0) {
                     userService.enableMic(true, errorCode1 -> {
@@ -169,7 +169,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     });
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
-                    showWarnTips(getString(R.string.call_user_failed, errorCode));
+                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
                 }
             });
@@ -190,12 +190,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     });
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
-                    showWarnTips(getString(R.string.call_user_failed, errorCode));
+                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
-        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_AUDIO) {
+        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.enableMic(true, errorCode -> {
@@ -229,7 +229,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         binding.callUserBg.setImageBitmap(blurBitmap);
 
         switch (type) {
-            case CallStateManager.TYPE_INCOMING_CALLING_AUDIO:
+            case CallStateManager.TYPE_INCOMING_CALLING_VOICE:
             case CallStateManager.TYPE_INCOMING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.VISIBLE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
@@ -251,7 +251,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.VISIBLE);
                 break;
-            case CallStateManager.TYPE_OUTGOING_CALLING_AUDIO:
+            case CallStateManager.TYPE_OUTGOING_CALLING_VOICE:
             case CallStateManager.TYPE_OUTGOING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.VISIBLE);

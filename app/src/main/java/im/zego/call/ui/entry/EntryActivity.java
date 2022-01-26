@@ -116,7 +116,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 dialog.updateData(userInfo, type);
                 int state;
                 if (type == ZegoCallType.VOICE) {
-                    state = CallStateManager.TYPE_INCOMING_CALLING_AUDIO;
+                    state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
                 } else {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
                 }
@@ -152,7 +152,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                     });
                 } else {
                     int callState = CallStateManager.getInstance().getCallState();
-                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) {
+                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
                         callState = CallStateManager.TYPE_CONNECTED_VOICE;
                     } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
                         callState = CallStateManager.TYPE_CONNECTED_VIDEO;

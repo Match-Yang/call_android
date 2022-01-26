@@ -21,7 +21,7 @@
     android:layout_height="80dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="74dp"
-    android:text="@string/welcome"
+    android:text="@string/login_page_title"
     android:textColor="@color/white"
     android:textSize="28sp"
     app:layout_constraintLeft_toLeftOf="parent"
@@ -45,7 +45,7 @@
       android:background="@drawable/round_rect_bg_input_button"
       android:ellipsize="end"
       android:gravity="center_vertical"
-      android:hint="@string/login_username_hint"
+      android:hint="@string/login_page_user_name"
       android:maxLength="16"
       android:maxLines="1"
       android:paddingStart="17dp"
@@ -68,7 +68,7 @@
       android:layout_height="50dp"
       android:layout_gravity="center_horizontal"
       android:background="@drawable/selector_submit_button"
-      android:text="@string/log_in"
+      android:text="@string/login_page_login"
       android:textColor="@color/white"
       android:textSize="16sp" />
   </LinearLayout>

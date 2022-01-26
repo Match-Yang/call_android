@@ -81,7 +81,7 @@ public class IncomingCallView extends ConstraintLayout {
                         userService.enableMic(true, errorCode1 -> {
                             if (errorCode1 == 0) {
                             } else {
-                                ToastUtils.showShort(getContext().getString(R.string.mic_operate_failed, errorCode1));
+                                ToastUtils.showShort(R.string.mic_operate_failed, errorCode1);
                             }
                         });
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
@@ -108,7 +108,7 @@ public class IncomingCallView extends ConstraintLayout {
 
     public void setCallType(int callType) {
         boolean isVideoCall = callType == CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
-        boolean isAudioCall = callType == CallStateManager.TYPE_INCOMING_CALLING_AUDIO;
+        boolean isAudioCall = callType == CallStateManager.TYPE_INCOMING_CALLING_VOICE;
         if (isVideoCall) {
             binding.callAcceptVoice.setVisibility(GONE);
             binding.callAcceptVideo.setVisibility(VISIBLE);

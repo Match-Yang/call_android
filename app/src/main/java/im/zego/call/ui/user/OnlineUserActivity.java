@@ -3,11 +3,9 @@ package im.zego.call.ui.user;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
@@ -16,7 +14,6 @@ import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
-import im.zego.call.ui.common.ReceiveCallDialog;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoRoomCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -63,12 +60,12 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                 }
                 ZegoUserInfo userInfo = onlineUserAdapter.getUserInfo(adapterPosition);
                 int callState = CallStateManager.getInstance().getCallState();
-                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO ||
+                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE ||
                     callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_AUDIO);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
                     CallActivity.startCallActivity(userInfo);
 
                 } else if (itemChild.getId() == R.id.item_online_user_video) {

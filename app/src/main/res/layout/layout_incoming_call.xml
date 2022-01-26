@@ -37,7 +37,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="24dp"
-    android:text="@string/calling"
+    android:text="@string/call_page_status_calling"
     android:textColor="#B2FFFFFF"
     android:textSize="16sp"
     app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
     android:drawableTop="@drawable/selector_activity_decline_button"
     android:drawablePadding="7dp"
     android:gravity="center"
-    android:text="@string/decline"
+    android:text="@string/call_page_action_decline"
     android:textColor="@color/white"
     android:textSize="13sp"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -81,7 +81,7 @@
       android:drawableTop="@drawable/selector_activity_voice_button"
       android:drawablePadding="7dp"
       android:gravity="center"
-      android:text="@string/accept"
+      android:text="@string/call_page_action_accept"
       android:textColor="@color/white"
       android:textSize="13sp" />
 
@@ -92,7 +92,7 @@
       android:drawableTop="@drawable/selector_activity_video_button"
       android:drawablePadding="7dp"
       android:gravity="center"
-      android:text="@string/accept"
+      android:text="@string/call_page_action_accept"
       android:textColor="@color/white"
       android:textSize="13sp" />
   </FrameLayout>

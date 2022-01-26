@@ -57,7 +57,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="130dp"
     android:visibility="gone"
-    android:text="@string/net_quality_is_poor"
+    android:text="@string/call_page_call_quality_poor"
     android:textColor="@color/white"
     android:textSize="13sp"
     app:layout_constraintBottom_toBottomOf="parent"

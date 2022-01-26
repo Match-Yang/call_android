@@ -3,19 +3,13 @@ package im.zego.call.utils;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.provider.Settings;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 import com.blankj.utilcode.util.PermissionUtils;
-import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import com.blankj.utilcode.util.StringUtils;
 import com.permissionx.guolindev.PermissionX;
 import im.zego.call.R;
@@ -36,13 +30,13 @@ public class PermissionHelper {
                 if (deniedList.size() > 0) {
                     if (Objects.equals(Manifest.permission.CAMERA, deniedList.get(0))) {
                         new AlertDialog.Builder(activity)
-                            .setTitle(StringUtils.getString(R.string.dialog_room_page_title_cannot_use_camera))
-                            .setMessage(StringUtils.getString(R.string.dialog_room_page_massage_cannot_use_camera))
-                            .setNegativeButton(StringUtils.getString(R.string.dialog_room_page_cancel),
+                            .setTitle(StringUtils.getString(R.string.dialog_login_page_title_cannot_use_camera))
+                            .setMessage(StringUtils.getString(R.string.dialog_login_page_massage_cannot_use_camera))
+                            .setNegativeButton(StringUtils.getString(R.string.dialog_login_page_cancel),
                                 (dialog, which) -> {
                                     dialog.dismiss();
                                 })
-                            .setPositiveButton(StringUtils.getString(R.string.dialog_room_page_go_to_settings),
+                            .setPositiveButton(StringUtils.getString(R.string.dialog_login_page_go_to_settings),
                                 (dialog, which) -> {
                                     dialog.dismiss();
                                     forwardToSettings(activity);
@@ -51,13 +45,13 @@ public class PermissionHelper {
                             .show();
                     } else {
                         new AlertDialog.Builder(activity)
-                            .setTitle(StringUtils.getString(R.string.dialog_room_page_mic_cant_open))
-                            .setMessage(StringUtils.getString(R.string.dialog_room_page_mic_permission))
-                            .setNegativeButton(StringUtils.getString(R.string.dialog_room_page_cancel),
+                            .setTitle(StringUtils.getString(R.string.dialog_login_page_mic_cant_open))
+                            .setMessage(StringUtils.getString(R.string.dialog_login_page_mic_permission))
+                            .setNegativeButton(StringUtils.getString(R.string.dialog_login_page_cancel),
                                 (dialog, which) -> {
                                     dialog.dismiss();
                                 })
-                            .setPositiveButton(StringUtils.getString(R.string.dialog_room_page_go_to_settings),
+                            .setPositiveButton(StringUtils.getString(R.string.dialog_login_page_go_to_settings),
                                 (dialog, which) -> {
                                     dialog.dismiss();
                                     forwardToSettings(activity);

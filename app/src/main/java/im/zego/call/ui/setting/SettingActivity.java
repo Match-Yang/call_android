@@ -1,6 +1,5 @@
 package im.zego.call.ui.setting;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,7 +9,6 @@ import im.zego.call.R;
 import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.ui.BaseActivity;
-import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.ZegoZIMManager;
@@ -61,9 +59,9 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
                     @Override
                     public void onLogUploaded(ZIMError errorInfo) {
                         if (errorInfo.getCode().value() == ZIMErrorCode.SUCCESS.value()) {
-                            showNormalTips(getString(R.string.upload_log_success));
+                            showNormalTips(getString(R.string.toast_upload_log_success));
                         } else {
-                            showWarnTips(getString(R.string.upload_log_fail));
+                            showWarnTips(getString(R.string.toast_upload_log_fail,errorInfo.getCode().value()));
                         }
                     }
                 });

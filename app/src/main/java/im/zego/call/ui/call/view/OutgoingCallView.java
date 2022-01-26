@@ -53,7 +53,7 @@ public class OutgoingCallView extends ConstraintLayout {
         binding.callingHangUp.setOnClickListener(v -> {
             userService.cancelCall(ZegoCancelType.INTENT, userInfo.userID, errorCode -> {
                 if (errorCode == 0) {
-                    binding.callStateText.setText(R.string.state_canceled);
+                    binding.callStateText.setText(R.string.call_page_status_canceled);
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
                     ToastUtils.showShort(R.string.cancel_call_failed, errorCode);
@@ -98,7 +98,7 @@ public class OutgoingCallView extends ConstraintLayout {
     }
 
     private boolean isAudioCall() {
-        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO;
+        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE;
     }
 
     public TextureView getTextureView() {

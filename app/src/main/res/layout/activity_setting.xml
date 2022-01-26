@@ -27,7 +27,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_centerInParent="true"
-      android:text="Settings"
+      android:text="@string/setting_page_settings"
       android:textColor="#2A2A2A"
       android:textSize="18sp"
       android:textStyle="bold" />
@@ -45,7 +45,7 @@
       android:layout_alignParentStart="true"
       android:layout_centerVertical="true"
       android:layout_marginStart="16dp"
-      android:text="@string/express_sdk_version"
+      android:text="@string/setting_page_sdk_version"
       android:textColor="#2A2A2A"
       android:textSize="15sp" />
 
@@ -72,7 +72,7 @@
       android:layout_alignParentStart="true"
       android:layout_centerVertical="true"
       android:layout_marginStart="16dp"
-      android:text="@string/zim_sdk_version"
+      android:text="@string/setting_page_zim_sdk_version"
       android:textColor="#2A2A2A"
       android:textSize="15sp" />
 
@@ -99,7 +99,7 @@
       android:layout_alignParentStart="true"
       android:layout_centerVertical="true"
       android:layout_marginStart="16dp"
-      android:text="@string/app_version"
+      android:text="@string/setting_page_version"
       android:textColor="#2A2A2A"
       android:textSize="15sp" />
 
@@ -122,7 +122,7 @@
     android:background="@color/white"
     android:gravity="center_vertical"
     android:paddingStart="16dp"
-    android:text="@string/terms_of_service"
+    android:text="@string/setting_page_terms_of_service"
     android:textColor="#2A2A2A"
     android:textSize="15sp" />
 
@@ -134,7 +134,7 @@
     android:background="@color/white"
     android:gravity="center_vertical"
     android:paddingStart="16dp"
-    android:text="@string/privacy_policy"
+    android:text="@string/setting_page_privacy_policy"
     android:textColor="#2A2A2A"
     android:textSize="15sp" />
 
@@ -146,7 +146,7 @@
     android:background="@color/white"
     android:gravity="center_vertical"
     android:paddingStart="16dp"
-    android:text="@string/upload_log"
+    android:text="@string/setting_page_upload_log"
     android:textColor="#2A2A2A"
     android:textSize="15sp" />
 
@@ -157,7 +157,7 @@
     android:layout_marginTop="40dp"
     android:background="@color/white"
     android:gravity="center"
-    android:text="@string/log_out"
+    android:text="@string/setting_page_logout"
     android:textColor="#FF4A50"
     android:textSize="15sp" />
 </LinearLayout>
