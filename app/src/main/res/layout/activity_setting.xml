@@ -29,8 +29,7 @@
       android:layout_centerInParent="true"
       android:text="@string/setting_page_settings"
       android:textColor="#2A2A2A"
-      android:textSize="18sp"
-      android:textStyle="bold" />
+      android:textSize="18sp" />
   </RelativeLayout>
 
   <RelativeLayout

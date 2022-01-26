@@ -1,13 +1,17 @@
 package im.zego.call.ui.entry;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Person;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -16,14 +20,17 @@ import android.view.View.OnClickListener;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
+import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
+import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.call.ui.common.ReceiveCallDialog;
 import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
 import im.zego.call.ui.login.LoginActivity;
@@ -261,7 +268,10 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(topActivity);
-        notificationManager.notify(notificationId, builder.build());
+        Notification build = builder.build();
+        build.defaults = Notification.DEFAULT_SOUND;
+
+        notificationManager.notify(notificationId, build);
     }
 
     void dismissNotification(Context context, int notificationId) {
@@ -274,6 +284,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         super.onDestroy();
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(null);
+        stopService(new Intent(this, FloatWindowService.class));
     }
 
     @Override

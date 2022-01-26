@@ -2,9 +2,13 @@ package im.zego.call.ui.call;
 
 
 import android.app.Activity;
+import android.app.Service;
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Vibrator;
 import android.util.Log;
 import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -64,13 +68,14 @@ public class CallStateManager {
         this.callState = callState;
         if (beforeState != callState && listeners.size() > 0) {
             for (CallStateChangedListener listener : listeners) {
-                Log.d("sss", "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
+                Log.d("sss",
+                    "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
                 listener.onCallStateChanged(beforeState, callState);
             }
         }
         if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_VOICE) {
             playRingTone();
-        }else {
+        } else {
             stopRingTone();
         }
     }
@@ -79,10 +84,28 @@ public class CallStateManager {
 
     private void playRingTone() {
         Activity topActivity = ActivityUtils.getTopActivity();
-        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
-        mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+        AudioManager audioManager = (AudioManager) topActivity.getSystemService(Context.AUDIO_SERVICE);
+        Vibrator vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
+        if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+            Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
+            if (ringtoneUri != null && mediaPlayer == null) {
+                mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
+                mediaPlayer.setLooping(true);
+                mediaPlayer.start();
+
+                if (vibrator.hasVibrator()) {
+                    vibrator.cancel();
+                    vibrator.vibrate(new long[]{1000, 600, 1000, 600}, 0);
+                }
+            }
+        } else if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+            if (vibrator.hasVibrator()) {
+                vibrator.cancel();
+                vibrator.vibrate(new long[]{600, 600, 600, 600}, 0);
+            }
+        } else {
+
+        }
     }
 
     public void stopRingTone() {
@@ -91,6 +114,12 @@ public class CallStateManager {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        Activity topActivity = ActivityUtils.getTopActivity();
+        Vibrator vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
+        if (vibrator.hasVibrator()) {
+            vibrator.cancel();
+        }
+
     }
 
     public ZegoUserInfo getUserInfo() {

@@ -60,4 +60,5 @@
 
 
   <string name="create_user_failed">创建用户失败,错误码 :%d</string>
+  <string name="loading">加载中...</string>
 </resources>

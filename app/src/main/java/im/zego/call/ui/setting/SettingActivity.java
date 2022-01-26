@@ -7,6 +7,7 @@ import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.call.BuildConfig;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivitySettingBinding;
+import im.zego.call.http.CallApi;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.login.LoginActivity;
@@ -61,7 +62,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
                         if (errorInfo.getCode().value() == ZIMErrorCode.SUCCESS.value()) {
                             showNormalTips(getString(R.string.toast_upload_log_success));
                         } else {
-                            showWarnTips(getString(R.string.toast_upload_log_fail,errorInfo.getCode().value()));
+                            showWarnTips(getString(R.string.toast_upload_log_fail, errorInfo.getCode().value()));
                         }
                     }
                 });
@@ -72,7 +73,9 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
             @Override
             public void onClick(View v) {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                String userID = userService.localUserInfo.userID;
                 userService.logout();
+                CallApi.logout(userID, null);
                 WebClientManager.getInstance().stopHeartBeat();
                 ActivityUtils.finishToActivity(LoginActivity.class, false);
             }

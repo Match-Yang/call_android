@@ -24,6 +24,7 @@ import im.zego.call.http.IAsyncGetCallback;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
+import im.zego.call.ui.common.LoadingDialog;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.utils.PermissionHelper;
 import im.zego.call.utils.PermissionHelper.IPermissionCallback;
@@ -37,6 +38,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     private static final String TAG = "LoginActivity";
     private boolean isRequestingUserID = false;
     private boolean isLogin = false;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +132,8 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         }
         MMKV kv = MMKV.defaultMMKV();
         String userID = kv.decodeString("userID");
+
+        showLoading();
         if (TextUtils.isEmpty(userID)) {
             if (!isRequestingUserID) {
                 isRequestingUserID = true;
@@ -144,6 +148,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                             kv.encode("userID", returnedID);
                             login(userName, returnedID);
                         } else {
+                            dismissLoading();
                             showWarnTips(getString(R.string.create_user_failed, errorCode));
                         }
                     }
@@ -166,8 +171,9 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     "login() called with: errorCode = [" + errorCode + "], message = [" + message
                         + "], response = [" + response + "]");
                 isLogin = false;
+                dismissLoading();
+                MMKV kv = MMKV.defaultMMKV();
                 if (errorCode == 0) {
-                    MMKV kv = MMKV.defaultMMKV();
                     kv.encode("login", true);
                     kv.encode("userName", userName);
                     ZegoUserInfo userInfo = new ZegoUserInfo();
@@ -185,10 +191,26 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     });
                 } else {
                     CallApi.logout(userID, null);
+                    kv.encode("login", false);
                     showWarnTips(getString(R.string.toast_login_fail, errorCode));
                 }
             }
         });
+    }
+
+    private void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = new LoadingDialog(this);
+        }
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void dismissLoading() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+        }
     }
 }
 

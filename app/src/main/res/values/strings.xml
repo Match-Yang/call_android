@@ -61,4 +61,5 @@
 
 
   <string name="create_user_failed">create user failed,errorCode :%d</string>
+  <string name="loading">loading...</string>
 </resources>

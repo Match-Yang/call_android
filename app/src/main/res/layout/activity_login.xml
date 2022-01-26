@@ -17,7 +17,7 @@
 
   <TextView
     android:id="@+id/welcome_text"
-    android:layout_width="210dp"
+    android:layout_width="match_parent"
     android:layout_height="80dp"
     android:layout_marginStart="18dp"
     android:layout_marginTop="74dp"
