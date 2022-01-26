@@ -8,7 +8,7 @@
     android:id="@+id/call_user_icon"
     android:layout_width="100dp"
     android:layout_height="100dp"
-    android:layout_marginTop="92dp"
+    android:layout_marginTop="136dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"

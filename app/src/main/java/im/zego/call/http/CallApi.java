@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import im.zego.call.http.bean.UserBean;
@@ -32,9 +33,16 @@ public class CallApi {
         String json = jsonObject.toString();
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
             String string = "";
-            string = response.get("id").getAsString();
-            if (reqCallback != null) {
-                reqCallback.onResponse(errorCode, message, string);
+            JsonElement element = response.get("id");
+            if (element != null) {
+                string = element.getAsString();
+                if (reqCallback != null) {
+                    reqCallback.onResponse(errorCode, message, string);
+                }
+            } else {
+                if (reqCallback != null) {
+                    reqCallback.onResponse(SYSTEM_ERROR, message, string);
+                }
             }
         });
     }

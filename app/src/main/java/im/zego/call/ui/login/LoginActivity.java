@@ -39,7 +39,11 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate() called with: savedInstanceState = [" + savedInstanceState + "]");
+
+        if (!isTaskRoot()) {
+            finish();
+            return;
+        }
 
         ImmersionBar.with(this).reset().init();
 
@@ -77,7 +81,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             }
         });
 
-        int nextInt = Math.abs(new Random().nextInt());
+        int nextInt = Math.abs(new Random().nextInt(100));
         String manufacturer = DeviceUtils.getManufacturer();
         binding.loginUsername.setText(manufacturer + nextInt);
 
