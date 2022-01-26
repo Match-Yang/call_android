@@ -29,6 +29,8 @@ public class ZegoCallMessage {
         public ZegoResponseType responseType;
         @SerializedName("call_type")
         public ZegoCallType callType;
+        @SerializedName("cancel_type")
+        public ZegoCancelType cancelType;
     }
 
     public static class UserInfoBean {

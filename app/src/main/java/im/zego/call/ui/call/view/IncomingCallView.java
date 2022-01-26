@@ -54,11 +54,11 @@ public class IncomingCallView extends ConstraintLayout {
             public void onClick(View v) {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                 String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-                userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+                userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        userService.micOperate(true, errorCode1 -> {
+                        userService.enableMic(true, errorCode1 -> {
                             if (errorCode1 == 0) {
-                                userService.cameraOperate(true, errorCode2 -> {
+                                userService.enableCamera(true, errorCode2 -> {
                                     if (errorCode2 == 0) {
                                     }
                                 });
@@ -76,9 +76,9 @@ public class IncomingCallView extends ConstraintLayout {
             public void onClick(View v) {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                 String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-                userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+                userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        userService.micOperate(true, errorCode1 -> {
+                        userService.enableMic(true, errorCode1 -> {
                             if (errorCode1 == 0) {
                             } else {
                                 ToastUtils.showShort(getContext().getString(R.string.mic_operate_failed, errorCode1));
@@ -95,7 +95,7 @@ public class IncomingCallView extends ConstraintLayout {
             @Override
             public void onClick(View v) {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
+                userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                     } else {

@@ -34,13 +34,13 @@ import im.zego.call.utils.AvatarHelper;
 import im.zego.call.utils.PermissionHelper;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
-import java.util.Locale;
 
 public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
@@ -103,19 +103,19 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
 
             @Override
-            public void onCallReceived(ZegoUserInfo userInfo, ZegoCallType type) {
+            public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
                 Log.d(TAG, "onCallReceived() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 boolean needNotification = CallStateManager.getInstance().needNotification();
                 if (needNotification) {
                     //needNotification means call is happening,reject other calls
-                    userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
+                    userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
 
                     });
                     return;
                 }
                 dialog.updateData(userInfo, type);
                 int state;
-                if (type == ZegoCallType.Audio) {
+                if (type == ZegoCallType.VOICE) {
                     state = CallStateManager.TYPE_INCOMING_CALLING_AUDIO;
                 } else {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
@@ -135,14 +135,18 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
 
             @Override
-            public void onCancelCallReceived(ZegoUserInfo userInfo) {
-                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+            public void onReceiveCallCanceled(ZegoUserInfo userInfo,ZegoCancelType cancelType) {
+                if (cancelType == ZegoCancelType.INTENT) {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+                } else {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
+                }
                 dialog.dismissReceiveCallWindow();
             }
 
             @Override
-            public void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type) {
-                if (type == ZegoResponseType.Decline) {
+            public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
+                if (type == ZegoResponseType.Reject) {
                     userService.endCall(errorCode -> {
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                     });
@@ -158,7 +162,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
 
             @Override
-            public void onEndCallReceived() {
+            public void onReceiveCallEnded() {
                 Log.d(TAG, "onEndCallReceived() called");
                 userService.endCall(errorCode -> {
                     CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);

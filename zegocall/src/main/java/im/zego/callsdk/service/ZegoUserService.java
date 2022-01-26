@@ -11,6 +11,7 @@ import im.zego.callsdk.model.ZegoCallMessage;
 import im.zego.callsdk.model.ZegoCallMessage.ContentBean;
 import im.zego.callsdk.model.ZegoCallMessage.UserInfoBean;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -94,7 +95,7 @@ public class ZegoUserService {
         userList.clear();
     }
 
-    public void callToUser(String userID, ZegoCallType callType, String createRoomToken, ZegoRoomCallback callback) {
+    public void callUser(String userID, ZegoCallType callType, String createRoomToken, ZegoRoomCallback callback) {
         if (localUserInfo != null) {
             String roomID = localUserInfo.userID;
             roomService.createRoom(roomID, localUserInfo.userName, createRoomToken, errorCode -> {
@@ -127,13 +128,14 @@ public class ZegoUserService {
         }
     }
 
-    public void cancelCallToUser(String userID, ZegoRoomCallback callback) {
+    public void cancelCall(ZegoCancelType cancelType, String userID, ZegoRoomCallback callback) {
         if (localUserInfo != null) {
             ZegoCallMessage callMessage = new ZegoCallMessage();
             callMessage.actionType = ZegoCallMessage.CANCEL_CALL;
             callMessage.target = Collections.singletonList(userID);
             ZegoCallMessage.ContentBean contentBean = new ContentBean();
             contentBean.userInfo = new UserInfoBean(localUserInfo.userID, localUserInfo.userName);
+            contentBean.cancelType = cancelType;
             callMessage.content = contentBean;
             String messageJson = mGson.toJson(callMessage);
             ZIMCustomMessage custom = new ZIMCustomMessage();
@@ -153,7 +155,7 @@ public class ZegoUserService {
         }
     }
 
-    public void responseCall(ZegoResponseType type, String userID, String joinRoomToken, ZegoRoomCallback callback) {
+    public void respondCall(ZegoResponseType type, String userID, String joinRoomToken, ZegoRoomCallback callback) {
         if (localUserInfo != null) {
             if (type == ZegoResponseType.Accept) {
                 roomService.joinRoom(userID, joinRoomToken, errorCode -> {
@@ -212,13 +214,13 @@ public class ZegoUserService {
         });
     }
 
-    public void micOperate(boolean open, ZegoRoomCallback callback) {
+    public void enableMic(boolean enable, ZegoRoomCallback callback) {
         boolean micState = localUserInfo.mic;
-        if (micState == open) {
+        if (micState == enable) {
             callback.onRoomCallback(0);
             return;
         }
-        localUserInfo.mic = open;
+        localUserInfo.mic = enable;
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(localUserInfo.userID, mGson.toJson(localUserInfo));
 
@@ -243,7 +245,7 @@ public class ZegoUserService {
         });
     }
 
-    public void cameraOperate(boolean open, ZegoRoomCallback callback) {
+    public void enableCamera(boolean open, ZegoRoomCallback callback) {
         boolean cameraState = localUserInfo.camera;
         if (cameraState == open) {
             callback.onRoomCallback(0);
@@ -305,15 +307,15 @@ public class ZegoUserService {
                         }
                         userInfo.mic = true;
                         if (listener != null) {
-                            listener.onCallReceived(userInfo, callType);
+                            listener.onReceiveCallInvite(userInfo, callType);
                         }
                     } else if (callMessage.actionType == ZegoCallMessage.CANCEL_CALL) {
                         if (listener != null) {
-                            listener.onCancelCallReceived(userInfo);
+                            listener.onReceiveCallCanceled(userInfo,callMessage.content.cancelType);
                         }
                     } else if (callMessage.actionType == ZegoCallMessage.RESPONSE_CALL) {
                         if (listener != null) {
-                            listener.onCallResponseReceived(userInfo, callMessage.content.responseType);
+                            listener.onReceiveCallResponse(userInfo, callMessage.content.responseType);
                         }
                     }
                 }
@@ -340,13 +342,13 @@ public class ZegoUserService {
     void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
         List<ZegoUserInfo> leaveUsers = generateRoomUsers(memberList);
         for (ZegoUserInfo leaveUser : leaveUsers) {
-            stopPlayingMedia(leaveUser.userID);
+            stopPlaying(leaveUser.userID);
             userList.remove(leaveUser);
         }
         Log.d(TAG, "onRoomMemberLeft: " + userList.size());
         if (userList.size() <= 1 && listener != null) {
             // only self left
-            listener.onEndCallReceived();
+            listener.onReceiveCallEnded();
         }
     }
 
@@ -380,7 +382,7 @@ public class ZegoUserService {
                     ZegoRoomInfo roomInfo = mGson.fromJson(roomAttributes.get(key), ZegoRoomInfo.class);
                     roomService.updateRoomInfo(roomInfo);
                     if (roomInfo == null && listener != null) {
-                        listener.onEndCallReceived();
+                        listener.onReceiveCallEnded();
                     }
                 } else {
                     ZegoUserInfo attrUserInfo = mGson.fromJson(value, ZegoUserInfo.class);
@@ -409,7 +411,7 @@ public class ZegoUserService {
             }
         } else {
             if (listener != null) {
-                listener.onEndCallReceived();
+                listener.onReceiveCallEnded();
             }
         }
 
@@ -419,7 +421,7 @@ public class ZegoUserService {
         ZegoExpressEngine.getEngine().muteSpeaker(!open);
     }
 
-    public void startPlayingUserMedia(String userID, TextureView textureView) {
+    public void startPlaying(String userID, TextureView textureView) {
         ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
         zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
 
@@ -431,7 +433,7 @@ public class ZegoUserService {
         }
     }
 
-    public void stopPlayingMedia(String userID) {
+    public void stopPlaying(String userID) {
         if (Objects.equals(localUserInfo.userID, userID)) {
             ZegoExpressEngine.getEngine().stopPreview();
         } else {

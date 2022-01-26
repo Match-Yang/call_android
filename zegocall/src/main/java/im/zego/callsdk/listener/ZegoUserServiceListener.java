@@ -1,6 +1,7 @@
 package im.zego.callsdk.listener;
 
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.zim.enums.ZIMConnectionEvent;
@@ -14,21 +15,21 @@ public interface ZegoUserServiceListener {
 
     void onUserInfoUpdated(ZegoUserInfo userInfo);
 
-    void onCallReceived(ZegoUserInfo userInfo, ZegoCallType type);
+    void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type);
 
-    void onCancelCallReceived(ZegoUserInfo userInfo);
+    void onReceiveCallCanceled(ZegoUserInfo userInfo,ZegoCancelType cancelType);
 
     /**
      * call end because of person decline request
      * @param userInfo
      * @param type
      */
-    void onCallResponseReceived(ZegoUserInfo userInfo, ZegoResponseType type);
+    void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type);
 
     /**
      * call end because of room destroy,people hangup(leave room),etc.
      */
-    void onEndCallReceived();
+    void onReceiveCallEnded();
 
     /**
      * Callbacks related to the user connection status.
