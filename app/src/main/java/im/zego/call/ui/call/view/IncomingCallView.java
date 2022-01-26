@@ -66,7 +66,7 @@ public class IncomingCallView extends ConstraintLayout {
                         });
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
                     } else {
-                        ToastUtils.showShort("responseCall " + errorCode);
+                        ToastUtils.showShort(R.string.response_failed, errorCode);
                     }
                 });
             }

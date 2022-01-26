@@ -17,15 +17,21 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
+import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
+import im.zego.call.http.CallApi;
+import im.zego.call.http.IAsyncGetCallback;
+import im.zego.call.http.bean.UserBean;
 import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
@@ -178,7 +184,15 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-
+                if (event == ZIMConnectionEvent.KICKED_OUT) {
+                    ToastUtils.showShort(R.string.toast_kickout_error);
+                    ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                    String userID = userService.localUserInfo.userID;
+                    userService.logout();
+                    CallApi.logout(userID, null);
+                    MMKV.defaultMMKV().encode("autoLogin", false);
+                    ActivityUtils.finishToActivity(LoginActivity.class, false);
+                }
             }
         });
 
@@ -187,6 +201,23 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             @Override
             public void onForeground(Activity activity) {
                 dismissNotification(EntryActivity.this, notificationId);
+                // some phone will freeze app when phone is desktop,even if we start foreground service,
+                // such as vivo.
+                // so when app back to foreground, if heartbeat failed,relogin.
+                CallApi.heartBeat(localUserInfo.userID, new IAsyncGetCallback<String>() {
+                    @Override
+                    public void onResponse(int errorCode, @NonNull String message, String response) {
+                        if (errorCode != 0) {
+                            CallApi.login(localUserInfo.userName, localUserInfo.userID,
+                                new IAsyncGetCallback<UserBean>() {
+                                    @Override
+                                    public void onResponse(int errorCode, @NonNull String message, UserBean response) {
+
+                                    }
+                                });
+                        }
+                    }
+                });
             }
 
             @Override
@@ -219,6 +250,8 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 CallActivity.startCallActivity(dialog.getUserInfo());
             }
         });
+        Intent intent = new Intent(this, FloatWindowService.class);
+        ContextCompat.startForegroundService(this, intent);
     }
 
     private void createNotificationChannel() {
@@ -227,7 +260,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = CHANNEL_NAME;
             String description = CHANNEL_DESC;
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
@@ -263,8 +296,9 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             .setSmallIcon(R.drawable.icon_dialog_voice_accept)
             .setContentTitle(topActivity.getString(R.string.app_name))
             .setContentText(notificationText)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(topActivity);

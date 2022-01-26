@@ -30,6 +30,7 @@ public class CallStateManager {
     public static final int TYPE_CALL_COMPLETED = 8;
     public static final int TYPE_CALL_MISSED = 9;
     public static final int TYPE_CALL_DECLINE = 10;
+    private Vibrator vibrator;
 
     private CallStateManager() {
     }
@@ -85,7 +86,7 @@ public class CallStateManager {
     private void playRingTone() {
         Activity topActivity = ActivityUtils.getTopActivity();
         AudioManager audioManager = (AudioManager) topActivity.getSystemService(Context.AUDIO_SERVICE);
-        Vibrator vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
+        vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
         if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
             Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
             if (ringtoneUri != null && mediaPlayer == null) {
@@ -114,12 +115,9 @@ public class CallStateManager {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        Activity topActivity = ActivityUtils.getTopActivity();
-        Vibrator vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
-        if (vibrator.hasVibrator()) {
+        if (vibrator != null && vibrator.hasVibrator()) {
             vibrator.cancel();
         }
-
     }
 
     public ZegoUserInfo getUserInfo() {

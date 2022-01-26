@@ -56,10 +56,12 @@
   <string name="cancel_call_failed">cancel call Failed,errorCode:%d</string>
   <string name="end_call_failed">End call Failed,errorCode:%d</string>
   <string name="me">me</string>
-
-
-
-
-  <string name="create_user_failed">create user failed,errorCode :%d</string>
   <string name="loading">loading...</string>
+
+
+
+  <string name="toast_kickout_error">This account has already logged in from another device.</string>
+  <string name="create_user_failed">create user failed,errorCode :%d</string>
+  <string name="get_user_list_failed">get user list failed,errorCode :%d</string>
+  <string name="response_failed">response failed,errorCode: %d</string>
 </resources>

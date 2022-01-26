@@ -56,9 +56,11 @@
   <string name="cancel_call_failed">取消呼叫失败，错误码: %d</string>
   <string name="end_call_failed">结束通话失败，错误码: %d</string>
   <string name="me">我</string>
-
-
-
-  <string name="create_user_failed">创建用户失败,错误码 :%d</string>
   <string name="loading">加载中...</string>
+
+
+  <string name="toast_kickout_error">该帐号已在其他设备登录，你已被下线</string>
+  <string name="create_user_failed">创建用户失败,错误码 :%d</string>
+  <string name="get_user_list_failed">获取用户列表失败，错误码：%d</string>
+  <string name="response_failed">回应呼叫失败，错误码：%d</string>
 </resources>

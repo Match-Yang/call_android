@@ -2,6 +2,7 @@ package im.zego.call.ui.common;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import androidx.annotation.NonNull;
 import im.zego.call.databinding.LayoutDialogLoadingBinding;
@@ -24,5 +25,6 @@ public class LoadingDialog extends Dialog {
         setContentView(binding.getRoot());
         setCanceledOnTouchOutside(false);
         setCancelable(false);
+        getWindow().setBackgroundDrawable(new ColorDrawable());
     }
 }

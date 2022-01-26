@@ -66,19 +66,26 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoCamera.setSelected(localUserInfo.camera);
         binding.callVideoCamera.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-            v.setSelected(!selected);
             userService.enableCamera(!selected, errorCode -> {
-
+                if (errorCode == 0) {
+                    v.setSelected(!selected);
+                } else {
+                    ToastUtils.showShort(R.string.camera_operate_failed, errorCode);
+                }
             });
         });
         binding.callVideoMic.setSelected(localUserInfo.mic);
         binding.callVideoMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-            v.setSelected(!selected);
             userService.enableMic(!selected, errorCode -> {
-
+                if (errorCode == 0) {
+                    v.setSelected(!selected);
+                } else {
+                    ToastUtils.showShort(R.string.mic_operate_failed, errorCode);
+                }
             });
         });
+        binding.callVideoCameraSwitch.setSelected(true);
         binding.callVideoCameraSwitch.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);

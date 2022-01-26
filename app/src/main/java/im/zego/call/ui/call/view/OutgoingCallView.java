@@ -60,6 +60,7 @@ public class OutgoingCallView extends ConstraintLayout {
                 }
             });
         });
+        binding.cameraSwitch.setSelected(true);
         binding.cameraSwitch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

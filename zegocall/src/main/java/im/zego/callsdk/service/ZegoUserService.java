@@ -33,6 +33,8 @@ import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMErrorCode;
 import im.zego.zim.enums.ZIMMessageType;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
+import im.zego.zim.enums.ZIMRoomEvent;
+import im.zego.zim.enums.ZIMRoomState;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -286,7 +288,9 @@ public class ZegoUserService {
 
     void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
         JSONObject extendedData) {
-
+        if (listener != null) {
+            listener.onConnectionStateChanged(state, event);
+        }
     }
 
     void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
@@ -311,7 +315,7 @@ public class ZegoUserService {
                         }
                     } else if (callMessage.actionType == ZegoCallMessage.CANCEL_CALL) {
                         if (listener != null) {
-                            listener.onReceiveCallCanceled(userInfo,callMessage.content.cancelType);
+                            listener.onReceiveCallCanceled(userInfo, callMessage.content.cancelType);
                         }
                     } else if (callMessage.actionType == ZegoCallMessage.RESPONSE_CALL) {
                         if (listener != null) {
@@ -345,7 +349,7 @@ public class ZegoUserService {
             stopPlaying(leaveUser.userID);
             userList.remove(leaveUser);
         }
-        Log.d(TAG, "onRoomMemberLeft: " + userList.size());
+        Log.d(TAG, "onRoomMemberLeft: " + leaveUsers);
         if (userList.size() <= 1 && listener != null) {
             // only self left
             listener.onReceiveCallEnded();
@@ -444,5 +448,15 @@ public class ZegoUserService {
 
     public void useFrontCamera(boolean enable) {
         ZegoExpressEngine.getEngine().useFrontCamera(enable);
+    }
+
+    public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
+        String roomID) {
+        if (state == ZIMRoomState.DISCONNECTED) {
+            roomService.leaveRoom(null);
+            if (listener != null) {
+                listener.onReceiveCallEnded();
+            }
+        }
     }
 }

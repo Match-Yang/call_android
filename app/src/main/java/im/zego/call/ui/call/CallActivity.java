@@ -157,6 +157,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        userService.useFrontCamera(true);
+        userService.speakerOperate(true);
+
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
@@ -214,7 +217,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 }
             });
         }
-        userService.speakerOperate(true);
     }
 
     private void updateUi(int type) {

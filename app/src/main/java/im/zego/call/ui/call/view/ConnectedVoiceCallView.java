@@ -63,9 +63,12 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callVoiceMic.setSelected(localUserInfo.mic);
         binding.callVoiceMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-            v.setSelected(!selected);
             userService.enableMic(!selected, errorCode -> {
-
+                if (errorCode == 0) {
+                    v.setSelected(!selected);
+                }else {
+                    ToastUtils.showShort(R.string.camera_operate_failed,errorCode);
+                }
             });
         });
         binding.callVoiceSpeaker.setSelected(true);

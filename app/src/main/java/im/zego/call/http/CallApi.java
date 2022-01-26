@@ -59,9 +59,9 @@ public class CallApi {
         jsonObject.addProperty("type", 1);
         String json = jsonObject.toString();
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
-            if (response != null) {
-                JsonElement element = response.get("user_list");
-                if (element != null) {
+            if (errorCode == 0) {
+                if (response != null && response.get("user_list") != null) {
+                    JsonElement element = response.get("user_list");
                     JsonArray userArray = element.getAsJsonArray();
                     Type userListType = new TypeToken<ArrayList<UserBean>>() {
                     }.getType();
@@ -73,6 +73,10 @@ public class CallApi {
                     if (callback != null) {
                         callback.onResponse(ErrorcodeConstants.ErrorJSONFormatInvalid, message, null);
                     }
+                }
+            } else {
+                if (callback != null) {
+                    callback.onResponse(errorCode, message, null);
                 }
             }
         });

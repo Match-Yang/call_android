@@ -6,6 +6,7 @@ import android.view.View.OnClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import com.blankj.utilcode.util.ToastUtils;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
@@ -44,6 +45,9 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
         binding.smartRefreshLayout.setRefreshHeader(new MaterialHeader(this));
         binding.smartRefreshLayout.setOnRefreshListener(refreshLayout -> {
             getUserList(errorCode -> {
+                if (errorCode != 0) {
+                    showWarnTips(getString(R.string.get_user_list_failed, errorCode));
+                }
                 refreshLayout.finishRefresh();
             });
         });

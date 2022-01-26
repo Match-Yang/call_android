@@ -93,14 +93,17 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             binding.loginUsername.setText(manufacturer + nextInt);
         } else {
             binding.loginUsername.setText(userName);
-            PermissionHelper.requestCameraAndAudio(LoginActivity.this, new IPermissionCallback() {
-                @Override
-                public void onRequestCallback(boolean isAllGranted) {
-                    if (isAllGranted) {
-                        onLoginButtonClicked();
+            boolean autoLogin = kv.decodeBool("autoLogin");
+            if (autoLogin) {
+                PermissionHelper.requestCameraAndAudio(LoginActivity.this, new IPermissionCallback() {
+                    @Override
+                    public void onRequestCallback(boolean isAllGranted) {
+                        if (isAllGranted) {
+                            onLoginButtonClicked();
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         systemPermissionCheck();
@@ -174,7 +177,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                 dismissLoading();
                 MMKV kv = MMKV.defaultMMKV();
                 if (errorCode == 0) {
-                    kv.encode("login", true);
+                    kv.encode("autoLogin", true);
                     kv.encode("userName", userName);
                     ZegoUserInfo userInfo = new ZegoUserInfo();
                     userInfo.userName = userName;
@@ -191,7 +194,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     });
                 } else {
                     CallApi.logout(userID, null);
-                    kv.encode("login", false);
+                    kv.encode("autoLogin", false);
                     showWarnTips(getString(R.string.toast_login_fail, errorCode));
                 }
             }

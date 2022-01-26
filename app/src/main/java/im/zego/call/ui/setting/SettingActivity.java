@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import com.blankj.utilcode.util.ActivityUtils;
+import com.tencent.mmkv.MMKV;
 import im.zego.call.BuildConfig;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivitySettingBinding;
@@ -76,7 +77,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
                 String userID = userService.localUserInfo.userID;
                 userService.logout();
                 CallApi.logout(userID, null);
-                WebClientManager.getInstance().stopHeartBeat();
+                MMKV.defaultMMKV().encode("autoLogin", false);
                 ActivityUtils.finishToActivity(LoginActivity.class, false);
             }
         });
