@@ -3,9 +3,11 @@ package im.zego.call.ui.user;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
@@ -26,7 +28,6 @@ import java.util.Objects;
 public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> {
 
     private OnlineUserAdapter onlineUserAdapter;
-    private ReceiveCallDialog callDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,8 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
             }
         });
 
-        binding.userRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.userRecyclerview.setLayoutManager(layoutManager);
         onlineUserAdapter = new OnlineUserAdapter(null);
         binding.userRecyclerview.setAdapter(onlineUserAdapter);
         binding.smartRefreshLayout.setRefreshHeader(new MaterialHeader(this));

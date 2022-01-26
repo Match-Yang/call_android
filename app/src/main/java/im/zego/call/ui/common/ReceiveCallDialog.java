@@ -1,15 +1,15 @@
 package im.zego.call.ui.common;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.graphics.PixelFormat;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +17,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import im.zego.call.R;
 import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
@@ -33,8 +35,9 @@ public class ReceiveCallDialog {
     private boolean isViewAddedToWindow;
     private WindowManager windowManager;
     private WindowManager.LayoutParams lp;
-    private CallDialog callDialog;
+    private Dialog callDialog;
     private OnReceiveCallViewClickedListener listener;
+    private AlertDialog floatPermissionDialog;
 
     public ReceiveCallDialog() {
         Activity topActivity = ActivityUtils.getTopActivity();
@@ -46,8 +49,9 @@ public class ReceiveCallDialog {
             lp.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
         lp.format = PixelFormat.RGBA_8888;
-        lp.flags =
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        lp.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            | WindowManager.LayoutParams.FLAG_BLUR_BEHIND;
+
         lp.width = LayoutParams.MATCH_PARENT;
         lp.height = LayoutParams.WRAP_CONTENT;
         lp.gravity = Gravity.TOP;
@@ -100,7 +104,7 @@ public class ReceiveCallDialog {
                 //if app is background and receive call, no overlay permission
                 // show app dialog android notification
                 Activity topActivity = ActivityUtils.getTopActivity();
-                PermissionHelper.showFloatPermissionDialog(topActivity, new SimpleCallback() {
+                showFloatPermissionDialog(topActivity, new SimpleCallback() {
                     @Override
                     public void onGranted() {
                         showGlobalWindow();
@@ -115,11 +119,28 @@ public class ReceiveCallDialog {
         }
     }
 
+    public void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {
+        Builder builder = new Builder(context);
+        builder.setMessage(R.string.float_permission_tips);
+        builder.setPositiveButton(R.string.dialog_room_page_ok, new DialogInterface.OnClickListener() {
+            @RequiresApi(api = VERSION_CODES.M)
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                PermissionUtils.requestDrawOverlays(callback);
+            }
+        });
+        floatPermissionDialog = builder.create();
+        floatPermissionDialog.setCancelable(false);
+        floatPermissionDialog.setCanceledOnTouchOutside(false);
+        floatPermissionDialog.show();
+    }
+
     private void showAppDialog() {
         Activity topActivity = ActivityUtils.getTopActivity();
         if (topActivity instanceof LoginActivity) {
             return;
         }
+
         callDialog = new CallDialog(topActivity, receiveCallView);
         if (!callDialog.isShowing()) {
             callDialog.show();
@@ -142,6 +163,9 @@ public class ReceiveCallDialog {
         ViewGroup viewParent = (ViewGroup) receiveCallView.getParent();
         if (viewParent != null) {
             viewParent.removeView(receiveCallView);
+        }
+        if (floatPermissionDialog != null) {
+            floatPermissionDialog.dismiss();
         }
     }
 
@@ -170,10 +194,11 @@ public class ReceiveCallDialog {
             setCancelable(false);
             setContentView(view);
 
+            view.measure(0,0);
+
             Window window = getWindow();
             WindowManager.LayoutParams lp = window.getAttributes();
             lp.width = LayoutParams.MATCH_PARENT;
-            lp.height = LayoutParams.WRAP_CONTENT;
             lp.gravity = Gravity.TOP;
             window.setAttributes(lp);
         }

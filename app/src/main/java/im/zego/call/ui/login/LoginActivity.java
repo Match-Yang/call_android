@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
@@ -38,9 +39,16 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate() called with: savedInstanceState = [" + savedInstanceState + "]");
+
+        if (!isTaskRoot()) {
+            finish();
+            return;
+        }
 
         ImmersionBar.with(this).reset().init();
+
+        int fontHeight = binding.welcomeText.getPaint().getFontMetricsInt(null);
+        binding.welcomeText.setLineSpacing(SizeUtils.dp2px(40f) - fontHeight, 1);
 
         binding.loginButton.setEnabled(false);
         binding.loginUsername.addTextChangedListener(new TextWatcher() {
@@ -73,7 +81,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             }
         });
 
-        int nextInt = Math.abs(new Random().nextInt());
+        int nextInt = Math.abs(new Random().nextInt(100));
         String manufacturer = DeviceUtils.getManufacturer();
         binding.loginUsername.setText(manufacturer + nextInt);
 

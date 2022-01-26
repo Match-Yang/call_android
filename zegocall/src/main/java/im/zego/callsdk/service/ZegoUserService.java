@@ -368,10 +368,9 @@ public class ZegoUserService {
     }
 
     void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
-        Log.d(TAG,
-            "onRoomAttributesUpdated() called with: zim = [" + zim + "], info = [" + info + "], roomID = [" + roomID
-                + "]");
         HashMap<String, String> roomAttributes = info.roomAttributes;
+        Log.d(TAG,
+            "onRoomAttributesUpdated() called with: zim = [" + zim + "], roomAttributes = [" + roomAttributes + "]");
         if (info.action == ZIMRoomAttributesUpdateAction.SET) {
             for (Entry<String, String> entry : roomAttributes.entrySet()) {
                 Log.d(TAG, "onRoomAttributesUpdated,entry : " + entry);

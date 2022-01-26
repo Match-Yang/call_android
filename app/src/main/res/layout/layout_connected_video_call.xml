@@ -9,11 +9,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    android:background="@drawable/video_call_top_mask"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="134dp"
+    android:background="@drawable/video_call_bottom_mask"
+    app:layout_constraintBottom_toBottomOf="parent" />
+
   <ImageView
     android:id="@+id/call_video_view_center_icon"
-    android:scaleType="centerCrop"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:scaleType="centerCrop" />
 
   <ImageView
     android:id="@+id/call_video_camera"
@@ -36,7 +48,7 @@
     android:layout_marginStart="11dp"
     android:layout_marginEnd="11dp"
     android:layout_marginBottom="59dp"
-    android:src="@drawable/selector_activity_mic_button"
+    android:src="@drawable/selector_activity_mic_button_video"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toStartOf="@+id/call_video_hang_up"
     app:layout_constraintHorizontal_bias="0.5"
@@ -94,6 +106,14 @@
       android:id="@+id/call_video_view_small_texture"
       android:layout_width="match_parent"
       android:layout_height="match_parent" />
+
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="26dp"
+      android:layout_alignParentBottom="true"
+      android:background="@drawable/video_call_bottom_mask"
+      app:layout_constraintBottom_toBottomOf="parent" />
+
 
     <ImageView
       android:id="@+id/call_video_view_small_icon"

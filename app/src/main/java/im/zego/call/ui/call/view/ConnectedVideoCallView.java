@@ -97,7 +97,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
                 userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
                 userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
-                binding.callVideoViewSmallName.setText("");
+                binding.callVideoViewSmallName.setText(R.string.me);
                 userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
                 userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewCenterTexture);
             }

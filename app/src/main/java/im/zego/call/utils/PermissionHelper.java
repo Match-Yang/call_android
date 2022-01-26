@@ -89,22 +89,6 @@ public class PermissionHelper {
         }
     }
 
-    public static void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {
-        Builder builder = new Builder(context);
-        builder.setMessage(R.string.float_permission_tips);
-        builder.setPositiveButton(R.string.dialog_room_page_ok, new DialogInterface.OnClickListener() {
-            @RequiresApi(api = VERSION_CODES.M)
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                PermissionUtils.requestDrawOverlays(callback);
-            }
-        });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setCancelable(false);
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
-    }
-
     public interface IPermissionCallback {
 
         void onRequestCallback(boolean isAllGranted);

@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import im.zego.call.http.bean.UserBean;
@@ -32,9 +33,16 @@ public class CallApi {
         String json = jsonObject.toString();
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
             String string = "";
-            string = response.get("id").getAsString();
-            if (reqCallback != null) {
-                reqCallback.onResponse(errorCode, message, string);
+            JsonElement element = response.get("id");
+            if (element != null) {
+                string = element.getAsString();
+                if (reqCallback != null) {
+                    reqCallback.onResponse(errorCode, message, string);
+                }
+            } else {
+                if (reqCallback != null) {
+                    reqCallback.onResponse(ErrorcodeConstants.ErrorJSONFormatInvalid, message, string);
+                }
             }
         });
     }
@@ -52,12 +60,19 @@ public class CallApi {
         String json = jsonObject.toString();
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
             if (response != null) {
-                JsonArray userArray = response.get("user_list").getAsJsonArray();
-                Type userListType = new TypeToken<ArrayList<UserBean>>() {
-                }.getType();
-                ArrayList<UserBean> userList = gson.fromJson(userArray, userListType);
-                if (callback != null) {
-                    callback.onResponse(errorCode, message, userList);
+                JsonElement element = response.get("user_list");
+                if (element != null) {
+                    JsonArray userArray = element.getAsJsonArray();
+                    Type userListType = new TypeToken<ArrayList<UserBean>>() {
+                    }.getType();
+                    ArrayList<UserBean> userList = gson.fromJson(userArray, userListType);
+                    if (callback != null) {
+                        callback.onResponse(errorCode, message, userList);
+                    }
+                } else {
+                    if (callback != null) {
+                        callback.onResponse(ErrorcodeConstants.ErrorJSONFormatInvalid, message, null);
+                    }
                 }
             }
         });

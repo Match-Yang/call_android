@@ -119,7 +119,6 @@ public class ReceiveCallView extends FrameLayout {
                 listener.onWindowClicked();
             }
         });
-        binding.getRoot().measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
     }
 
     public void updateData(ZegoUserInfo userInfo, ZegoCallType callType) {

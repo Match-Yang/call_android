@@ -3,8 +3,9 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="wrap_content">
 
+  <!--  need extra layout to show on dialog -->
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fl_toast_message"
     android:layout_width="match_parent"
@@ -28,7 +29,11 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginStart="13dp"
+      android:ellipsize="end"
       android:gravity="center"
+      android:maxWidth="173dp"
+      android:maxLines="1"
+      android:singleLine="true"
       android:text="User name"
       android:textColor="@color/white"
       android:textSize="18sp"
@@ -43,6 +48,7 @@
       android:layout_marginStart="13dp"
       android:text="@string/zego_voice_call"
       android:textColor="#D6ffffff"
+      android:textSize="12sp"
       app:layout_constraintBottom_toBottomOf="@id/dialog_call_icon"
       app:layout_constraintStart_toEndOf="@id/dialog_call_icon" />
 

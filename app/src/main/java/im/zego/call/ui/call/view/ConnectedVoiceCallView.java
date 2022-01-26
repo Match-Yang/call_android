@@ -93,10 +93,6 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callUserName.setText(userName);
         Drawable drawable = AvatarHelper.getAvatarByUserName(userName);
         binding.callUserIcon.setImageDrawable(drawable);
-        if (Objects.equals(userInfo.userName, this.userInfo.userName)) {
-            Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
-            binding.callUserBg.setImageDrawable(fullAvatar);
-        }
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
@@ -104,10 +100,9 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         if (Objects.equals(userService.localUserInfo, userInfo)) {
             binding.callVoiceMic.setSelected(userInfo.mic);
         }
+    }
 
-        if (Objects.equals(userInfo.userName, this.userInfo.userName)) {
-            Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
-            binding.callUserBg.setImageDrawable(fullAvatar);
-        }
+    public void updateStateText(int stringID) {
+        binding.callStateText.setText(stringID);
     }
 }

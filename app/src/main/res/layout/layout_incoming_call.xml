@@ -4,22 +4,6 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <ImageView
-    android:id="@+id/call_user_bg"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:scaleType="centerCrop" />
-
-  <View
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#CC333333" />
-
-  <TextureView
-    android:id="@+id/call_user_texture"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
-
   <com.google.android.material.imageview.ShapeableImageView
     android:id="@+id/call_user_icon"
     android:layout_width="100dp"
@@ -32,8 +16,11 @@
 
   <TextView
     android:id="@+id/call_user_name"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="37dp"
+    android:layout_marginEnd="37dp"
+    android:gravity="center"
     android:layout_marginTop="5dp"
     android:ellipsize="end"
     android:maxLines="1"
@@ -61,7 +48,7 @@
     android:id="@+id/call_decline"
     android:layout_width="60dp"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="68dp"
+    android:layout_marginEnd="57dp"
     android:layout_marginBottom="28dp"
     android:drawableTop="@drawable/selector_activity_decline_button"
     android:drawablePadding="7dp"
@@ -79,7 +66,7 @@
     android:id="@+id/call_accept_layout"
     android:layout_width="60dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="68dp"
+    android:layout_marginStart="57dp"
     android:layout_marginBottom="28dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -110,13 +97,4 @@
       android:textSize="13sp" />
   </FrameLayout>
 
-  <ImageView
-    android:id="@+id/call_camera_switch_small"
-    android:layout_width="26dp"
-    android:layout_height="26dp"
-    android:layout_marginTop="36dp"
-    android:layout_marginEnd="20dp"
-    android:src="@drawable/icon_camera_switch_small"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
 </merge>

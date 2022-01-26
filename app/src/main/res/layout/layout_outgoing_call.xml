@@ -15,7 +15,7 @@
     android:layout_height="26dp"
     android:layout_marginTop="36dp"
     android:layout_marginEnd="20dp"
-    android:src="@drawable/selector_activity_camera_switch_button"
+    android:src="@drawable/icon_camera_switch_small"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,10 +31,13 @@
 
   <TextView
     android:id="@+id/call_user_name"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="37dp"
     android:layout_marginTop="5dp"
+    android:layout_marginEnd="37dp"
     android:ellipsize="end"
+    android:gravity="center"
     android:maxLines="1"
     android:singleLine="true"
     android:text="User name"

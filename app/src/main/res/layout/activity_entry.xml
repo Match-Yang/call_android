@@ -31,7 +31,6 @@
       android:text="User name"
       android:textColor="#2A2A2A"
       android:textSize="15sp"
-      android:textStyle="bold"
       app:layout_constraintStart_toEndOf="@id/entry_user_avatar"
       app:layout_constraintTop_toTopOf="@id/entry_user_avatar" />
 
@@ -144,7 +143,7 @@
       android:text="@string/entry_contact_us"
       android:textColor="#2A2A2A"
       android:textSize="14sp"
-      android:textStyle="bold"
+      android:layout_marginStart="2dp"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.5"
@@ -186,7 +185,6 @@
       android:text="@string/entry_get_more"
       android:textColor="#2A2A2A"
       android:textSize="14sp"
-      android:textStyle="bold"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.5"

@@ -16,9 +16,10 @@
     app:layout_constraintTop_toTopOf="parent" />
 
   <TextView
-    android:layout_width="204dp"
+    android:id="@+id/welcome_text"
+    android:layout_width="210dp"
     android:layout_height="80dp"
-    android:layout_marginStart="18dp"
+    android:layout_marginStart="8dp"
     android:layout_marginTop="74dp"
     android:text="@string/welcome"
     android:textColor="@color/white"
@@ -49,6 +50,7 @@
       android:maxLines="1"
       android:paddingStart="17dp"
       android:singleLine="true"
+      android:textColorHint="#A4A4A4"
       android:textSize="16sp" />
 
     <TextView
