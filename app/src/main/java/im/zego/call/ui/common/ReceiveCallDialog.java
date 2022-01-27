@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.Gravity;
@@ -122,7 +121,7 @@ public class ReceiveCallDialog {
     public void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {
         Builder builder = new Builder(context);
         builder.setMessage(R.string.float_permission_tips);
-        builder.setPositiveButton(R.string.dialog_room_page_ok, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.dialog_login_page_ok, new DialogInterface.OnClickListener() {
             @RequiresApi(api = VERSION_CODES.M)
             @Override
             public void onClick(DialogInterface dialog, int which) {

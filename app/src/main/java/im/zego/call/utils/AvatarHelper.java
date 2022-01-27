@@ -11,18 +11,18 @@ public final class AvatarHelper {
     private static final String TAG = "AvatarHelper";
 
     public static Drawable getAvatarByUserName(String userName) {
-        int resourceID = getResourceIndex(userName, false);
+        int resourceID = getResourceID(userName, false);
         Drawable drawable = ResourceUtils.getDrawable(resourceID);
         return drawable;
     }
 
     public static Drawable getFullAvatarByUserName(String userName) {
-        int resourceID = getResourceIndex(userName, true);
+        int resourceID = getResourceID(userName, true);
         Drawable drawable = ResourceUtils.getDrawable(resourceID);
         return drawable;
     }
 
-    public static int getResourceIndex(String userName, boolean full) {
+    public static int getResourceID(String userName, boolean full) {
         String md5String = EncryptUtils.encryptMD5ToString(userName).toLowerCase();
         int index = Math.abs(userName.charAt(0) % MAX_INDEX) + 1;
         String name;
@@ -32,6 +32,16 @@ public final class AvatarHelper {
             name = "user_icon_" + (index);
         }
         Log.d(TAG, "getResourceIndex() called with: userName = [" + userName + "], full = [" + full + "],md5String:"
+            + md5String + ",index:" + index + ",name: " + name);
+        return ResourceUtils.getDrawableIdByName(name);
+
+    }
+
+    public static int getBlurResourceID(String userName) {
+        String md5String = EncryptUtils.encryptMD5ToString(userName).toLowerCase();
+        int index = Math.abs(userName.charAt(0) % MAX_INDEX) + 1;
+        String name = "user_icon_" + (index) + "_blur";
+        Log.d(TAG, "getResourceIndex() called with: userName = [" + userName + "],md5String:"
             + md5String + ",index:" + index + ",name: " + name);
         return ResourceUtils.getDrawableIdByName(name);
 

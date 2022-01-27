@@ -118,6 +118,8 @@ public class APIBase {
     }
 
     public static <T> void asyncPost(String url, String json, final IAsyncGetCallback<JsonObject> reqCallback) {
+        Log.d(TAG,
+            "asyncPost() called with: url = [" + url + "], json = [" + json + "], reqCallback = [" + reqCallback + "]");
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
             .url(url)

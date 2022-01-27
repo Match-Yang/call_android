@@ -1,16 +1,16 @@
 package im.zego.call.ui.setting;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import com.blankj.utilcode.util.ActivityUtils;
+import com.tencent.mmkv.MMKV;
 import im.zego.call.BuildConfig;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivitySettingBinding;
+import im.zego.call.http.CallApi;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.ui.BaseActivity;
-import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.ZegoZIMManager;
@@ -61,9 +61,9 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
                     @Override
                     public void onLogUploaded(ZIMError errorInfo) {
                         if (errorInfo.getCode().value() == ZIMErrorCode.SUCCESS.value()) {
-                            showNormalTips(getString(R.string.upload_log_success));
+                            showNormalTips(getString(R.string.toast_upload_log_success));
                         } else {
-                            showWarnTips(getString(R.string.upload_log_fail));
+                            showWarnTips(getString(R.string.toast_upload_log_fail, errorInfo.getCode().value()));
                         }
                     }
                 });
@@ -74,8 +74,10 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
             @Override
             public void onClick(View v) {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                String userID = userService.localUserInfo.userID;
                 userService.logout();
-                WebClientManager.getInstance().stopHeartBeat();
+                CallApi.logout(userID, null);
+                MMKV.defaultMMKV().encode("autoLogin", false);
                 ActivityUtils.finishToActivity(LoginActivity.class, false);
             }
         });

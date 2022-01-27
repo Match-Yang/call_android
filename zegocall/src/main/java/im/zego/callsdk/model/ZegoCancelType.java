@@ -1,8 +1,8 @@
 package im.zego.callsdk.model;
 
-public enum ZegoResponseType {
-    Accept(1),
-    Reject(2);
+public enum ZegoCancelType {
+    INTENT(1),
+    TIMEOUT(2);
 
     private final int value;
 
@@ -10,7 +10,7 @@ public enum ZegoResponseType {
         return value;
     }
 
-    ZegoResponseType(int value) {
+    ZegoCancelType(int value) {
         this.value = value;
     }
 }

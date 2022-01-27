@@ -2,9 +2,13 @@ package im.zego.call.ui.call;
 
 
 import android.app.Activity;
+import android.app.Service;
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Vibrator;
 import android.util.Log;
 import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -15,17 +19,18 @@ public class CallStateManager {
 
     public static final int TYPE_NO_CALL = 0;
 
-    public static final int TYPE_INCOMING_CALLING_AUDIO = 1;
+    public static final int TYPE_INCOMING_CALLING_VOICE = 1;
     public static final int TYPE_INCOMING_CALLING_VIDEO = 2;
     public static final int TYPE_CONNECTED_VOICE = 3;
     public static final int TYPE_CONNECTED_VIDEO = 4;
-    public static final int TYPE_OUTGOING_CALLING_AUDIO = 5;
+    public static final int TYPE_OUTGOING_CALLING_VOICE = 5;
     public static final int TYPE_OUTGOING_CALLING_VIDEO = 6;
 
     public static final int TYPE_CALL_CANCELED = 7;
     public static final int TYPE_CALL_COMPLETED = 8;
     public static final int TYPE_CALL_MISSED = 9;
     public static final int TYPE_CALL_DECLINE = 10;
+    private Vibrator vibrator;
 
     private CallStateManager() {
     }
@@ -48,11 +53,11 @@ public class CallStateManager {
     }
 
     public boolean needNotification() {
-        return callState == TYPE_INCOMING_CALLING_AUDIO ||
+        return callState == TYPE_INCOMING_CALLING_VOICE ||
             callState == TYPE_INCOMING_CALLING_VIDEO ||
             callState == TYPE_CONNECTED_VOICE ||
             callState == TYPE_CONNECTED_VIDEO ||
-            callState == TYPE_OUTGOING_CALLING_AUDIO ||
+            callState == TYPE_OUTGOING_CALLING_VOICE ||
             callState == TYPE_OUTGOING_CALLING_VIDEO;
     }
 
@@ -64,13 +69,14 @@ public class CallStateManager {
         this.callState = callState;
         if (beforeState != callState && listeners.size() > 0) {
             for (CallStateChangedListener listener : listeners) {
-                Log.d("sss", "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
+                Log.d("sss",
+                    "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
                 listener.onCallStateChanged(beforeState, callState);
             }
         }
-        if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_AUDIO) {
+        if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_VOICE) {
             playRingTone();
-        }else {
+        } else {
             stopRingTone();
         }
     }
@@ -79,10 +85,28 @@ public class CallStateManager {
 
     private void playRingTone() {
         Activity topActivity = ActivityUtils.getTopActivity();
-        Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
-        mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+        AudioManager audioManager = (AudioManager) topActivity.getSystemService(Context.AUDIO_SERVICE);
+        vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
+        if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+            Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
+            if (ringtoneUri != null && mediaPlayer == null) {
+                mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
+                mediaPlayer.setLooping(true);
+                mediaPlayer.start();
+
+                if (vibrator.hasVibrator()) {
+                    vibrator.cancel();
+                    vibrator.vibrate(new long[]{1000, 600, 1000, 600}, 0);
+                }
+            }
+        } else if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+            if (vibrator.hasVibrator()) {
+                vibrator.cancel();
+                vibrator.vibrate(new long[]{600, 600, 600, 600}, 0);
+            }
+        } else {
+
+        }
     }
 
     public void stopRingTone() {
@@ -90,6 +114,9 @@ public class CallStateManager {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
+        }
+        if (vibrator != null && vibrator.hasVibrator()) {
+            vibrator.cancel();
         }
     }
 

@@ -27,7 +27,7 @@ public class ReceiveCallView extends FrameLayout {
     private LayoutReceiveCallBinding binding;
     private OnReceiveCallViewClickedListener listener;
     private ZegoUserInfo userInfo;
-    private ZegoCallType callType = ZegoCallType.Audio;
+    private ZegoCallType callType = ZegoCallType.VOICE;
 
     public ReceiveCallView(@NonNull Context context) {
         super(context);
@@ -52,7 +52,7 @@ public class ReceiveCallView extends FrameLayout {
 
     private void initView(Context context) {
         binding = LayoutReceiveCallBinding.inflate(LayoutInflater.from(context), this, true);
-        if (callType == ZegoCallType.Audio) {
+        if (callType == ZegoCallType.VOICE) {
             binding.dialogCallAcceptVoice.setVisibility(View.VISIBLE);
             binding.dialogCallAcceptVideo.setVisibility(View.GONE);
         } else {
@@ -65,7 +65,7 @@ public class ReceiveCallView extends FrameLayout {
             binding.dialogCallIcon.setImageDrawable(userIcon);
         }
 
-        if (callType == ZegoCallType.Audio) {
+        if (callType == ZegoCallType.VOICE) {
             binding.dialogCallType.setText(R.string.zego_voice_call);
         } else {
             binding.dialogCallType.setText(R.string.zego_video_call);
@@ -74,7 +74,7 @@ public class ReceiveCallView extends FrameLayout {
         binding.dialogCallAcceptVoice.setOnClickListener(v -> {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-            userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+            userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
                     CallActivity.startCallActivity(userInfo);
@@ -89,7 +89,7 @@ public class ReceiveCallView extends FrameLayout {
         binding.dialogCallAcceptVideo.setOnClickListener(v -> {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-            userService.responseCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+            userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
                     CallActivity.startCallActivity(userInfo);
@@ -103,7 +103,7 @@ public class ReceiveCallView extends FrameLayout {
         });
         binding.dialogCallDecline.setOnClickListener(v -> {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-            userService.responseCall(ZegoResponseType.Decline, userInfo.userID, null, errorCode -> {
+            userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                 } else {
@@ -124,7 +124,7 @@ public class ReceiveCallView extends FrameLayout {
     public void updateData(ZegoUserInfo userInfo, ZegoCallType callType) {
         this.userInfo = userInfo;
         this.callType = callType;
-        if (callType == ZegoCallType.Audio) {
+        if (callType == ZegoCallType.VOICE) {
             binding.dialogCallAcceptVoice.setVisibility(View.VISIBLE);
             binding.dialogCallAcceptVideo.setVisibility(View.GONE);
         } else {
@@ -137,7 +137,7 @@ public class ReceiveCallView extends FrameLayout {
             binding.dialogCallIcon.setImageDrawable(userIcon);
         }
 
-        if (callType == ZegoCallType.Audio) {
+        if (callType == ZegoCallType.VOICE) {
             binding.dialogCallType.setText(R.string.zego_voice_call);
         } else {
             binding.dialogCallType.setText(R.string.zego_video_call);

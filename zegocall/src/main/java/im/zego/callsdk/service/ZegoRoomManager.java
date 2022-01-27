@@ -61,6 +61,8 @@ public class ZegoRoomManager {
      */
     public ZegoUserService userService;
 
+    private static final String TAG = "RoomManager";
+
     /**
      * Initialize the SDK.
      * <p>Call this method at: Before you log in. We recommend you call this method when the application starts.
@@ -104,7 +106,7 @@ public class ZegoRoomManager {
                 JSONObject extendedData) {
                 super.onRoomStreamUpdate(roomID, updateType, streamList, extendedData);
                 for (ZegoStream zegoStream : streamList) {
-                    Log.d("TAG", "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
+                    Log.d(TAG, "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
                 }
             }
         });
@@ -116,6 +118,9 @@ public class ZegoRoomManager {
             public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
                 JSONObject extendedData) {
                 super.onConnectionStateChanged(zim, state, event, extendedData);
+                Log.d(TAG,
+                    "onConnectionStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = ["
+                        + event + "], extendedData = [" + extendedData + "]");
                 if (userService != null) {
                     userService.onConnectionStateChanged(zim, state, event, extendedData);
                 }
@@ -164,7 +169,12 @@ public class ZegoRoomManager {
             public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
                 String roomID) {
                 super.onRoomStateChanged(zim, state, event, extendedData, roomID);
-
+                Log.d(TAG,
+                    "onRoomStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = [" + event
+                        + "], extendedData = [" + extendedData + "], roomID = [" + roomID + "]");
+                if (userService != null) {
+                    userService.onRoomStateChanged(zim, state, event, extendedData, roomID);
+                }
             }
 
             @Override

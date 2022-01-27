@@ -63,9 +63,12 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callVoiceMic.setSelected(localUserInfo.mic);
         binding.callVoiceMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-            v.setSelected(!selected);
-            userService.micOperate(!selected, errorCode -> {
-
+            userService.enableMic(!selected, errorCode -> {
+                if (errorCode == 0) {
+                    v.setSelected(!selected);
+                }else {
+                    ToastUtils.showShort(R.string.camera_operate_failed,errorCode);
+                }
             });
         });
         binding.callVoiceSpeaker.setSelected(true);
@@ -82,7 +85,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         if (changedView == this) {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             if (visibility == View.VISIBLE) {
-                userService.startPlayingUserMedia(userInfo.userID, null);
+                userService.startPlaying(userInfo.userID, null);
             }
         }
     }
@@ -100,9 +103,5 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         if (Objects.equals(userService.localUserInfo, userInfo)) {
             binding.callVoiceMic.setSelected(userInfo.mic);
         }
-    }
-
-    public void updateStateText(int stringID) {
-        binding.callStateText.setText(stringID);
     }
 }

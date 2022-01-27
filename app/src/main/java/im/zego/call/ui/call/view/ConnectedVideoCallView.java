@@ -66,19 +66,26 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoCamera.setSelected(localUserInfo.camera);
         binding.callVideoCamera.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-            v.setSelected(!selected);
-            userService.cameraOperate(!selected, errorCode -> {
-
+            userService.enableCamera(!selected, errorCode -> {
+                if (errorCode == 0) {
+                    v.setSelected(!selected);
+                } else {
+                    ToastUtils.showShort(R.string.camera_operate_failed, errorCode);
+                }
             });
         });
         binding.callVideoMic.setSelected(localUserInfo.mic);
         binding.callVideoMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-            v.setSelected(!selected);
-            userService.micOperate(!selected, errorCode -> {
-
+            userService.enableMic(!selected, errorCode -> {
+                if (errorCode == 0) {
+                    v.setSelected(!selected);
+                } else {
+                    ToastUtils.showShort(R.string.mic_operate_failed, errorCode);
+                }
             });
         });
+        binding.callVideoCameraSwitch.setSelected(true);
         binding.callVideoCameraSwitch.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);
@@ -94,12 +101,12 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             isSelfCenter = !isSelfCenter;
             if (isSelfCenter) {
                 binding.callVideoViewSmallName.setText(userInfo.userName);
-                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
-                userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewSmallTexture);
+                userService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                userService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
                 binding.callVideoViewSmallName.setText(R.string.me);
-                userService.startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-                userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewCenterTexture);
+                userService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                userService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
             }
             onUserInfoUpdated(userInfo);
             onUserInfoUpdated(localUserInfo);
@@ -114,12 +121,12 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             if (visibility == View.VISIBLE) {
                 if (isSelfCenter) {
                     userService
-                        .startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
-                    userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewSmallTexture);
+                        .startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                    userService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
                 } else {
                     userService
-                        .startPlayingUserMedia(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-                    userService.startPlayingUserMedia(userInfo.userID, binding.callVideoViewCenterTexture);
+                        .startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                    userService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
                 }
             }
         }

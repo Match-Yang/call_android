@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import im.zego.call.R;
@@ -27,6 +28,7 @@ import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
@@ -43,7 +45,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable cancelCallRunnable = () -> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.cancelCallToUser(userInfo.userID, errorCode -> {
+        userService.cancelCall(ZegoCancelType.TIMEOUT, userInfo.userID, errorCode -> {
             CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
         });
     };
@@ -119,9 +121,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             @Override
             public void onCallStateChanged(int before, int after) {
                 updateUi(after);
-                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) ||
+                boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
                     (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
-                boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_AUDIO) ||
+                boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_VOICE) ||
                     (before == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
                 boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
                     (after == CallStateManager.TYPE_CONNECTED_VIDEO);
@@ -130,16 +132,17 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.postDelayed(timeCountRunnable, 1000);
                     handler.removeCallbacks(cancelCallRunnable);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
-                    updateStateText(R.string.state_canceled);
+                    updateStateText(R.string.call_page_status_canceled);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
-                    updateStateText(R.string.state_complete);
+                    updateStateText(R.string.call_page_status_completed);
+                    ToastUtils.showShort(R.string.call_page_status_completed);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_MISSED) {
-                    updateStateText(R.string.state_missed);
+                    updateStateText(R.string.call_page_status_missed);
                     finishActivityDelayed();
                 } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
-                    updateStateText(R.string.state_declined);
+                    updateStateText(R.string.call_page_status_declined);
                     finishActivityDelayed();
                 }
             }
@@ -150,17 +153,19 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void updateStateText(@StringRes int stringID) {
         binding.layoutOutgoingCall.updateStateText(stringID);
         binding.layoutIncomingCall.updateStateText(stringID);
-        binding.layoutConnectedVoiceCall.updateStateText(stringID);
     }
 
     private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        userService.useFrontCamera(true);
+        userService.speakerOperate(true);
+
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
-        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO) {
-            userService.callToUser(userInfo.userID, ZegoCallType.Audio, token, errorCode -> {
+        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+            userService.callUser(userInfo.userID, ZegoCallType.VOICE, token, errorCode -> {
                 if (errorCode == 0) {
-                    userService.micOperate(true, errorCode1 -> {
+                    userService.enableMic(true, errorCode1 -> {
                         if (errorCode1 == 0) {
                         } else {
                             ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
@@ -168,51 +173,50 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     });
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
-                    showWarnTips(getString(R.string.call_user_failed, errorCode));
+                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
-            userService.callToUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
+            userService.callUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
                 if (errorCode == 0) {
                     TextureView textureView = binding.layoutOutgoingCall.getTextureView();
-                    userService.cameraOperate(true, errorCode1 -> {
+                    userService.enableCamera(true, errorCode1 -> {
                         if (errorCode1 == 0) {
-                            userService.micOperate(true, errorCode2 -> {
+                            userService.enableMic(true, errorCode2 -> {
                                 if (errorCode2 == 0) {
                                 }
                             });
                         } else {
                             ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
                         }
-                        userService.startPlayingUserMedia(userService.localUserInfo.userID, textureView);
+                        userService.startPlaying(userService.localUserInfo.userID, textureView);
                     });
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
-                    showWarnTips(getString(R.string.call_user_failed, errorCode));
+                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
-        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_AUDIO) {
+        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
             handler.postDelayed(timeCountRunnable, 1000);
-            userService.micOperate(true, errorCode -> {
+            userService.enableMic(true, errorCode -> {
                 if (errorCode == 0) {
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
             handler.postDelayed(timeCountRunnable, 1000);
-            userService.micOperate(true, errorCode -> {
+            userService.enableMic(true, errorCode -> {
                 if (errorCode == 0) {
-                    userService.cameraOperate(true, errorCode1 -> {
+                    userService.enableCamera(true, errorCode1 -> {
                         if (errorCode1 == 0) {
                         }
                     });
                 }
             });
         }
-        userService.speakerOperate(true);
     }
 
     private void updateUi(int type) {
@@ -222,13 +226,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         binding.layoutIncomingCall.setUserInfo(userInfo);
         binding.layoutConnectedVoiceCall.setUserInfo(userInfo);
         binding.layoutConnectedVideoCall.setUserInfo(userInfo);
-        int resourceID = AvatarHelper.getResourceIndex(userInfo.userName, true);
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceID);
-        Bitmap blurBitmap = ImageUtils.fastBlur(bitmap, 1f, 25f);
-        binding.callUserBg.setImageBitmap(blurBitmap);
+        int resourceID = AvatarHelper.getBlurResourceID(userInfo.userName);
+        binding.callUserBg.setImageDrawable(ResourceUtils.getDrawable(resourceID));
 
         switch (type) {
-            case CallStateManager.TYPE_INCOMING_CALLING_AUDIO:
+            case CallStateManager.TYPE_INCOMING_CALLING_VOICE:
             case CallStateManager.TYPE_INCOMING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.VISIBLE);
                 binding.layoutOutgoingCall.setVisibility(View.GONE);
@@ -250,7 +252,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.VISIBLE);
                 break;
-            case CallStateManager.TYPE_OUTGOING_CALLING_AUDIO:
+            case CallStateManager.TYPE_OUTGOING_CALLING_VOICE:
             case CallStateManager.TYPE_OUTGOING_CALLING_VIDEO:
                 binding.layoutIncomingCall.setVisibility(View.GONE);
                 binding.layoutOutgoingCall.setVisibility(View.VISIBLE);

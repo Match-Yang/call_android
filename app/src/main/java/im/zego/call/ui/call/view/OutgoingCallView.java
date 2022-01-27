@@ -15,6 +15,7 @@ import im.zego.call.R;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.call.databinding.LayoutOutgoingCallBinding;
+import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
@@ -50,15 +51,16 @@ public class OutgoingCallView extends ConstraintLayout {
         binding = LayoutOutgoingCallBinding.inflate(LayoutInflater.from(getContext()), this);
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         binding.callingHangUp.setOnClickListener(v -> {
-            userService.cancelCallToUser(userInfo.userID, errorCode -> {
+            userService.cancelCall(ZegoCancelType.INTENT, userInfo.userID, errorCode -> {
                 if (errorCode == 0) {
-                    binding.callStateText.setText(R.string.state_canceled);
+                    binding.callStateText.setText(R.string.call_page_status_canceled);
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
                     ToastUtils.showShort(R.string.cancel_call_failed, errorCode);
                 }
             });
         });
+        binding.cameraSwitch.setSelected(true);
         binding.cameraSwitch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,7 +99,7 @@ public class OutgoingCallView extends ConstraintLayout {
     }
 
     private boolean isAudioCall() {
-        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_AUDIO;
+        return typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE;
     }
 
     public TextureView getTextureView() {

@@ -32,20 +32,6 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/call_user_icon" />
 
-  <TextView
-    android:id="@+id/call_state_text"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
-    android:text="@string/calling"
-    android:textColor="#B2FFFFFF"
-    android:textSize="16sp"
-    android:visibility="gone"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/call_user_name" />
-
-
   <ImageView
     android:id="@+id/call_voice_mic"
     android:layout_width="60dp"
