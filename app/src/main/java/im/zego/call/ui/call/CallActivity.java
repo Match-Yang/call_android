@@ -167,7 +167,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.useFrontCamera(true);
+        ZegoRoomManager.getInstance().deviceService.useFrontCamera(true);
         userService.speakerOperate(true);
 
         String userID = userService.localUserInfo.userID;
@@ -200,7 +200,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         } else {
                             ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
                         }
-                        userService.startPlaying(userService.localUserInfo.userID, textureView);
+                        ZegoRoomManager.getInstance().deviceService.playVideoStream(userService.localUserInfo.userID, textureView);
                     });
                     handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {

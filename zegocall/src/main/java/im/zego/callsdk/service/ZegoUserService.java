@@ -59,7 +59,6 @@ public class ZegoUserService {
     private ZegoUserServiceListener listener;
     private ZegoRoomService roomService;
     private static Gson mGson;
-    private Map<String, String> streamMap = new HashMap();
 
     public ZegoUserService() {
         roomService = new ZegoRoomService();
@@ -251,7 +250,7 @@ public class ZegoUserService {
             } else {
                 localUserInfo.mic = micState;
             }
-            ZegoExpressEngine.getEngine().muteMicrophone(!localUserInfo.mic);
+            ZegoRoomManager.getInstance().deviceService.muteMic(!localUserInfo.mic);
             callback.onRoomCallback(errorInfo.code.value());
         });
     }
@@ -282,7 +281,7 @@ public class ZegoUserService {
             } else {
                 localUserInfo.camera = cameraState;
             }
-            ZegoExpressEngine.getEngine().enableCamera(localUserInfo.camera);
+            ZegoRoomManager.getInstance().deviceService.enableCamera(localUserInfo.camera);
             callback.onRoomCallback(errorInfo.code.value());
         });
     }
@@ -355,7 +354,7 @@ public class ZegoUserService {
     void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
         List<ZegoUserInfo> leaveUsers = generateRoomUsers(memberList);
         for (ZegoUserInfo leaveUser : leaveUsers) {
-            stopPlaying(leaveUser.userID);
+            ZegoRoomManager.getInstance().deviceService.stopPlayStream(leaveUser.userID);
             userList.remove(leaveUser);
         }
         Log.d(TAG, "onRoomMemberLeft: " + leaveUsers);
@@ -377,7 +376,7 @@ public class ZegoUserService {
         return roomUsers;
     }
 
-    private String getStreamIDFromUser(String userID) {
+    String getStreamIDFromUser(String userID) {
         String roomID = roomService.roomInfo.roomID;
         return String.format("%s_%s_%s", roomID, userID, "main");
     }
@@ -432,31 +431,6 @@ public class ZegoUserService {
 
     public void speakerOperate(boolean open) {
         ZegoExpressEngine.getEngine().setAudioRouteToSpeaker(open);
-    }
-
-    public void startPlaying(String userID, TextureView textureView) {
-        ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
-        zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
-
-        if (Objects.equals(localUserInfo.userID, userID)) {
-            ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
-            ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
-        } else {
-            ZegoExpressEngine.getEngine().startPlayingStream(getStreamIDFromUser(userID), zegoCanvas);
-        }
-    }
-
-    public void stopPlaying(String userID) {
-        if (Objects.equals(localUserInfo.userID, userID)) {
-            ZegoExpressEngine.getEngine().stopPreview();
-        } else {
-            String streamID = streamMap.get(userID);
-            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
-        }
-    }
-
-    public void useFrontCamera(boolean enable) {
-        ZegoExpressEngine.getEngine().useFrontCamera(enable);
     }
 
     public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
