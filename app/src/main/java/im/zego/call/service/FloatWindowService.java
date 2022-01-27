@@ -53,7 +53,6 @@ public class FloatWindowService extends Service {
         NotificationCompat.Builder builder = new Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.icon_dialog_voice_accept)
             .setContentTitle(context.getString(R.string.app_name))
-            .setContentText("前台服务")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setOngoing(false)

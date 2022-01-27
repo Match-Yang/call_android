@@ -215,5 +215,16 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             loadingDialog.dismiss();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // some brands kill process will not really kill process,
+        // which cause login twice
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        String userID = userService.localUserInfo.userID;
+        userService.logout();
+        CallApi.logout(userID, null);
+    }
 }
 

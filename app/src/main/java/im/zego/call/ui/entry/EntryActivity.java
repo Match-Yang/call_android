@@ -117,10 +117,13 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
-                Log.d(TAG, "onCallReceived() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+                Activity topActivity = ActivityUtils.getTopActivity();
+                Log.d(TAG,
+                    "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], topActivity = [" + topActivity
+                        + "]");
                 boolean needNotification = CallStateManager.getInstance().needNotification();
-                if (needNotification) {
-                    //needNotification means call is happening,reject other calls
+                if (needNotification || topActivity instanceof CallActivity) {
+                    // means call is happening,reject other calls
                     userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
 
                     });
@@ -135,8 +138,6 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 }
                 CallStateManager.getInstance().setCallState(userInfo, state);
 
-                dialog.showReceiveCallWindow();
-
                 //show notification on lock-screen
                 PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 boolean isScreenOff = !powerManager.isInteractive();
@@ -145,10 +146,14 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 if (isScreenOff || (isBackground && !hasOverlayPermission)) {
                     showNotification(userInfo);
                 }
+                dialog.showReceiveCallWindow();
             }
 
             @Override
             public void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType) {
+                Log.d(TAG,
+                    "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
+                        + "]");
                 if (cancelType == ZegoCancelType.INTENT) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
@@ -159,6 +164,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
+                Log.d(TAG, "onReceiveCallResponse() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 if (type == ZegoResponseType.Reject) {
                     userService.endCall(errorCode -> {
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
@@ -178,7 +184,13 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             public void onReceiveCallEnded() {
                 Log.d(TAG, "onEndCallReceived() called");
                 userService.endCall(errorCode -> {
-                    CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
+                    int callState = CallStateManager.getInstance().getCallState();
+                    if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
+                        callState == CallStateManager.TYPE_CONNECTED_VOICE) {
+                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
+                    } else {
+                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_CANCELED);
+                    }
                 });
             }
 
@@ -186,12 +198,16 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
                 if (event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
-                    ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                    String userID = userService.localUserInfo.userID;
-                    userService.logout();
-                    CallApi.logout(userID, null);
-                    MMKV.defaultMMKV().encode("autoLogin", false);
-                    ActivityUtils.finishToActivity(LoginActivity.class, false);
+                    logout();
+                }
+                if (state == ZIMConnectionState.DISCONNECTED) {
+                    logout();
+                } else if (state == ZIMConnectionState.CONNECTED) {
+                    tryReLogin((errorCode, message, response) -> {
+                        if (errorCode != 0) {
+                            logout();
+                        }
+                    });
                 }
             }
         });
@@ -204,18 +220,9 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 // some phone will freeze app when phone is desktop,even if we start foreground service,
                 // such as vivo.
                 // so when app back to foreground, if heartbeat failed,relogin.
-                CallApi.heartBeat(localUserInfo.userID, new IAsyncGetCallback<String>() {
-                    @Override
-                    public void onResponse(int errorCode, @NonNull String message, String response) {
-                        if (errorCode != 0) {
-                            CallApi.login(localUserInfo.userName, localUserInfo.userID,
-                                new IAsyncGetCallback<UserBean>() {
-                                    @Override
-                                    public void onResponse(int errorCode, @NonNull String message, UserBean response) {
-
-                                    }
-                                });
-                        }
+                tryReLogin((errorCode, message, response) -> {
+                    if (errorCode != 0) {
+                        logout();
                     }
                 });
             }
@@ -324,5 +331,37 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     @Override
     public void onBackPressed() {
 
+    }
+
+    private void tryReLogin(IAsyncGetCallback<UserBean> callback) {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        ZegoUserInfo localUserInfo = userService.localUserInfo;
+        CallApi.heartBeat(localUserInfo.userID, new IAsyncGetCallback<String>() {
+            @Override
+            public void onResponse(int errorCode, @NonNull String message, String response) {
+                if (errorCode != 0) {
+                    // means heart failed,relogin to make it success
+                    CallApi.login(localUserInfo.userName, localUserInfo.userID,
+                        new IAsyncGetCallback<UserBean>() {
+                            @Override
+                            public void onResponse(int errorCode, @NonNull String message,
+                                UserBean response) {
+                                if (callback != null) {
+                                    callback.onResponse(errorCode, message, response);
+                                }
+                            }
+                        });
+                }
+            }
+        });
+    }
+
+    private void logout() {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        String userID = userService.localUserInfo.userID;
+        userService.logout();
+        CallApi.logout(userID, null);
+        MMKV.defaultMMKV().encode("autoLogin", false);
+        ActivityUtils.finishToActivity(LoginActivity.class, false);
     }
 }
