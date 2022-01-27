@@ -60,6 +60,7 @@ public class ZegoRoomManager {
      * information and other business logics.
      */
     public ZegoUserService userService;
+    public ZegoDeviceService deviceService;
 
     private static final String TAG = "RoomManager";
 
@@ -75,6 +76,7 @@ public class ZegoRoomManager {
      */
     public void init(long appID, String appSign, Application application) {
         userService = new ZegoUserService();
+        deviceService = new ZegoDeviceService();
 
         ZegoEngineProfile profile = new ZegoEngineProfile();
         profile.appID = appID;
