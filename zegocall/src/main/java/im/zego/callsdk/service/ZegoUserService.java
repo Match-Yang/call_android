@@ -12,12 +12,14 @@ import im.zego.callsdk.model.ZegoCallMessage.ContentBean;
 import im.zego.callsdk.model.ZegoCallMessage.UserInfoBean;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CustomTypeAdapterFactory;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoOrientation;
+import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zegoexpress.constants.ZegoViewMode;
 import im.zego.zegoexpress.entity.ZegoCanvas;
 import im.zego.zim.ZIM;
@@ -468,5 +470,21 @@ public class ZegoUserService {
                 }
             }
         }
+    }
+
+    public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
+        ZegoStreamQualityLevel downstreamQuality) {
+        Log.d(TAG, "onNetworkQuality() called with: userID = [" + userID + "], upstreamQuality = [" + upstreamQuality
+            + "], downstreamQuality = [" + downstreamQuality + "]");
+        ZegoNetWorkQuality quality;
+        if (upstreamQuality == ZegoStreamQualityLevel.EXCELLENT
+            || upstreamQuality == ZegoStreamQualityLevel.GOOD) {
+            quality = ZegoNetWorkQuality.Good;
+        } else if (upstreamQuality == ZegoStreamQualityLevel.MEDIUM) {
+            quality = ZegoNetWorkQuality.Medium;
+        } else {
+            quality = ZegoNetWorkQuality.Bad;
+        }
+        listener.onNetworkQuality(userID,quality);
     }
 }

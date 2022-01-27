@@ -2,6 +2,7 @@ package im.zego.callsdk.listener;
 
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.zim.enums.ZIMConnectionEvent;
@@ -17,10 +18,11 @@ public interface ZegoUserServiceListener {
 
     void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type);
 
-    void onReceiveCallCanceled(ZegoUserInfo userInfo,ZegoCancelType cancelType);
+    void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType);
 
     /**
      * call end because of person decline request
+     *
      * @param userInfo
      * @param type
      */
@@ -40,4 +42,6 @@ public interface ZegoUserServiceListener {
      * @param event refers to the the event that causes the connection status changes.
      */
     void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event);
+
+    void onNetworkQuality(String userID, ZegoNetWorkQuality quality);
 }

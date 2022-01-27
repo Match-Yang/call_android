@@ -9,6 +9,8 @@ import android.content.DialogInterface;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import im.zego.call.R;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
 import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.utils.PermissionHelper;
@@ -37,6 +40,7 @@ public class ReceiveCallDialog {
     private Dialog callDialog;
     private OnReceiveCallViewClickedListener listener;
     private AlertDialog floatPermissionDialog;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     public ReceiveCallDialog() {
         Activity topActivity = ActivityUtils.getTopActivity();
@@ -91,6 +95,14 @@ public class ReceiveCallDialog {
                 }
             }
         });
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                CallStateManager.getInstance().setCallState(getUserInfo(), CallStateManager.TYPE_CALL_MISSED);
+                dismissReceiveCallWindow();
+            }
+        }, 62 * 1000);
     }
 
     public void showReceiveCallWindow() {
@@ -152,7 +164,7 @@ public class ReceiveCallDialog {
     }
 
     public void dismissReceiveCallWindow() {
-        if (callDialog != null && !callDialog.isShowing()) {
+        if (callDialog != null && callDialog.isShowing()) {
             callDialog.dismiss();
         }
         if (isViewAddedToWindow) {

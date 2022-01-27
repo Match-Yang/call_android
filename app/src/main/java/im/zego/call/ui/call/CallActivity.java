@@ -5,8 +5,6 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.WindowManager;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
@@ -26,12 +23,16 @@ import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityCallBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
+import im.zego.call.ui.common.LoadingDialog;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
+import im.zego.zim.enums.ZIMConnectionEvent;
+import im.zego.zim.enums.ZIMConnectionState;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -43,11 +44,14 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private ZegoUserInfo userInfo;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable cancelCallRunnable = () -> {
+    private Runnable missCallRunnable = () -> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.cancelCall(ZegoCancelType.TIMEOUT, userInfo.userID, errorCode -> {
             CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
         });
+    };
+    private Runnable finishRunnable = () -> {
+        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
     };
     private Runnable timeCountRunnable = new Runnable() {
         @Override
@@ -61,6 +65,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private long time;
     private CallStateChangedListener callStateChangedListener;
+    private LoadingDialog loadingDialog;
 
     public static void startCallActivity(ZegoUserInfo userInfo) {
         Log.d(TAG, "startCallActivity() called with: userInfo = [" + userInfo + "]");
@@ -130,7 +135,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 if ((beforeIsOutgoing || beforeIsInComing) && afterIsAccept) {
                     time = 0;
                     handler.postDelayed(timeCountRunnable, 1000);
-                    handler.removeCallbacks(cancelCallRunnable);
+                    handler.removeCallbacks(missCallRunnable);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
                     updateStateText(R.string.call_page_status_canceled);
                     finishActivityDelayed();
@@ -171,7 +176,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                             ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
                         }
                     });
-                    handler.postDelayed(cancelCallRunnable, 60 * 1000);
+                    handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
@@ -192,14 +197,16 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         }
                         userService.startPlaying(userService.localUserInfo.userID, textureView);
                     });
-                    handler.postDelayed(cancelCallRunnable, 60 * 1000);
+                    handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
+            handler.postDelayed(finishRunnable, 62 * 1000);
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
+            handler.postDelayed(finishRunnable, 62 * 1000);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.enableMic(true, errorCode -> {
@@ -289,5 +296,37 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         binding.layoutOutgoingCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVideoCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVoiceCall.onUserInfoUpdated(userInfo);
+    }
+
+    public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
+        if (quality == ZegoNetWorkQuality.Bad) {
+            binding.callNetState.setVisibility(View.VISIBLE);
+        } else {
+            binding.callNetState.setVisibility(View.GONE);
+        }
+    }
+
+    private void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = new LoadingDialog(this);
+            loadingDialog.setLoadingText(getString(R.string.call_page_call_disconnected));
+        }
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    private void dismissLoading() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+        }
+    }
+
+    public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
+        if (state == ZIMConnectionState.CONNECTED) {
+            dismissLoading();
+        } else {
+            showLoading();
+        }
     }
 }

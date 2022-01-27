@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.call.R;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.LoginActivity;
 
 public class FloatWindowService extends Service {
@@ -66,6 +67,7 @@ public class FloatWindowService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
+        CallStateManager.getInstance().setCallState(null,CallStateManager.TYPE_NO_CALL);
         Log.d(TAG, "onDestroy() called");
     }
 

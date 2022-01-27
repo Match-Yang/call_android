@@ -4,10 +4,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
 import androidx.annotation.NonNull;
 import im.zego.call.databinding.LayoutDialogLoadingBinding;
 
 public class LoadingDialog extends Dialog {
+
     private LayoutDialogLoadingBinding binding;
 
     public LoadingDialog(@NonNull Context context) {
@@ -25,6 +28,16 @@ public class LoadingDialog extends Dialog {
         setContentView(binding.getRoot());
         setCanceledOnTouchOutside(false);
         setCancelable(false);
-        getWindow().setBackgroundDrawable(new ColorDrawable());
+        Window window = getWindow();
+        window.setBackgroundDrawable(new ColorDrawable());
+        window.setDimAmount(0f);
+    }
+
+    public void setProgressVisibility(boolean visible) {
+        binding.progress.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    public void setLoadingText(String text) {
+        binding.content.setText(text);
     }
 }
