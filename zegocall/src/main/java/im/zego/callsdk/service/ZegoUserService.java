@@ -429,7 +429,7 @@ public class ZegoUserService {
     }
 
     public void speakerOperate(boolean open) {
-        ZegoExpressEngine.getEngine().muteSpeaker(!open);
+        ZegoExpressEngine.getEngine().setAudioRouteToSpeaker(open);
     }
 
     public void startPlaying(String userID, TextureView textureView) {

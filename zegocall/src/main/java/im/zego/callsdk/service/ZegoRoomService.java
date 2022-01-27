@@ -4,7 +4,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoRoomCallback;
-import im.zego.callsdk.listener.ZegoRoomServiceListener;
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 
 public class ZegoRoomService {
 
-    private ZegoRoomServiceListener listener;
     public ZegoRoomInfo roomInfo = new ZegoRoomInfo();
 
     public static final String KEY_ROOM_INFO = "room_info";
@@ -89,10 +87,6 @@ public class ZegoRoomService {
         roomConfig.token = token;
         ZegoExpressEngine.getEngine().loginRoom(roomID, user, roomConfig);
         ZegoExpressEngine.getEngine().startSoundLevelMonitor(500);
-    }
-
-    public void setListener(ZegoRoomServiceListener listener) {
-        this.listener = listener;
     }
 
     public void updateRoomInfo(ZegoRoomInfo roomInfo) {

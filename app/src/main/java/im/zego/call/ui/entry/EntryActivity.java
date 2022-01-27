@@ -138,8 +138,6 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 }
                 CallStateManager.getInstance().setCallState(userInfo, state);
 
-                dialog.showReceiveCallWindow();
-
                 //show notification on lock-screen
                 PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 boolean isScreenOff = !powerManager.isInteractive();
@@ -148,6 +146,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 if (isScreenOff || (isBackground && !hasOverlayPermission)) {
                     showNotification(userInfo);
                 }
+                dialog.showReceiveCallWindow();
             }
 
             @Override
@@ -199,14 +198,16 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
                 if (event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
+                    logout();
                 }
                 if (state == ZIMConnectionState.DISCONNECTED) {
-                    ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                    String userID = userService.localUserInfo.userID;
-                    userService.logout();
-                    CallApi.logout(userID, null);
-                    MMKV.defaultMMKV().encode("autoLogin", false);
-                    ActivityUtils.finishToActivity(LoginActivity.class, false);
+                    logout();
+                } else if (state == ZIMConnectionState.CONNECTED) {
+                    tryReLogin((errorCode, message, response) -> {
+                        if (errorCode != 0) {
+                            logout();
+                        }
+                    });
                 }
             }
         });
@@ -219,18 +220,9 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 // some phone will freeze app when phone is desktop,even if we start foreground service,
                 // such as vivo.
                 // so when app back to foreground, if heartbeat failed,relogin.
-                CallApi.heartBeat(localUserInfo.userID, new IAsyncGetCallback<String>() {
-                    @Override
-                    public void onResponse(int errorCode, @NonNull String message, String response) {
-                        if (errorCode != 0) {
-                            CallApi.login(localUserInfo.userName, localUserInfo.userID,
-                                new IAsyncGetCallback<UserBean>() {
-                                    @Override
-                                    public void onResponse(int errorCode, @NonNull String message, UserBean response) {
-
-                                    }
-                                });
-                        }
+                tryReLogin((errorCode, message, response) -> {
+                    if (errorCode != 0) {
+                        logout();
                     }
                 });
             }
@@ -339,5 +331,37 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     @Override
     public void onBackPressed() {
 
+    }
+
+    private void tryReLogin(IAsyncGetCallback<UserBean> callback) {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        ZegoUserInfo localUserInfo = userService.localUserInfo;
+        CallApi.heartBeat(localUserInfo.userID, new IAsyncGetCallback<String>() {
+            @Override
+            public void onResponse(int errorCode, @NonNull String message, String response) {
+                if (errorCode != 0) {
+                    // means heart failed,relogin to make it success
+                    CallApi.login(localUserInfo.userName, localUserInfo.userID,
+                        new IAsyncGetCallback<UserBean>() {
+                            @Override
+                            public void onResponse(int errorCode, @NonNull String message,
+                                UserBean response) {
+                                if (callback != null) {
+                                    callback.onResponse(errorCode, message, response);
+                                }
+                            }
+                        });
+                }
+            }
+        });
+    }
+
+    private void logout() {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        String userID = userService.localUserInfo.userID;
+        userService.logout();
+        CallApi.logout(userID, null);
+        MMKV.defaultMMKV().encode("autoLogin", false);
+        ActivityUtils.finishToActivity(LoginActivity.class, false);
     }
 }
