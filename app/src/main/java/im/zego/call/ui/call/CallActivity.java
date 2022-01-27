@@ -57,7 +57,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         @Override
         public void run() {
             time++;
-            String timeFormat = String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60);
+            String timeFormat;
+            if (time / 3600 > 0) {
+                timeFormat = String.format(Locale.getDefault(), "%02d:%02d:%02d", time / 3600, time / 60 - 60 * (time / 3600), time % 60);
+            } else {
+                timeFormat = String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60);
+            }
             binding.callTime.setText(timeFormat);
             handler.postDelayed(timeCountRunnable, 1000);
         }
