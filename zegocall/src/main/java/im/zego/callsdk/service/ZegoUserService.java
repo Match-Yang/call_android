@@ -98,10 +98,12 @@ public class ZegoUserService {
     }
 
     public void callUser(String userID, ZegoCallType callType, String createRoomToken, ZegoRoomCallback callback) {
+        Log.d(TAG,
+            "callUser() called with: userID = [" + userID + "], callType = [" + callType + "], createRoomToken = ["
+                + createRoomToken + "], callback = [" + callback + "]");
         if (localUserInfo != null) {
             String roomID = localUserInfo.userID;
             roomService.createRoom(roomID, localUserInfo.userName, createRoomToken, errorCode -> {
-                Log.d(TAG, "createRoom: " + errorCode + ",roomID:" + roomID);
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     ZegoCallMessage callMessage = new ZegoCallMessage();
                     callMessage.actionType = ZegoCallMessage.CALL;
@@ -131,6 +133,9 @@ public class ZegoUserService {
     }
 
     public void cancelCall(ZegoCancelType cancelType, String userID, ZegoRoomCallback callback) {
+        Log.d(TAG,
+            "cancelCall() called with: cancelType = [" + cancelType + "], userID = [" + userID + "], callback = ["
+                + callback + "]");
         if (localUserInfo != null) {
             ZegoCallMessage callMessage = new ZegoCallMessage();
             callMessage.actionType = ZegoCallMessage.CANCEL_CALL;
@@ -158,6 +163,8 @@ public class ZegoUserService {
     }
 
     public void respondCall(ZegoResponseType type, String userID, String joinRoomToken, ZegoRoomCallback callback) {
+        Log.d(TAG, "respondCall() called with: type = [" + type + "], userID = [" + userID + "], joinRoomToken = ["
+            + joinRoomToken + "], callback = [" + callback + "]");
         if (localUserInfo != null) {
             if (type == ZegoResponseType.Accept) {
                 roomService.joinRoom(userID, joinRoomToken, errorCode -> {
@@ -452,10 +459,13 @@ public class ZegoUserService {
 
     public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
         String roomID) {
-        if (state == ZIMRoomState.DISCONNECTED) {
-            roomService.leaveRoom(null);
-            if (listener != null) {
-                listener.onReceiveCallEnded();
+        // not user call leave api
+        if (event != ZIMRoomEvent.SUCCESS) {
+            if (state == ZIMRoomState.DISCONNECTED) {
+                roomService.leaveRoom(null);
+                if (listener != null) {
+                    listener.onReceiveCallEnded();
+                }
             }
         }
     }

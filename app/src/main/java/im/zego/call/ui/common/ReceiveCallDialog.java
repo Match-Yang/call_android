@@ -152,7 +152,7 @@ public class ReceiveCallDialog {
     }
 
     public void dismissReceiveCallWindow() {
-        if (callDialog != null) {
+        if (callDialog != null && !callDialog.isShowing()) {
             callDialog.dismiss();
         }
         if (isViewAddedToWindow) {
@@ -193,7 +193,7 @@ public class ReceiveCallDialog {
             setCancelable(false);
             setContentView(view);
 
-            view.measure(0,0);
+            view.measure(0, 0);
 
             Window window = getWindow();
             WindowManager.LayoutParams lp = window.getAttributes();

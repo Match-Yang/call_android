@@ -117,10 +117,13 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
-                Log.d(TAG, "onCallReceived() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+                Activity topActivity = ActivityUtils.getTopActivity();
+                Log.d(TAG,
+                    "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], topActivity = [" + topActivity
+                        + "]");
                 boolean needNotification = CallStateManager.getInstance().needNotification();
-                if (needNotification) {
-                    //needNotification means call is happening,reject other calls
+                if (needNotification || topActivity instanceof CallActivity) {
+                    // means call is happening,reject other calls
                     userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
 
                     });
@@ -149,6 +152,9 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType) {
+                Log.d(TAG,
+                    "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
+                        + "]");
                 if (cancelType == ZegoCancelType.INTENT) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
@@ -159,6 +165,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
+                Log.d(TAG, "onReceiveCallResponse() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 if (type == ZegoResponseType.Reject) {
                     userService.endCall(errorCode -> {
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
@@ -178,7 +185,13 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             public void onReceiveCallEnded() {
                 Log.d(TAG, "onEndCallReceived() called");
                 userService.endCall(errorCode -> {
-                    CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
+                    int callState = CallStateManager.getInstance().getCallState();
+                    if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
+                        callState == CallStateManager.TYPE_CONNECTED_VOICE) {
+                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
+                    } else {
+                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_CANCELED);
+                    }
                 });
             }
 
@@ -186,6 +199,8 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
                 if (event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
+                }
+                if (state == ZIMConnectionState.DISCONNECTED) {
                     ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                     String userID = userService.localUserInfo.userID;
                     userService.logout();
