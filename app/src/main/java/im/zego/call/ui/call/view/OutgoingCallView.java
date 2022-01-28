@@ -66,7 +66,7 @@ public class OutgoingCallView extends ConstraintLayout {
             public void onClick(View v) {
                 boolean selected = v.isSelected();
                 v.setSelected(!selected);
-                ZegoRoomManager.getInstance().deviceService.useFrontCamera(selected);
+                userService.useFrontCamera(selected);
             }
         });
     }

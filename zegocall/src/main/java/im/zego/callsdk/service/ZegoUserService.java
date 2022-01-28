@@ -68,6 +68,7 @@ public class ZegoUserService {
     private ZegoUserServiceListener listener;
     private ZegoRoomService roomService;
     private static Gson mGson;
+    private Map<String, String> streamMap = new HashMap();
 
     public ZegoUserService() {
         roomService = new ZegoRoomService();
@@ -327,7 +328,7 @@ public class ZegoUserService {
             } else {
                 localUserInfo.mic = micState;
             }
-            ZegoRoomManager.getInstance().deviceService.muteMic(!localUserInfo.mic);
+            ZegoExpressEngine.getEngine().muteMicrophone(!localUserInfo.mic);
             callback.onRoomCallback(errorInfo.code.value());
         });
     }
@@ -368,7 +369,7 @@ public class ZegoUserService {
             } else {
                 localUserInfo.camera = cameraState;
             }
-            ZegoRoomManager.getInstance().deviceService.enableCamera(localUserInfo.camera);
+            ZegoExpressEngine.getEngine().enableCamera(localUserInfo.camera);
             callback.onRoomCallback(errorInfo.code.value());
         });
     }
@@ -441,7 +442,7 @@ public class ZegoUserService {
     void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
         List<ZegoUserInfo> leaveUsers = generateRoomUsers(memberList);
         for (ZegoUserInfo leaveUser : leaveUsers) {
-            ZegoRoomManager.getInstance().deviceService.stopPlayStream(leaveUser.userID);
+            stopPlaying(leaveUser.userID);
             userList.remove(leaveUser);
         }
         Log.d(TAG, "onRoomMemberLeft: " + leaveUsers);
@@ -463,7 +464,7 @@ public class ZegoUserService {
         return roomUsers;
     }
 
-    String getStreamIDFromUser(String userID) {
+    private String getStreamIDFromUser(String userID) {
         String roomID = roomService.roomInfo.roomID;
         return String.format("%s_%s_%s", roomID, userID, "main");
     }
@@ -518,6 +519,50 @@ public class ZegoUserService {
 
     public void speakerOperate(boolean open) {
         ZegoExpressEngine.getEngine().setAudioRouteToSpeaker(open);
+    }
+
+    /**
+     * Playback video streams data
+     * <p>
+     * Description: This can be used to intuitively play the video stream data, the audio stream data is played by default.
+     * Call this method at: After joining a room
+     *
+     * @param userID      refers to the ID of the user you want to play the video streams from.
+     * @param textureView refers to the target view that you want to be rendered.
+     */
+    public void startPlaying(String userID, TextureView textureView) {
+        ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
+        zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
+
+        if (Objects.equals(localUserInfo.userID, userID)) {
+            ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
+            ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
+        } else {
+            ZegoExpressEngine.getEngine().startPlayingStream(getStreamIDFromUser(userID), zegoCanvas);
+        }
+    }
+
+    private void stopPlaying(String userID) {
+        if (Objects.equals(localUserInfo.userID, userID)) {
+            ZegoExpressEngine.getEngine().stopPreview();
+        } else {
+            String streamID = streamMap.get(userID);
+            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
+        }
+    }
+
+    /**
+     * Use front-facing and rear camera
+     * <p>
+     * Description: This method can be used to set the camera, the SDK uses the front-facing camera by default.
+     * <p>
+     * Call this method at: After joining a room
+     *
+     * @param isFront determines whether to use the front-facing camera or the rear camera.
+     *                true: Use front-facing camera. false: Use rear camera.
+     */
+    public void useFrontCamera(boolean isFront) {
+        ZegoExpressEngine.getEngine().useFrontCamera(isFront);
     }
 
     public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
