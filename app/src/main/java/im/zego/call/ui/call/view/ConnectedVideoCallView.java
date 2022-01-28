@@ -103,12 +103,12 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             isSelfCenter = !isSelfCenter;
             if (isSelfCenter) {
                 binding.callVideoViewSmallName.setText(userInfo.userName);
-                deviceService.playVideoStream(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
-                deviceService.playVideoStream(userInfo.userID, binding.callVideoViewSmallTexture);
+                deviceService.startPlayStream(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                deviceService.startPlayStream(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
                 binding.callVideoViewSmallName.setText(R.string.me);
-                deviceService.playVideoStream(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-                deviceService.playVideoStream(userInfo.userID, binding.callVideoViewCenterTexture);
+                deviceService.startPlayStream(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                deviceService.startPlayStream(userInfo.userID, binding.callVideoViewCenterTexture);
             }
             onUserInfoUpdated(userInfo);
             onUserInfoUpdated(localUserInfo);
@@ -123,11 +123,11 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             ZegoDeviceService deviceService = ZegoRoomManager.getInstance().deviceService;
             if (visibility == View.VISIBLE) {
                 if (isSelfCenter) {
-                    deviceService.playVideoStream(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
-                    deviceService.playVideoStream(userInfo.userID, binding.callVideoViewSmallTexture);
+                    deviceService.startPlayStream(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                    deviceService.startPlayStream(userInfo.userID, binding.callVideoViewSmallTexture);
                 } else {
-                    deviceService.playVideoStream(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-                    deviceService.playVideoStream(userInfo.userID, binding.callVideoViewCenterTexture);
+                    deviceService.startPlayStream(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                    deviceService.startPlayStream(userInfo.userID, binding.callVideoViewCenterTexture);
                 }
             }
         }

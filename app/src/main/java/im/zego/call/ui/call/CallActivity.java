@@ -200,7 +200,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         } else {
                             ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
                         }
-                        ZegoRoomManager.getInstance().deviceService.playVideoStream(userService.localUserInfo.userID, textureView);
+                        ZegoRoomManager.getInstance().deviceService.startPlayStream(userService.localUserInfo.userID, textureView);
                     });
                     handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {
