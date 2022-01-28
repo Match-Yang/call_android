@@ -84,7 +84,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         if (changedView == this) {
             ZegoUserService userService = ZegoRoomManager.getInstance().userService;
             if (visibility == View.VISIBLE) {
-                ZegoRoomManager.getInstance().deviceService.startPlayStream(userInfo.userID, null);
+                userService.startPlaying(userInfo.userID, null);
             }
         }
     }
