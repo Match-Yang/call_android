@@ -47,11 +47,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private Runnable missCallRunnable = () -> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.cancelCall(ZegoCancelType.TIMEOUT, userInfo.userID, errorCode -> {
-            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
+            CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
         });
     };
     private Runnable finishRunnable = () -> {
-        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
+        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
     };
     private Runnable timeCountRunnable = new Runnable() {
         @Override

@@ -5,13 +5,10 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Person;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -36,7 +33,6 @@ import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
-import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.call.ui.common.ReceiveCallDialog;
 import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
 import im.zego.call.ui.login.LoginActivity;
@@ -123,8 +119,8 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 Log.d(TAG,
                     "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], topActivity = [" + topActivity
                         + "]");
-                boolean needNotification = CallStateManager.getInstance().needNotification();
-                if (needNotification || topActivity instanceof CallActivity) {
+                boolean inACallStream = CallStateManager.getInstance().isInACallStream();
+                if (inACallStream || topActivity instanceof CallActivity) {
                     // means call is happening,reject other calls
                     userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
 
@@ -156,6 +152,11 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 Log.d(TAG,
                     "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
                         + "]");
+                boolean connected = CallStateManager.getInstance().isConnected();
+                ZegoUserInfo userInfo1 = CallStateManager.getInstance().getUserInfo();
+                if (connected && userInfo1 != userInfo) {
+                    return;
+                }
                 if (cancelType == ZegoCancelType.INTENT) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 } else {
@@ -167,6 +168,11 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             @Override
             public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
                 Log.d(TAG, "onReceiveCallResponse() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+                boolean connected = CallStateManager.getInstance().isConnected();
+                ZegoUserInfo userInfo1 = CallStateManager.getInstance().getUserInfo();
+                if (connected && userInfo1 != userInfo) {
+                    return;
+                }
                 if (type == ZegoResponseType.Reject) {
                     userService.endCall(errorCode -> {
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
@@ -255,7 +261,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onBackground(Activity activity) {
-                boolean needNotification = CallStateManager.getInstance().needNotification();
+                boolean needNotification = CallStateManager.getInstance().isInACallStream();
                 ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
                 if (needNotification && userInfo != null) {
                     showNotification(userInfo);
@@ -388,7 +394,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         String userID = userService.localUserInfo.userID;
         userService.logout();
         CallApi.logout(userID, null);
-        CallStateManager.getInstance().setCallState(null,CallStateManager.TYPE_NO_CALL);
+        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
         MMKV.defaultMMKV().encode("autoLogin", false);
         ActivityUtils.finishToActivity(LoginActivity.class, false);
     }
