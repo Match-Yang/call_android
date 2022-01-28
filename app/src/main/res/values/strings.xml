@@ -1,7 +1,7 @@
 <resources>
   <string name="app_name">ZEGO Call</string>
   <string name="login_page_title">Welcome to experience \n ZEGO Call</string>
-  <string name="login_page_user_name">Please enter your user name</string>
+  <string name="login_page_user_name">Please enter your username</string>
   <string name="login_page_login">Log in</string>
   <string name="toast_login_fail">Failed to log in. Error code: %d.</string>
   <string name="login_page_input_user_name_tip">Username can only contain letters and numbers.</string>
@@ -9,7 +9,7 @@
   <string name="setting_page_sdk_version">Express SDK Version</string>
   <string name="setting_page_zim_sdk_version">ZIM SDK Version</string>
   <string name="setting_page_version">App Version</string>
-  <string name="setting_page_terms_of_service">Terms of service</string>
+  <string name="setting_page_terms_of_service">Terms of Use</string>
   <string name="setting_page_privacy_policy">Privacy Policy</string>
   <string name="setting_page_upload_log">Upload Logs</string>
   <string name="toast_upload_log_success">Logs uploaded successfully.</string>

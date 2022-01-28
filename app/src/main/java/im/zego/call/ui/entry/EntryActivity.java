@@ -163,6 +163,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
                 }
                 dialog.dismissReceiveCallWindow();
+                dismissNotification(notificationId);
             }
 
             @Override
@@ -248,7 +249,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         AppUtils.registerAppStatusChangedListener(new OnAppStatusChangedListener() {
             @Override
             public void onForeground(Activity activity) {
-                dismissNotification(EntryActivity.this, notificationId);
+                dismissNotification(notificationId);
                 // some phone will freeze app when phone is desktop,even if we start foreground service,
                 // such as vivo.
                 // so when app back to foreground, if heartbeat failed,relogin.
@@ -271,17 +272,17 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         dialog.setListener(new OnReceiveCallViewClickedListener() {
             @Override
             public void onAcceptAudioClicked() {
-                dismissNotification(EntryActivity.this, notificationId);
+                dismissNotification(notificationId);
             }
 
             @Override
             public void onAcceptVideoClicked() {
-                dismissNotification(EntryActivity.this, notificationId);
+                dismissNotification(notificationId);
             }
 
             @Override
             public void onDeclineClicked() {
-                dismissNotification(EntryActivity.this, notificationId);
+                dismissNotification(notificationId);
             }
 
             @Override
@@ -347,8 +348,8 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         notificationManager.notify(notificationId, build);
     }
 
-    void dismissNotification(Context context, int notificationId) {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+    void dismissNotification(int notificationId) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancel(notificationId);
     }
 

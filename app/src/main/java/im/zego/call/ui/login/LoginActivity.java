@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.mmkv.MMKV;
@@ -22,7 +21,6 @@ import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityLoginBinding;
 import im.zego.call.http.CallApi;
 import im.zego.call.http.IAsyncGetCallback;
-import im.zego.call.http.WebClientManager;
 import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
@@ -45,7 +43,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(TAG, "onCreate() called with: isTaskRoot() = [" + isTaskRoot() + "]");
         if (!isTaskRoot()) {
             finish();
             return;
@@ -89,6 +87,8 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
         MMKV kv = MMKV.defaultMMKV();
         String userName = kv.decodeString("userName");
+        Log.d(TAG, "onCreate() called with: userName = [" + kv.decodeString("userName") + "],autoLogin:" + (kv
+            .decodeBool("autoLogin")));
         if (TextUtils.isEmpty(userName)) {
             int nextInt = Math.abs(new Random().nextInt(100));
             String manufacturer = DeviceUtils.getManufacturer();
