@@ -14,10 +14,32 @@ import im.zego.zim.enums.ZIMConnectionState;
  */
 public interface ZegoUserServiceListener {
 
+    /**
+     * Callback for changes on user state
+     * <p>
+     * Description: This callback will be triggered when the state of the user's microphone/camera changes.
+     *
+     * @param userInfo refers to the changes on user state information
+     */
     void onUserInfoUpdated(ZegoUserInfo userInfo);
 
+    /**
+     * Callback for receive an incoming call
+     * <p>
+     * Description: This callback will be triggered when receiving an incoming call.
+     *
+     * @param userInfo refers to the caller information.
+     * @param type     indicates the call type.  ZegoCallTypeVoice: Voice call.  ZegoCallTypeVideo: Video call.
+     */
     void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type);
 
+    /**
+     * Callback for receive a canceled call
+     * <p>
+     * Description: This callback will be triggered when the caller cancel the outbound call.
+     *
+     * @param userInfo refers to the caller information.
+     */
     void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType);
 
     /**
