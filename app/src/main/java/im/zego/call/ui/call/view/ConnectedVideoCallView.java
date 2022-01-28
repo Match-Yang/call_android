@@ -93,7 +93,6 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             v.setSelected(!selected);
             ZegoRoomManager.getInstance().deviceService.useFrontCamera(!selected);
         });
-        binding.callVideoSpeaker.setSelected(true);
         binding.callVideoSpeaker.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);

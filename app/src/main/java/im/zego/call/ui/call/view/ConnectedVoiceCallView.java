@@ -71,7 +71,6 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
                 }
             });
         });
-        binding.callVoiceSpeaker.setSelected(true);
         binding.callVoiceSpeaker.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);
