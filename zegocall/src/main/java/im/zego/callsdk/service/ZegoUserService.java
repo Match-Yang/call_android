@@ -48,14 +48,23 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import org.json.JSONObject;
 
+/**
+ * Class user information management
+ * <p>
+ * Description: This class contains the user information management logic,
+ * such as the logic of log in, log out, get the logged-in user info, get the in-room user list, and add co-hosts, etc.
+ */
 public class ZegoUserService {
 
+    // The local logged-in user information.
     public ZegoUserInfo localUserInfo;
 
+    // In-room user list, can be used when displaying the user list in the room.
     private List<ZegoUserInfo> userList;
 
     private static final String TAG = "UserService";
 
+    // The listener related to user status
     private ZegoUserServiceListener listener;
     private ZegoRoomService roomService;
     private static Gson mGson;
@@ -68,6 +77,17 @@ public class ZegoUserService {
         userList = new ArrayList<>();
     }
 
+    /**
+     * User to log in
+     * <p>
+     * Description: Call this method with user ID and username to log in to the LiveAudioRoom service.
+     * <p>
+     * Call this method at: After the SDK initialization
+     *
+     * @param userInfo refers to the user information. You only need to enter the user ID and username.
+     * @param token    refers to the authentication token. To get this, refer to the documentation: https://doc-en.zego.im/article/11648
+     * @param callback refers to the callback for log in.
+     */
     public void login(ZegoUserInfo userInfo, String token, ZegoRoomCallback callback) {
         ZIMUserInfo zimUserInfo = new ZIMUserInfo();
         zimUserInfo.userID = userInfo.userID;
@@ -87,7 +107,13 @@ public class ZegoUserService {
         });
     }
 
-    // user logout
+    /**
+     * User to log out
+     * <p>
+     * Description: This method can be used to log out from the current user account.
+     * <p>
+     * Call this method at: After the user login
+     */
     public void logout() {
         Log.d(TAG, "logout() called");
         ZegoZIMManager.getInstance().zim.logout();
@@ -98,6 +124,17 @@ public class ZegoUserService {
         userList.clear();
     }
 
+    /**
+     * Make an outbound call
+     * <p>
+     * Description: This method can be used to initiate a call to a online user. The called user receives a notification once this method gets called. And if the call is not answered in 60 seconds, you will need to call a method to cancel the call.
+     * <p>
+     * Call this method at: After the user login
+     *
+     * @param userID   refers to the ID of the user you want call.
+     * @param callType refers to the call type.  ZegoCallTypeVoice: Voice call.  ZegoCallTypeVideo: Video call.
+     * @param callback refers to the callback for make a outbound call.
+     */
     public void callUser(String userID, ZegoCallType callType, String createRoomToken, ZegoRoomCallback callback) {
         Log.d(TAG,
             "callUser() called with: userID = [" + userID + "], callType = [" + callType + "], createRoomToken = ["
@@ -133,6 +170,16 @@ public class ZegoUserService {
         }
     }
 
+    /**
+     * Cancel a call
+     * <p>
+     * Description: This method can be used to cancel a call. And the called user receives a notification through callback that the call has been canceled.
+     * <p>
+     * Call this method at: After the user login
+     *
+     * @param userID     refers to the ID of the user you are calling.
+     * @param cancelType
+     */
     public void cancelCall(ZegoCancelType cancelType, String userID, ZegoRoomCallback callback) {
         Log.d(TAG,
             "cancelCall() called with: cancelType = [" + cancelType + "], userID = [" + userID + "], callback = ["
@@ -163,6 +210,17 @@ public class ZegoUserService {
         }
     }
 
+    /**
+     * Respond to an incoming call
+     * <p>
+     * Description: This method can be used to accept or decline an incoming call. You will need to call this method to respond to the call within 60 seconds upon receiving.
+     * <p>
+     * Call this method at: After the user login
+     *
+     * @param type     refers to the answer of the incoming call.  ZegoResponseTypeAccept: Accept. ZegoResponseTypeDecline: Decline.
+     * @param userID   refers to the ID of the caller.
+     * @param callback refers to the callback for respond to an incoming call.
+     */
     public void respondCall(ZegoResponseType type, String userID, String joinRoomToken, ZegoRoomCallback callback) {
         Log.d(TAG, "respondCall() called with: type = [" + type + "], userID = [" + userID + "], joinRoomToken = ["
             + joinRoomToken + "], callback = [" + callback + "]");
@@ -215,6 +273,15 @@ public class ZegoUserService {
         });
     }
 
+    /**
+     * End a call
+     * <p>
+     * Description: This method can be used to end a call. After the call is ended, both the caller and called user will be logged out from the room, and the stream publishing and playing stop upon ending.
+     * <p>
+     * Call this method at: After the user login
+     *
+     * @param callback refers to the callback for end a call.
+     */
     public void endCall(ZegoRoomCallback callback) {
         Log.d(TAG, "endCall() called with: callback = [" + callback + "]");
         roomService.leaveRoom(errorCode -> {
@@ -224,6 +291,16 @@ public class ZegoUserService {
         });
     }
 
+    /**
+     * Microphone related operation
+     * <p>
+     * Description: This method can be used to enable and disable the microphone. When the microphone is enabled, the SDK automatically publishes audio streams to remote users. When the microphone is disabled, the audio stream publishing stops automatically.
+     * <p>
+     * Call this method at: After the call is connected
+     *
+     * @param enable   indicates whether to enable or disable the microphone. true: Enable. false: Disable.
+     * @param callback refers to the callback for enable or disable the microphone.
+     */
     public void enableMic(boolean enable, ZegoRoomCallback callback) {
         boolean micState = localUserInfo.mic;
         if (micState == enable) {
@@ -255,6 +332,16 @@ public class ZegoUserService {
         });
     }
 
+    /**
+     * Camera related operation
+     * <p>
+     * Description: This method can be used to enable and disable the camera. When the camera is enabled, the SDK automatically publishes video streams to remote users. When the camera is disabled, the video stream publishing stops automatically.
+     * <p>
+     * Call this method at:  After the call is connected
+     *
+     * @param open     indicates whether to enable or disable the camera. true: Enable. false: Disable.
+     * @param callback refers to the callback for enable or disable the camera.
+     */
     public void enableCamera(boolean open, ZegoRoomCallback callback) {
         boolean cameraState = localUserInfo.camera;
         if (cameraState == open) {
