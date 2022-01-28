@@ -5,7 +5,7 @@
   android:layout_height="match_parent">
 
   <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="85dp"
+    android:layout_width="wrap_content"
     android:layout_height="82dp"
     android:background="@drawable/round_rect_bg_loading">
 
@@ -13,6 +13,8 @@
       android:id="@+id/progress"
       android:layout_width="29dp"
       android:layout_height="29dp"
+      android:layout_marginStart="28dp"
+      android:layout_marginEnd="28dp"
       android:layout_marginBottom="4dp"
       android:indeterminateBehavior="repeat"
       android:indeterminateDrawable="@drawable/progress_bar"
@@ -26,7 +28,9 @@
       android:id="@+id/content"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginStart="4dp"
       android:layout_marginTop="4dp"
+      android:layout_marginEnd="4dp"
       android:gravity="center"
       android:text="@string/loading"
       android:textColor="@android:color/white"

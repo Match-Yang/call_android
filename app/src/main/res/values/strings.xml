@@ -51,11 +51,12 @@
   <string name="request_call_notification">You are calling %s. Tap here to check.</string>
   <string name="call_page_call_fail">Call failed. Error code: %d.</string>
   <string name="call_page_call_quality_poor">Poor call quality...</string>
+  <string name="call_page_call_disconnected">The call has dropped. Please wait.</string>
   <string name="mic_operate_failed">enable micPhone failed,errorCode: %d</string>
   <string name="camera_operate_failed">enable camera failed,errorCode: %d</string>
   <string name="cancel_call_failed">cancel call Failed,errorCode:%d</string>
   <string name="end_call_failed">End call Failed,errorCode:%d</string>
-  <string name="me">me</string>
+  <string name="me">Me</string>
   <string name="loading">loading...</string>
 
 

@@ -88,6 +88,9 @@ public class ZegoRoomManager {
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
                 ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                if (userService != null) {
+                    userService.onNetworkQuality(userID,upstreamQuality,downstreamQuality);
+                }
             }
 
             @Override

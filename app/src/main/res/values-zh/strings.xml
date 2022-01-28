@@ -51,6 +51,7 @@
   <string name="request_call_notification">正在呼叫%s, 可点击查看。</string>
   <string name="call_page_call_fail">呼叫失败，错误码：%d</string>
   <string name="call_page_call_quality_poor">当前通话质量差...</string>
+  <string name="call_page_call_disconnected">当前通话断线,请等待.</string>
   <string name="mic_operate_failed">开关麦克风失败，错误码：%d</string>
   <string name="camera_operate_failed">开关摄像头失败，错误码：%d</string>
   <string name="cancel_call_failed">取消呼叫失败，错误码: %d</string>

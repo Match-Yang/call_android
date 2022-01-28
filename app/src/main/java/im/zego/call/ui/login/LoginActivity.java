@@ -14,6 +14,7 @@ import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
@@ -24,6 +25,7 @@ import im.zego.call.http.IAsyncGetCallback;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.LoadingDialog;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.utils.PermissionHelper;
@@ -152,7 +154,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                             login(userName, returnedID);
                         } else {
                             dismissLoading();
-                            showWarnTips(getString(R.string.create_user_failed, errorCode));
+                            ToastUtils.showShort(getString(R.string.create_user_failed, errorCode));
                         }
                     }
                 });
@@ -189,13 +191,13 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                         if (code == 0) {
                             ActivityUtils.startActivity(EntryActivity.class);
                         } else {
-                            showWarnTips(getString(R.string.toast_login_fail, code));
+                            ToastUtils.showShort(getString(R.string.toast_login_fail, code));
                         }
                     });
                 } else {
                     CallApi.logout(userID, null);
                     kv.encode("autoLogin", false);
-                    showWarnTips(getString(R.string.toast_login_fail, errorCode));
+                    ToastUtils.showShort(getString(R.string.toast_login_fail, errorCode));
                 }
             }
         });
@@ -219,11 +221,13 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
         // some brands kill process will not really kill process,
         // which cause login twice
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         String userID = userService.localUserInfo.userID;
         userService.logout();
+        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
         CallApi.logout(userID, null);
     }
 }

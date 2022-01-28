@@ -48,12 +48,14 @@ import im.zego.call.utils.PermissionHelper;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
+import java.util.Objects;
 
 public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
@@ -199,6 +201,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 if (event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
                     logout();
+                    return;
                 }
                 if (state == ZIMConnectionState.DISCONNECTED) {
                     logout();
@@ -208,6 +211,29 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                             logout();
                         }
                     });
+                    Activity topActivity = ActivityUtils.getTopActivity();
+                    if (topActivity instanceof CallActivity) {
+                        CallActivity callActivity = (CallActivity) topActivity;
+                        callActivity.onConnectionStateChanged(state, event);
+                    }
+                } else {
+                    Activity topActivity = ActivityUtils.getTopActivity();
+                    if (topActivity instanceof CallActivity) {
+                        CallActivity callActivity = (CallActivity) topActivity;
+                        callActivity.onConnectionStateChanged(state, event);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
+                if (Objects.equals(userID, localUserInfo.userID) || userID == null) {
+                    Activity topActivity = ActivityUtils.getTopActivity();
+                    if (topActivity instanceof CallActivity) {
+                        CallActivity callActivity = (CallActivity) topActivity;
+                        callActivity.onNetworkQuality(userID, quality);
+                    }
                 }
             }
         });
@@ -323,6 +349,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(null);
         stopService(new Intent(this, FloatWindowService.class));
@@ -361,6 +388,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         String userID = userService.localUserInfo.userID;
         userService.logout();
         CallApi.logout(userID, null);
+        CallStateManager.getInstance().setCallState(null,CallStateManager.TYPE_NO_CALL);
         MMKV.defaultMMKV().encode("autoLogin", false);
         ActivityUtils.finishToActivity(LoginActivity.class, false);
     }

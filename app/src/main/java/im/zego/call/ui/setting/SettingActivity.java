@@ -11,6 +11,7 @@ import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.http.CallApi;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.ui.BaseActivity;
+import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.ZegoZIMManager;
@@ -76,6 +77,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                 String userID = userService.localUserInfo.userID;
                 userService.logout();
+                CallStateManager.getInstance().setCallState(null,CallStateManager.TYPE_NO_CALL);
                 CallApi.logout(userID, null);
                 MMKV.defaultMMKV().encode("autoLogin", false);
                 ActivityUtils.finishToActivity(LoginActivity.class, false);
