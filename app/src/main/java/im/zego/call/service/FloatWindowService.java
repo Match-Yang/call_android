@@ -1,7 +1,6 @@
 package im.zego.call.service;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,12 +12,14 @@ import android.os.IBinder;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
-import androidx.core.app.NotificationManagerCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.call.R;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.LoginActivity;
 
+/**
+ * foreground service used to keep process foreground.
+ */
 public class FloatWindowService extends Service {
 
     public static boolean isStarted = false;
@@ -67,7 +68,7 @@ public class FloatWindowService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        CallStateManager.getInstance().setCallState(null,CallStateManager.TYPE_NO_CALL);
+        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
         Log.d(TAG, "onDestroy() called");
     }
 

@@ -448,8 +448,6 @@ public class ZegoUserService {
 
     public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
         ZegoStreamQualityLevel downstreamQuality) {
-        Log.d(TAG, "onNetworkQuality() called with: userID = [" + userID + "], upstreamQuality = [" + upstreamQuality
-            + "], downstreamQuality = [" + downstreamQuality + "]");
         ZegoNetWorkQuality quality;
         if (upstreamQuality == ZegoStreamQualityLevel.EXCELLENT
             || upstreamQuality == ZegoStreamQualityLevel.GOOD) {
@@ -459,6 +457,8 @@ public class ZegoUserService {
         } else {
             quality = ZegoNetWorkQuality.Bad;
         }
-        listener.onNetworkQuality(userID,quality);
+        if (listener != null) {
+            listener.onNetworkQuality(userID, quality);
+        }
     }
 }

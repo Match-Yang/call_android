@@ -141,6 +141,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     time = 0;
                     handler.postDelayed(timeCountRunnable, 1000);
                     handler.removeCallbacks(missCallRunnable);
+                    handler.removeCallbacks(finishRunnable);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
                     updateStateText(R.string.call_page_status_canceled);
                     finishActivityDelayed();
@@ -218,6 +219,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 if (errorCode == 0) {
                 }
             });
+            handler.removeCallbacks(missCallRunnable);
+            handler.removeCallbacks(finishRunnable);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
             handler.postDelayed(timeCountRunnable, 1000);
             userService.enableMic(true, errorCode -> {
@@ -228,6 +231,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     });
                 }
             });
+            handler.removeCallbacks(missCallRunnable);
+            handler.removeCallbacks(finishRunnable);
         }
     }
 

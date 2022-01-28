@@ -349,6 +349,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy() called");
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(null);
         stopService(new Intent(this, FloatWindowService.class));
