@@ -521,6 +521,15 @@ public class ZegoUserService {
         ZegoExpressEngine.getEngine().setAudioRouteToSpeaker(open);
     }
 
+    /**
+     * Playback video streams data
+     * <p>
+     * Description: This can be used to intuitively play the video stream data, the audio stream data is played by default.
+     * Call this method at: After joining a room
+     *
+     * @param userID      refers to the ID of the user you want to play the video streams from.
+     * @param textureView refers to the target view that you want to be rendered.
+     */
     public void startPlaying(String userID, TextureView textureView) {
         ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
         zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
@@ -533,7 +542,7 @@ public class ZegoUserService {
         }
     }
 
-    public void stopPlaying(String userID) {
+    private void stopPlaying(String userID) {
         if (Objects.equals(localUserInfo.userID, userID)) {
             ZegoExpressEngine.getEngine().stopPreview();
         } else {
@@ -542,8 +551,18 @@ public class ZegoUserService {
         }
     }
 
-    public void useFrontCamera(boolean enable) {
-        ZegoExpressEngine.getEngine().useFrontCamera(enable);
+    /**
+     * Use front-facing and rear camera
+     * <p>
+     * Description: This method can be used to set the camera, the SDK uses the front-facing camera by default.
+     * <p>
+     * Call this method at: After joining a room
+     *
+     * @param isFront determines whether to use the front-facing camera or the rear camera.
+     *                true: Use front-facing camera. false: Use rear camera.
+     */
+    public void useFrontCamera(boolean isFront) {
+        ZegoExpressEngine.getEngine().useFrontCamera(isFront);
     }
 
     public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
