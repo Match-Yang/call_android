@@ -5,8 +5,6 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.WindowManager;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
@@ -195,7 +192,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         } else {
                             ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
                         }
-                        ZegoRoomManager.getInstance().deviceService.playVideoStream(userService.localUserInfo.userID, textureView);
+                        ZegoRoomManager.getInstance().deviceService.startPlayStream(userService.localUserInfo.userID, textureView);
                     });
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
