@@ -134,6 +134,7 @@ public class ZegoUserService {
      *
      * @param userID   refers to the ID of the user you want call.
      * @param callType refers to the call type.  ZegoCallTypeVoice: Voice call.  ZegoCallTypeVideo: Video call.
+     * @param createRoomToken: refers to the authentication token. To get this, see the documentation: https://docs.zegocloud.com/article/11648
      * @param callback refers to the callback for make a outbound call.
      */
     public void callUser(String userID, ZegoCallType callType, String createRoomToken, ZegoRoomCallback callback) {
@@ -179,7 +180,8 @@ public class ZegoUserService {
      * Call this method at: After the user login
      *
      * @param userID     refers to the ID of the user you are calling.
-     * @param cancelType
+     * @param cancelType cancel type
+     * @param callback:  refers to the callback for cancel a call.
      */
     public void cancelCall(ZegoCancelType cancelType, String userID, ZegoRoomCallback callback) {
         Log.d(TAG,
@@ -578,6 +580,14 @@ public class ZegoUserService {
         }
     }
 
+    /**
+     * Callback for the network quality
+     * <p>
+     * Description: Callback for the network quality, and this callback will be triggered after the stream publishing or stream playing.
+     *
+     * @param userID:          Refers to the user ID of the stream publisher or stream subscriber.
+     * @param upstreamQuality: Refers to the stream quality level.
+     */
     public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
         ZegoStreamQualityLevel downstreamQuality) {
         ZegoNetWorkQuality quality;
