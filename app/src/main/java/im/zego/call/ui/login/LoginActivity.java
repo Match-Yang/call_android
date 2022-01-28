@@ -191,13 +191,13 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                         if (code == 0) {
                             ActivityUtils.startActivity(EntryActivity.class);
                         } else {
-                            ToastUtils.showShort(getString(R.string.toast_login_fail, code));
+                            showWarnTips(getString(R.string.toast_login_fail, code));
                         }
                     });
                 } else {
                     CallApi.logout(userID, null);
                     kv.encode("autoLogin", false);
-                    ToastUtils.showShort(getString(R.string.toast_login_fail, errorCode));
+                    showWarnTips(getString(R.string.toast_login_fail, errorCode));
                 }
             }
         });
