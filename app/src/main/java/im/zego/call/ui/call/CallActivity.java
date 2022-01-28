@@ -171,7 +171,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.useFrontCamera(true);
-        userService.speakerOperate(true);
+        userService.speakerOperate(false);
 
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
