@@ -5,8 +5,6 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +15,6 @@ import android.view.View;
 import android.view.WindowManager;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
@@ -53,7 +50,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         @Override
         public void run() {
             time++;
-            String timeFormat = String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60);
+            String timeFormat;
+            if (time / 3600 > 0) {
+                timeFormat = String.format(Locale.getDefault(), "%02d:%02d:%02d", time / 3600, time / 60 - 60 * (time / 3600), time % 60);
+            } else {
+                timeFormat = String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60);
+            }
             binding.callTime.setText(timeFormat);
             handler.postDelayed(timeCountRunnable, 1000);
         }
@@ -157,7 +159,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.useFrontCamera(true);
+        ZegoRoomManager.getInstance().deviceService.useFrontCamera(true);
         userService.speakerOperate(true);
 
         String userID = userService.localUserInfo.userID;
@@ -190,7 +192,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         } else {
                             ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
                         }
-                        userService.startPlaying(userService.localUserInfo.userID, textureView);
+                        ZegoRoomManager.getInstance().deviceService.startPlayStream(userService.localUserInfo.userID, textureView);
                     });
                     handler.postDelayed(cancelCallRunnable, 60 * 1000);
                 } else {
