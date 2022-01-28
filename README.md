@@ -69,7 +69,6 @@ Directory path:
 ├── listener
 ├── model
 ├── service
-│ ├── ZegoDeviceService.java                ------ Streaming and device related service, such as stream publishing, playing and configure audio and video settings. 
 │ ├── ZegoRoomManager.java                ------ Room related instances that used to initialize the SDK, and provide the capabilities for service implementation.
 │ ├── ZegoRoomService.java                ------ Room related service, such as join/leave a room, update room information, and more.
 │ └── ZegoUserService.java                ------ User related service, such as start/end call, turn on/off the microphone/camera, and more.
