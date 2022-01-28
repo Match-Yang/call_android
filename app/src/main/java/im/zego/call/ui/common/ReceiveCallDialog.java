@@ -69,6 +69,7 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onAcceptAudioClicked();
                 }
+                handler.removeCallbacks(null);
             }
 
             @Override
@@ -77,6 +78,7 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onAcceptVideoClicked();
                 }
+                handler.removeCallbacks(null);
             }
 
             @Override
@@ -85,6 +87,7 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onDeclineClicked();
                 }
+                handler.removeCallbacks(null);
             }
 
             @Override
@@ -93,6 +96,7 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onWindowClicked();
                 }
+                handler.removeCallbacks(null);
             }
         });
 
@@ -178,6 +182,7 @@ public class ReceiveCallDialog {
         if (floatPermissionDialog != null) {
             floatPermissionDialog.dismiss();
         }
+        handler.removeCallbacks(null);
     }
 
     public void setListener(OnReceiveCallViewClickedListener listener) {

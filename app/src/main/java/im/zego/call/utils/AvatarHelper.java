@@ -41,8 +41,7 @@ public final class AvatarHelper {
     public static int getBlurResourceID(String userName) {
         int index = getIndex(userName);
         String name = "user_icon_" + (index % MAX_INDEX + 1) + "_blur";
-        Log.d(TAG, "getResourceIndex() called with: userName = [" + userName + "]," +
-            ",index:" + index + ",name: " + name);
+        Log.d(TAG, "getResourceIndex() called with: userName = [" + userName + "],index:" + index + ",name: " + name);
         return ResourceUtils.getDrawableIdByName(name);
 
     }
@@ -60,7 +59,6 @@ public final class AvatarHelper {
             String hex = bytesToHex(value);
             int value0 = value[0] & 0xff;
             int index = Math.abs(value0 % MAX_INDEX);
-            Log.d(TAG, "getIndex: md5=" + hex + ", value[0]=" + value0 + ", index=" + index);
             return index;
         } else {
             return 0;

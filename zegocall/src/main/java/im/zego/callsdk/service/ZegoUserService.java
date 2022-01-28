@@ -226,10 +226,6 @@ public class ZegoUserService {
 
     public void enableMic(boolean enable, ZegoRoomCallback callback) {
         boolean micState = localUserInfo.mic;
-        if (micState == enable) {
-            callback.onRoomCallback(0);
-            return;
-        }
         localUserInfo.mic = enable;
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(localUserInfo.userID, mGson.toJson(localUserInfo));
@@ -257,10 +253,6 @@ public class ZegoUserService {
 
     public void enableCamera(boolean open, ZegoRoomCallback callback) {
         boolean cameraState = localUserInfo.camera;
-        if (cameraState == open) {
-            callback.onRoomCallback(0);
-            return;
-        }
         localUserInfo.camera = open;
         HashMap<String, String> seatAttributes = new HashMap<>();
         seatAttributes.put(localUserInfo.userID, mGson.toJson(localUserInfo));
