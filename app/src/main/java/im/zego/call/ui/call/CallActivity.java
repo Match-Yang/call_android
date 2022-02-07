@@ -47,11 +47,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private Runnable missCallRunnable = () -> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.cancelCall(ZegoCancelType.TIMEOUT, userInfo.userID, errorCode -> {
-            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
+            CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
         });
     };
     private Runnable finishRunnable = () -> {
-        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
+        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
     };
     private Runnable timeCountRunnable = new Runnable() {
         @Override
@@ -59,7 +59,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             time++;
             String timeFormat;
             if (time / 3600 > 0) {
-                timeFormat = String.format(Locale.getDefault(), "%02d:%02d:%02d", time / 3600, time / 60 - 60 * (time / 3600), time % 60);
+                timeFormat = String
+                    .format(Locale.getDefault(), "%02d:%02d:%02d", time / 3600, time / 60 - 60 * (time / 3600),
+                        time % 60);
             } else {
                 timeFormat = String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60);
             }
@@ -139,7 +141,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     (after == CallStateManager.TYPE_CONNECTED_VIDEO);
                 if ((beforeIsOutgoing || beforeIsInComing) && afterIsAccept) {
                     time = 0;
-                    handler.postDelayed(timeCountRunnable, 1000);
+                    handler.post(timeCountRunnable);
                     handler.removeCallbacks(missCallRunnable);
                     handler.removeCallbacks(finishRunnable);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
@@ -169,7 +171,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.useFrontCamera(true);
-        userService.speakerOperate(true);
+        userService.speakerOperate(false);
 
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
@@ -214,7 +216,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
             handler.postDelayed(finishRunnable, 62 * 1000);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
-            handler.postDelayed(timeCountRunnable, 1000);
+            handler.post(timeCountRunnable);
             userService.enableMic(true, errorCode -> {
                 if (errorCode == 0) {
                 }
@@ -222,7 +224,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             handler.removeCallbacks(missCallRunnable);
             handler.removeCallbacks(finishRunnable);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
-            handler.postDelayed(timeCountRunnable, 1000);
+            handler.post(timeCountRunnable);
             userService.enableMic(true, errorCode -> {
                 if (errorCode == 0) {
                     userService.enableCamera(true, errorCode1 -> {

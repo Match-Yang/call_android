@@ -91,7 +91,6 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             v.setSelected(!selected);
             userService.useFrontCamera(!selected);
         });
-        binding.callVideoSpeaker.setSelected(true);
         binding.callVideoSpeaker.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);

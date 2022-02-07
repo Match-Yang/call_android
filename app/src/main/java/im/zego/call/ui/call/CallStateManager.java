@@ -52,7 +52,7 @@ public class CallStateManager {
         return callState;
     }
 
-    public boolean needNotification() {
+    public boolean isInACallStream() {
         return callState == TYPE_INCOMING_CALLING_VOICE ||
             callState == TYPE_INCOMING_CALLING_VIDEO ||
             callState == TYPE_CONNECTED_VOICE ||
@@ -61,11 +61,14 @@ public class CallStateManager {
             callState == TYPE_OUTGOING_CALLING_VIDEO;
     }
 
+    public boolean isConnected() {
+        return callState == TYPE_CONNECTED_VIDEO ||
+            callState == TYPE_CONNECTED_VOICE;
+    }
+
     public void setCallState(ZegoUserInfo userInfo, int callState) {
         int beforeState = this.callState;
-        if (userInfo != null) {
-            this.userInfo = userInfo;
-        }
+        this.userInfo = userInfo;
         this.callState = callState;
         if (beforeState != callState && listeners.size() > 0) {
             for (CallStateChangedListener listener : listeners) {

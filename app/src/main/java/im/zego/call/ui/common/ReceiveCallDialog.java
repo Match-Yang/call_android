@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,7 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onAcceptAudioClicked();
                 }
+                handler.removeCallbacksAndMessages(null);
             }
 
             @Override
@@ -77,6 +79,7 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onAcceptVideoClicked();
                 }
+                handler.removeCallbacksAndMessages(null);
             }
 
             @Override
@@ -85,6 +88,7 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onDeclineClicked();
                 }
+                handler.removeCallbacksAndMessages(null);
             }
 
             @Override
@@ -93,16 +97,9 @@ public class ReceiveCallDialog {
                 if (listener != null) {
                     listener.onWindowClicked();
                 }
+                handler.removeCallbacksAndMessages(null);
             }
         });
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                CallStateManager.getInstance().setCallState(getUserInfo(), CallStateManager.TYPE_CALL_MISSED);
-                dismissReceiveCallWindow();
-            }
-        }, 62 * 1000);
     }
 
     public void showReceiveCallWindow() {
@@ -128,6 +125,14 @@ public class ReceiveCallDialog {
                 });
             }
         }
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("TAG", "run() called");
+                CallStateManager.getInstance().setCallState(getUserInfo(), CallStateManager.TYPE_CALL_MISSED);
+                dismissReceiveCallWindow();
+            }
+        }, 62 * 1000);
     }
 
     public void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {
@@ -178,6 +183,7 @@ public class ReceiveCallDialog {
         if (floatPermissionDialog != null) {
             floatPermissionDialog.dismiss();
         }
+        handler.removeCallbacksAndMessages(null);
     }
 
     public void setListener(OnReceiveCallViewClickedListener listener) {
