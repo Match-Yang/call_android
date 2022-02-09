@@ -78,7 +78,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
                 String userID = userService.localUserInfo.userID;
                 userService.logout();
                 CallStateManager.getInstance().setCallState(null,CallStateManager.TYPE_NO_CALL);
-                CallApi.logout(userID, null);
+                WebClientManager.getInstance().logout(userID, null);
                 MMKV.defaultMMKV().encode("autoLogin", false);
                 ActivityUtils.finishToActivity(LoginActivity.class, false);
             }

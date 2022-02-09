@@ -33,8 +33,8 @@ public class CallApi {
         String json = jsonObject.toString();
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
             String string = "";
-            JsonElement element = response.get("id");
-            if (element != null) {
+            if (response != null && response.get("id") != null) {
+                JsonElement element = response.get("id");
                 string = element.getAsString();
                 if (reqCallback != null) {
                     reqCallback.onResponse(errorCode, message, string);
@@ -95,14 +95,15 @@ public class CallApi {
         String json = jsonObject.toString();
 
         APIBase.asyncPost(url, json, (errorCode, message, response) -> {
-            if (errorCode == 0) {
-                WebClientManager.getInstance().startHeartBeat(userID);
+            if (response != null) {
+                UserBean userBean = gson.fromJson(response, UserBean.class);
+                if (callback != null) {
+                    callback.onResponse(errorCode, message, userBean);
+                }
             } else {
-                WebClientManager.getInstance().stopHeartBeat();
-            }
-            UserBean userBean = gson.fromJson(response, UserBean.class);
-            if (callback != null) {
-                callback.onResponse(errorCode, message, userBean);
+                if (callback != null) {
+                    callback.onResponse(errorCode, message, null);
+                }
             }
         });
     }

@@ -87,7 +87,7 @@
     android:layout_marginStart="11dp"
     android:layout_marginEnd="11dp"
     android:layout_marginBottom="59dp"
-    android:src="@drawable/selector_activity_speaker_button"
+    android:src="@drawable/selector_activity_speaker_video_button"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.5"

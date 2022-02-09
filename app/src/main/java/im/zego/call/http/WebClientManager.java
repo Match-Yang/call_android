@@ -3,6 +3,9 @@ package im.zego.call.http;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import im.zego.call.http.bean.UserBean;
+import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoUserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -27,6 +30,7 @@ public class WebClientManager {
     List<UserBean> userList = new ArrayList<>();
     final int pullPerCount = 100;
     private static final String TAG = "WebClientManager";
+    private boolean hasLoggedin = false;
 
     public void getUserList(IAsyncGetCallback<List<UserBean>> callback) {
         userList.clear();
@@ -60,12 +64,74 @@ public class WebClientManager {
         });
     }
 
+    public void login(String name, String userID, IAsyncGetCallback<UserBean> callback) {
+        Log.d(TAG,
+            "login() called with: name = [" + name + "], userID = [" + userID + "], callback = [" + callback + "]");
+        CallApi.login(name, userID, new IAsyncGetCallback<UserBean>() {
+            @Override
+            public void onResponse(int errorCode, @NonNull String message, UserBean response) {
+                hasLoggedin = errorCode == 0;
+                if (errorCode == 0) {
+                    WebClientManager.getInstance().startHeartBeat(userID);
+                } else {
+                    WebClientManager.getInstance().stopHeartBeat();
+                }
+                if (callback != null) {
+                    callback.onResponse(errorCode, message, response);
+                }
+            }
+        });
+    }
 
+    public void logout(String userID, IAsyncGetCallback<String> callback) {
+        Log.d(TAG, "logout() called with: userID = [" + userID + "], callback = [" + callback + "]");
+        CallApi.logout(userID, callback);
+        hasLoggedin = false;
+    }
+
+    public void tryReLogin(IAsyncGetCallback<UserBean> callback) {
+        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        ZegoUserInfo localUserInfo = userService.localUserInfo;
+        CallApi.heartBeat(localUserInfo.userID, new IAsyncGetCallback<String>() {
+            @Override
+            public void onResponse(int errorCode, @NonNull String message, String response) {
+                if (errorCode != 0) {
+                    // means heart failed,relogin to make it success,and online for other users
+                    CallApi.login(localUserInfo.userName, localUserInfo.userID,
+                        new IAsyncGetCallback<UserBean>() {
+                            @Override
+                            public void onResponse(int errorCode, @NonNull String message,
+                                UserBean response) {
+                                if (callback != null) {
+                                    callback.onResponse(errorCode, message, response);
+                                }
+                            }
+                        });
+                }
+            }
+        });
+    }
+
+    /**
+     * keep heart to make self visible for other users.
+     *
+     * @param userID
+     */
     public void startHeartBeat(String userID) {
+        Log.d(TAG, "startHeartBeat() called with: userID = [" + userID + "]");
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                CallApi.heartBeat(userID, null);
+                Log.d(TAG, "TimerTask run() called, heartBeat");
+                CallApi.heartBeat(userID, new IAsyncGetCallback<String>() {
+                    @Override
+                    public void onResponse(int errorCode, @NonNull String message, String response) {
+                        // if user not logout manually,try login when heartbeat failed
+                        if (hasLoggedin && errorCode != 0) {
+                            tryReLogin(null);
+                        }
+                    }
+                });
             }
         };
         if (timer != null) {
@@ -76,6 +142,7 @@ public class WebClientManager {
     }
 
     public void stopHeartBeat() {
+        Log.d(TAG, "stopHeartBeat() called");
         if (timer != null) {
             timer.cancel();
         }

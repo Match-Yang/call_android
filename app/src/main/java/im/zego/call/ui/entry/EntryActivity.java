@@ -14,7 +14,6 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationManagerCompat;
@@ -27,8 +26,7 @@ import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.call.http.CallApi;
-import im.zego.call.http.IAsyncGetCallback;
-import im.zego.call.http.bean.UserBean;
+import im.zego.call.http.WebClientManager;
 import im.zego.call.service.FloatWindowService;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
@@ -213,7 +211,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 if (state == ZIMConnectionState.DISCONNECTED) {
                     logout();
                 } else if (state == ZIMConnectionState.CONNECTED) {
-                    tryReLogin((errorCode, message, response) -> {
+                    WebClientManager.getInstance().tryReLogin((errorCode, message, response) -> {
                         if (errorCode != 0) {
                             logout();
                         }
@@ -230,7 +228,6 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                         callActivity.onConnectionStateChanged(state, event);
                     }
                 }
-
             }
 
             @Override
@@ -253,7 +250,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 // some phone will freeze app when phone is desktop,even if we start foreground service,
                 // such as vivo.
                 // so when app back to foreground, if heartbeat failed,relogin.
-                tryReLogin((errorCode, message, response) -> {
+                WebClientManager.getInstance().tryReLogin((errorCode, message, response) -> {
                     if (errorCode != 0) {
                         logout();
                     }
@@ -365,29 +362,6 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     @Override
     public void onBackPressed() {
 
-    }
-
-    private void tryReLogin(IAsyncGetCallback<UserBean> callback) {
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        ZegoUserInfo localUserInfo = userService.localUserInfo;
-        CallApi.heartBeat(localUserInfo.userID, new IAsyncGetCallback<String>() {
-            @Override
-            public void onResponse(int errorCode, @NonNull String message, String response) {
-                if (errorCode != 0) {
-                    // means heart failed,relogin to make it success
-                    CallApi.login(localUserInfo.userName, localUserInfo.userID,
-                        new IAsyncGetCallback<UserBean>() {
-                            @Override
-                            public void onResponse(int errorCode, @NonNull String message,
-                                UserBean response) {
-                                if (callback != null) {
-                                    callback.onResponse(errorCode, message, response);
-                                }
-                            }
-                        });
-                }
-            }
-        });
     }
 
     private void logout() {
