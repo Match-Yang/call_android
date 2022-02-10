@@ -1,6 +1,8 @@
 package im.zego.call.ui.call.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -9,6 +11,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.blankj.utilcode.util.ImageUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import im.zego.call.R;
 import im.zego.call.databinding.LayoutConnectedVideoCallBinding;
@@ -154,8 +158,10 @@ public class ConnectedVideoCallView extends ConstraintLayout {
                 if (userInfo.camera) {
                     binding.callVideoViewSmallIcon.setVisibility(View.GONE);
                 } else {
-                    Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
-                    binding.callVideoViewSmallIcon.setImageDrawable(fullAvatar);
+                    int resourceID = AvatarHelper.getResourceID(userInfo.userName, true);
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceID);
+                    Bitmap roundBitmap = ImageUtils.toRoundCorner(bitmap, SizeUtils.dp2px(4));
+                    binding.callVideoViewSmallIcon.setImageBitmap(roundBitmap);
                     binding.callVideoViewSmallIcon.setVisibility(View.VISIBLE);
                 }
             }
@@ -164,18 +170,24 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             if (isSelfCenter) {
                 if (userInfo.camera) {
                     binding.callVideoViewSmallIcon.setVisibility(View.GONE);
+                    binding.callVideoViewSmallTexture.setVisibility(VISIBLE);
                 } else {
-                    Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
-                    binding.callVideoViewSmallIcon.setImageDrawable(fullAvatar);
+                    int resourceID = AvatarHelper.getResourceID(userInfo.userName, true);
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceID);
+                    Bitmap roundBitmap = ImageUtils.toRoundCorner(bitmap, SizeUtils.dp2px(4));
+                    binding.callVideoViewSmallIcon.setImageBitmap(roundBitmap);
                     binding.callVideoViewSmallIcon.setVisibility(View.VISIBLE);
+                    binding.callVideoViewSmallTexture.setVisibility(GONE);
                 }
             } else {
                 if (userInfo.camera) {
                     binding.callVideoViewCenterIcon.setVisibility(View.GONE);
+                    binding.callVideoViewSmallTexture.setVisibility(VISIBLE);
                 } else {
                     Drawable fullAvatar = AvatarHelper.getFullAvatarByUserName(userInfo.userName);
                     binding.callVideoViewCenterIcon.setImageDrawable(fullAvatar);
                     binding.callVideoViewCenterIcon.setVisibility(View.VISIBLE);
+                    binding.callVideoViewSmallTexture.setVisibility(GONE);
                 }
             }
         }

@@ -25,9 +25,8 @@ import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
-import im.zego.call.http.CallApi;
 import im.zego.call.http.WebClientManager;
-import im.zego.call.service.FloatWindowService;
+import im.zego.call.service.ForegroundService;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
@@ -287,7 +286,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 CallActivity.startCallActivity(dialog.getUserInfo());
             }
         });
-        Intent intent = new Intent(this, FloatWindowService.class);
+        Intent intent = new Intent(this, ForegroundService.class);
         ContextCompat.startForegroundService(this, intent);
     }
 
@@ -356,7 +355,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         Log.d(TAG, "onDestroy() called");
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.setListener(null);
-        stopService(new Intent(this, FloatWindowService.class));
+        stopService(new Intent(this, ForegroundService.class));
     }
 
     @Override

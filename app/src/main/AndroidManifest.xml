@@ -49,7 +49,7 @@
     </activity>
 
     <service
-      android:name=".service.FloatWindowService"
+      android:name=".service.ForegroundService"
       android:exported="false"
       android:foregroundServiceType="camera|microphone|phoneCall" />
 
