@@ -368,8 +368,8 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         String userID = userService.localUserInfo.userID;
         userService.logout();
-        CallApi.logout(userID, null);
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
+        WebClientManager.getInstance().logout(userID, null);
         MMKV.defaultMMKV().encode("autoLogin", false);
         ActivityUtils.finishToActivity(LoginActivity.class, false);
     }
