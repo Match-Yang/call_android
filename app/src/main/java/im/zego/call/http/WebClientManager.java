@@ -64,6 +64,13 @@ public class WebClientManager {
         });
     }
 
+    /**
+     * login to web server,make self visible to other online users.
+     *
+     * @param name     name
+     * @param userID   id
+     * @param callback result
+     */
     public void login(String name, String userID, IAsyncGetCallback<UserBean> callback) {
         Log.d(TAG,
             "login() called with: name = [" + name + "], userID = [" + userID + "], callback = [" + callback + "]");
@@ -83,6 +90,12 @@ public class WebClientManager {
         });
     }
 
+    /**
+     * logout from web server,make self invisible to other online users.
+     *
+     * @param userID   user id
+     * @param callback result
+     */
     public void logout(String userID, IAsyncGetCallback<String> callback) {
         Log.d(TAG, "logout() called with: userID = [" + userID + "], callback = [" + callback + "]");
         CallApi.logout(userID, callback);
@@ -113,7 +126,7 @@ public class WebClientManager {
     }
 
     /**
-     * keep heart to make self visible for other users.
+     * keep heart to keep self online state.
      *
      * @param userID
      */
