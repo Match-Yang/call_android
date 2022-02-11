@@ -6,7 +6,6 @@ import android.view.View.OnClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import com.blankj.utilcode.util.ToastUtils;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
@@ -63,9 +62,8 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                     return;
                 }
                 ZegoUserInfo userInfo = onlineUserAdapter.getUserInfo(adapterPosition);
-                int callState = CallStateManager.getInstance().getCallState();
-                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE ||
-                    callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+                boolean inACallStream = CallStateManager.getInstance().isInACallStream();
+                if (inACallStream) {
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {

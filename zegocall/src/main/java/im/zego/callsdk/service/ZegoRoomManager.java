@@ -219,5 +219,6 @@ public class ZegoRoomManager {
     public void uploadLog(final ZegoRoomCallback callback) {
         ZegoZIMManager.getInstance().zim
             .uploadLog(errorInfo -> callback.onRoomCallback(errorInfo.code.value()));
+        ZegoExpressEngine.getEngine().uploadLog();
     }
 }

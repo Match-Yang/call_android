@@ -87,51 +87,55 @@
     android:layout_marginStart="11dp"
     android:layout_marginEnd="11dp"
     android:layout_marginBottom="59dp"
-    android:src="@drawable/selector_activity_speaker_button"
+    android:src="@drawable/selector_activity_speaker_video_button"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.5"
     app:layout_constraintStart_toEndOf="@+id/call_video_camera_switch" />
 
-  <RelativeLayout
+  <androidx.cardview.widget.CardView
     android:id="@+id/call_video_view_small_layout"
     android:layout_width="95dp"
     android:layout_height="169dp"
     android:layout_marginTop="37dp"
     android:layout_marginEnd="8dp"
+    app:cardCornerRadius="4dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <TextureView
-      android:id="@+id/call_video_view_small_texture"
+    <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent" />
+      android:layout_height="match_parent">
 
-    <View
-      android:layout_width="match_parent"
-      android:layout_height="26dp"
-      android:layout_alignParentBottom="true"
-      android:background="@drawable/video_call_bottom_mask"
-      app:layout_constraintBottom_toBottomOf="parent" />
+      <TextureView
+        android:id="@+id/call_video_view_small_texture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
+      <View
+        android:layout_width="match_parent"
+        android:layout_height="26dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/video_call_bottom_mask"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ImageView
-      android:id="@+id/call_video_view_small_icon"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
+      <ImageView
+        android:id="@+id/call_video_view_small_icon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <TextView
-      android:id="@+id/call_video_view_small_name"
-      android:layout_width="83dp"
-      android:layout_height="19dp"
-      android:layout_alignParentBottom="true"
-      android:layout_centerHorizontal="true"
-      android:layout_marginBottom="3dp"
-      android:ellipsize="end"
-      android:maxLines="1"
-      android:singleLine="true"
-      android:textColor="@color/white"
-      android:textSize="13sp" />
-  </RelativeLayout>
-
+      <TextView
+        android:id="@+id/call_video_view_small_name"
+        android:layout_width="83dp"
+        android:layout_height="19dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="3dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="13sp" />
+    </RelativeLayout>
+  </androidx.cardview.widget.CardView>
 </merge>

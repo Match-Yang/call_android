@@ -20,10 +20,10 @@ import im.zego.call.ui.login.LoginActivity;
 /**
  * foreground service used to keep process foreground.
  */
-public class FloatWindowService extends Service {
+public class ForegroundService extends Service {
 
     public static boolean isStarted = false;
-    private static final String TAG = "FloatWindowService";
+    private static final String TAG = "ForegroundService";
     private int notificationId = 888;
     private String CHANNEL_ID = "channel 2";
     private String CHANNEL_NAME = "channel2 name";

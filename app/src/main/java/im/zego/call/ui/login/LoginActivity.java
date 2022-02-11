@@ -21,6 +21,7 @@ import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityLoginBinding;
 import im.zego.call.http.CallApi;
 import im.zego.call.http.IAsyncGetCallback;
+import im.zego.call.http.WebClientManager;
 import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
@@ -169,7 +170,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
             return;
         }
         isLogin = true;
-        CallApi.login(userName, userID, new IAsyncGetCallback<UserBean>() {
+        WebClientManager.getInstance().login(userName, userID, new IAsyncGetCallback<UserBean>() {
             @Override
             public void onResponse(int errorCode, @NonNull String message, UserBean response) {
                 Log.d(TAG,
@@ -195,7 +196,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                         }
                     });
                 } else {
-                    CallApi.logout(userID, null);
+                    WebClientManager.getInstance().logout(userID, null);
                     kv.encode("autoLogin", false);
                     showWarnTips(getString(R.string.toast_login_fail, errorCode));
                 }
@@ -228,7 +229,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         String userID = userService.localUserInfo.userID;
         userService.logout();
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
-        CallApi.logout(userID, null);
+        WebClientManager.getInstance().logout(userID, null);
     }
 }
 
