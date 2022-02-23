@@ -7,7 +7,7 @@
 
   <!--  need extra layout to show on dialog -->
   <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/fl_toast_message"
+    android:id="@+id/dialog_receive_call"
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:layout_margin="8dp"

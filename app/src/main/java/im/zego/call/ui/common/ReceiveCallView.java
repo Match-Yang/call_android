@@ -114,7 +114,8 @@ public class ReceiveCallView extends FrameLayout {
                 }
             });
         });
-        binding.getRoot().setOnClickListener(v -> {
+        binding.dialogReceiveCall.setOnClickListener(v -> {
+            CallActivity.startCallActivity(userInfo);
             if (listener != null) {
                 listener.onWindowClicked();
             }

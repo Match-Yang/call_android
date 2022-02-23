@@ -283,7 +283,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
             @Override
             public void onWindowClicked() {
-                CallActivity.startCallActivity(dialog.getUserInfo());
+                dismissNotification(notificationId);
             }
         });
         Intent intent = new Intent(this, ForegroundService.class);

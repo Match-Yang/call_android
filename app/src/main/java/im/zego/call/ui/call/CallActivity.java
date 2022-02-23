@@ -144,6 +144,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.post(timeCountRunnable);
                     handler.removeCallbacks(missCallRunnable);
                     handler.removeCallbacks(finishRunnable);
+                    ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                    userService.speakerOperate(false);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
                     updateStateText(R.string.call_page_status_canceled);
                     finishActivityDelayed();
@@ -171,7 +173,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void initDeviceState(int typeOfCall) {
         ZegoUserService userService = ZegoRoomManager.getInstance().userService;
         userService.useFrontCamera(true);
-        userService.speakerOperate(false);
 
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
@@ -219,6 +220,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             handler.post(timeCountRunnable);
             userService.enableMic(true, errorCode -> {
                 if (errorCode == 0) {
+                    userService.speakerOperate(false);
                 }
             });
             handler.removeCallbacks(missCallRunnable);
@@ -229,6 +231,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 if (errorCode == 0) {
                     userService.enableCamera(true, errorCode1 -> {
                         if (errorCode1 == 0) {
+                            userService.speakerOperate(false);
                         }
                     });
                 }
