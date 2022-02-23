@@ -69,7 +69,7 @@ public class ZegoRoomService {
     }
 
     /**
-     * Join a room
+     * Join a room.
      * <p>
      * Description: This method can be used to join a room, the room must be an existing room.
      * <p>

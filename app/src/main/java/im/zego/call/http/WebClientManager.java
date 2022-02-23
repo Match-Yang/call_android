@@ -135,7 +135,7 @@ public class WebClientManager {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                Log.d(TAG, "TimerTask run() called, heartBeat");
+                Log.d(TAG, "TimerTask run() called, heartBeat，hasLoggedin :" + hasLoggedin);
                 CallApi.heartBeat(userID, new IAsyncGetCallback<String>() {
                     @Override
                     public void onResponse(int errorCode, @NonNull String message, String response) {

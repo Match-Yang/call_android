@@ -512,6 +512,7 @@ public class ZegoUserService {
     }
 
     public void speakerOperate(boolean open) {
+        Log.d(TAG, "speakerOperate() called with: open = [" + open + "]");
         ZegoExpressEngine.getEngine().setAudioRouteToSpeaker(open);
     }
 

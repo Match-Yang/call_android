@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,8 +52,7 @@ public class ReceiveCallDialog {
             lp.type = WindowManager.LayoutParams.TYPE_PHONE;
         }
         lp.format = PixelFormat.RGBA_8888;
-        lp.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            | WindowManager.LayoutParams.FLAG_BLUR_BEHIND;
+        lp.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
         lp.width = LayoutParams.MATCH_PARENT;
         lp.height = LayoutParams.WRAP_CONTENT;
@@ -128,7 +126,6 @@ public class ReceiveCallDialog {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("TAG", "run() called");
                 CallStateManager.getInstance().setCallState(getUserInfo(), CallStateManager.TYPE_CALL_MISSED);
                 dismissReceiveCallWindow();
             }
