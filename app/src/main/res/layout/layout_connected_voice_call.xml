@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <com.google.android.material.imageview.ShapeableImageView
+    android:id="@+id/call_user_icon"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_marginTop="136dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:shapeAppearance="@style/CircleStyle" />
+
+  <TextView
+    android:id="@+id/call_user_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="37dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="37dp"
+    android:ellipsize="end"
+    android:gravity="center"
+    android:maxLines="1"
+    android:singleLine="true"
+    android:text="User name"
+    android:textColor="#FFFFFF"
+    android:textSize="21sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/call_user_icon" />
+
+  <ImageView
+    android:id="@+id/call_voice_mic"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    android:layout_marginBottom="53dp"
+    android:src="@drawable/selector_activity_mic_button_voice"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toStartOf="@+id/call_voice_hang_up"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintHorizontal_chainStyle="packed"
+    app:layout_constraintStart_toStartOf="parent" />
+
+  <ImageView
+    android:id="@+id/call_voice_hang_up"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    android:layout_marginStart="54dp"
+    android:layout_marginEnd="54dp"
+    android:layout_marginBottom="53dp"
+    android:src="@drawable/selector_activity_hangup_button"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toStartOf="@+id/call_voice_speaker"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintStart_toEndOf="@+id/call_voice_mic" />
+
+  <ImageView
+    android:id="@+id/call_voice_speaker"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    android:layout_marginBottom="53dp"
+    android:src="@drawable/selector_activity_speaker_voice_button"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintStart_toEndOf="@+id/call_voice_hang_up" />
+
+</merge>

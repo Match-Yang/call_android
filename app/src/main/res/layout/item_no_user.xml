@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <ImageView
+    android:id="@+id/item_no_user_icon"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:scaleType="fitXY"
+    android:src="@drawable/icon_no_user"
+    app:layout_constraintBottom_toTopOf="@+id/item_no_user_text"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_chainStyle="packed" />
+
+  <TextView
+    android:id="@+id/item_no_user_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="13dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="123dp"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:singleLine="true"
+    android:text="@string/no_online_user"
+    android:textColor="#A4A4A4"
+    android:textSize="15sp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/item_no_user_icon" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

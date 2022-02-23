@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="74dp">
+
+  <com.google.android.material.imageview.ShapeableImageView
+    android:id="@+id/item_online_user_icon"
+    android:layout_width="42dp"
+    android:layout_height="42dp"
+    android:layout_marginStart="16dp"
+    android:scaleType="fitXY"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:shapeAppearance="@style/CircleStyle" />
+
+  <TextView
+    android:id="@+id/item_online_user_name"
+    android:layout_width="170dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="13dp"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:singleLine="true"
+    android:text="User name"
+    android:textColor="#2A2A2A"
+    android:textSize="16sp"
+    app:layout_constraintStart_toEndOf="@id/item_online_user_icon"
+    app:layout_constraintTop_toTopOf="@id/item_online_user_icon" />
+
+  <TextView
+    android:id="@+id/item_online_user_id"
+    android:layout_width="170dp"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:singleLine="true"
+    android:text="ID:xxxxx"
+    android:textColor="#A4A4A4"
+    android:textSize="12sp"
+    app:layout_constraintBottom_toBottomOf="@id/item_online_user_icon"
+    app:layout_constraintStart_toStartOf="@id/item_online_user_name" />
+
+  <ImageView
+    android:id="@+id/item_online_user_voice"
+    android:layout_width="42dp"
+    android:layout_height="42dp"
+    android:layout_marginEnd="74dp"
+    android:background="@drawable/circle_bg_voice_button"
+    android:clickable="true"
+    android:focusable="true"
+    android:scaleType="center"
+    android:src="@drawable/icon_online_voice"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <ImageView
+    android:id="@+id/item_online_user_video"
+    android:layout_width="42dp"
+    android:layout_height="42dp"
+    android:layout_marginEnd="16dp"
+    android:background="@drawable/circle_bg_voice_button"
+    android:clickable="true"
+    android:focusable="true"
+    android:scaleType="center"
+    android:src="@drawable/icon_online_video"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <View
+    android:layout_width="0dp"
+    android:layout_height="1px"
+    android:background="#E6E6E6"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="@id/item_online_user_name" />
+</androidx.constraintlayout.widget.ConstraintLayout>
