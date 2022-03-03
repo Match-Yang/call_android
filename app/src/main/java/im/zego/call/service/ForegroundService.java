@@ -49,7 +49,15 @@ public class ForegroundService extends Service {
         Intent appIntent = new Intent(topActivity, LoginActivity.class);
         appIntent.setAction(Intent.ACTION_MAIN);
         appIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, appIntent, 0);
+
+        PendingIntent pendingIntent;
+        if (Build.VERSION.SDK_INT >= 23) {
+            pendingIntent = PendingIntent.getActivity(topActivity, 0, appIntent,
+                PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            pendingIntent = PendingIntent.getActivity(topActivity, 0, appIntent,
+                0);
+        }
 
         Context context = getApplicationContext();
         NotificationCompat.Builder builder = new Builder(context, CHANNEL_ID)
