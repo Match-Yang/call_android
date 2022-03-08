@@ -1,7 +1,7 @@
 package im.zego.callsdk.model;
 
 public enum ZegoCallType {
-    VOICE(1),
+    Voice(1),
     Video(2);
 
     private final int value;

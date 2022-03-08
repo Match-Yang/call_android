@@ -126,7 +126,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 }
                 dialog.updateData(userInfo, type);
                 int state;
-                if (type == ZegoCallType.VOICE) {
+                if (type == ZegoCallType.Voice) {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
                 } else {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;

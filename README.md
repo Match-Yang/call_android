@@ -24,6 +24,9 @@ Before getting started with the ZEGO Call application, **contact us to activate 
 <img width="700px" src="images/configure_android.png"/>
 
 ### Run the sample code
+Note: To run the sample code successfully, you will need to upgrade to Java 11 if the JRE you are using is Java 8 version. To do so, refer to the following:
+https://developer.android.com/studio/intro/studio-config#jdk
+
 
 1. Open the ZEGO Call project in Android Studio.
 2. Make sure the developer mode and USB debugging are enabled for the Android device, and connect the Android device to your computer.
