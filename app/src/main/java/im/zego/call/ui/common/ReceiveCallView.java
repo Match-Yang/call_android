@@ -27,7 +27,7 @@ public class ReceiveCallView extends FrameLayout {
     private LayoutReceiveCallBinding binding;
     private OnReceiveCallViewClickedListener listener;
     private ZegoUserInfo userInfo;
-    private ZegoCallType callType = ZegoCallType.VOICE;
+    private ZegoCallType callType = ZegoCallType.Voice;
 
     public ReceiveCallView(@NonNull Context context) {
         super(context);
@@ -52,7 +52,7 @@ public class ReceiveCallView extends FrameLayout {
 
     private void initView(Context context) {
         binding = LayoutReceiveCallBinding.inflate(LayoutInflater.from(context), this, true);
-        if (callType == ZegoCallType.VOICE) {
+        if (callType == ZegoCallType.Voice) {
             binding.dialogCallAcceptVoice.setVisibility(View.VISIBLE);
             binding.dialogCallAcceptVideo.setVisibility(View.GONE);
         } else {
@@ -65,7 +65,7 @@ public class ReceiveCallView extends FrameLayout {
             binding.dialogCallIcon.setImageDrawable(userIcon);
         }
 
-        if (callType == ZegoCallType.VOICE) {
+        if (callType == ZegoCallType.Voice) {
             binding.dialogCallType.setText(R.string.zego_voice_call);
         } else {
             binding.dialogCallType.setText(R.string.zego_video_call);
@@ -125,7 +125,7 @@ public class ReceiveCallView extends FrameLayout {
     public void updateData(ZegoUserInfo userInfo, ZegoCallType callType) {
         this.userInfo = userInfo;
         this.callType = callType;
-        if (callType == ZegoCallType.VOICE) {
+        if (callType == ZegoCallType.Voice) {
             binding.dialogCallAcceptVoice.setVisibility(View.VISIBLE);
             binding.dialogCallAcceptVideo.setVisibility(View.GONE);
         } else {
@@ -138,7 +138,7 @@ public class ReceiveCallView extends FrameLayout {
             binding.dialogCallIcon.setImageDrawable(userIcon);
         }
 
-        if (callType == ZegoCallType.VOICE) {
+        if (callType == ZegoCallType.Voice) {
             binding.dialogCallType.setText(R.string.zego_voice_call);
         } else {
             binding.dialogCallType.setText(R.string.zego_video_call);

@@ -177,7 +177,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         String userID = userService.localUserInfo.userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
-            userService.callUser(userInfo.userID, ZegoCallType.VOICE, token, errorCode -> {
+            userService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {
                     userService.enableMic(true, errorCode1 -> {
                         if (errorCode1 == 0) {

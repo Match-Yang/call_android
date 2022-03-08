@@ -2,6 +2,7 @@ package im.zego.call.auth;
 
 import android.content.Context;
 import android.util.Log;
+import com.blankj.utilcode.util.ToastUtils;
 import im.zego.callsdk.auth.TokenServerAssistant;
 import im.zego.callsdk.auth.ZegoRTCServerAssistant;
 import java.io.IOException;
@@ -45,6 +46,12 @@ public class AuthInfoManager {
     public void init(Context context) {
         this.context = context;
         String fileJson = readJsonFile(context, "KeyCenter.json");
+        if (fileJson == null || fileJson.isEmpty()) {
+            ToastUtils.showLong("please check if \"KeyCenter.json\" file is existed.");
+            Log.e(TAG,"please check if \"KeyCenter.json\" file is existed.You can follow ReadMe.md's"
+                + "instruction to generate it.");
+            return;
+        }
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject(fileJson);
