@@ -19,7 +19,6 @@ import com.blankj.utilcode.util.SizeUtils;
 
 import im.zego.call.R;
 import im.zego.call.ui.call.CallStateManager;
-import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.utils.PermissionHelper;
 
 public class MinimalDialog {
@@ -120,7 +119,7 @@ public class MinimalDialog {
 
     private void showAppDialog() {
         Activity topActivity = ActivityUtils.getTopActivity();
-        if (topActivity instanceof LoginActivity) {
+        if (topActivity.getComponentName().getClassName().contains("LoginActivity")) {
             return;
         }
 

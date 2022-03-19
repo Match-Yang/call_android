@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,7 +26,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.mmkv.MMKV;
+
+import java.util.Random;
+
 import im.zego.call.R;
+import im.zego.call.ZegoCallKit;
 import im.zego.call.databinding.ActivityLoginBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.common.LoadingDialog;
@@ -36,6 +41,10 @@ import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.service.ZegoListenerManager;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
+import im.zego.call.ui.entry.EntryActivity;
+import im.zego.call.utils.PermissionHelper;
+import im.zego.call.utils.PermissionHelper.IPermissionCallback;
+import im.zego.callsdk.model.ZegoUserInfo;
 
 public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
@@ -152,21 +161,6 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
         }
     }
 
-    private void showLoading() {
-        if (loadingDialog == null) {
-            loadingDialog = new LoadingDialog(this);
-        }
-        if (!loadingDialog.isShowing()) {
-            loadingDialog.show();
-        }
-    }
-
-    private void dismissLoading() {
-        if (loadingDialog != null) {
-            loadingDialog.dismiss();
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -174,11 +168,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
         // some brands kill process will not really kill process,
         // which cause login twice
-        //        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        //        String userID = userService.localUserInfo.userID;
-        //        userService.logout();
-        //        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
-        //        WebClientManager.getInstance().logout(userID, null);
+        ZegoCallKit.getInstance().logout();
     }
 }
 

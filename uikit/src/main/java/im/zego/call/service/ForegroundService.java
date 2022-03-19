@@ -15,7 +15,6 @@ import androidx.core.app.NotificationCompat.Builder;
 import com.blankj.utilcode.util.ActivityUtils;
 import im.zego.call.R;
 import im.zego.call.ui.call.CallStateManager;
-import im.zego.call.ui.login.LoginActivity;
 
 /**
  * foreground service used to keep process foreground.
@@ -46,7 +45,12 @@ public class ForegroundService extends Service {
         createNotificationChannel();
 
         Activity topActivity = ActivityUtils.getTopActivity();
-        Intent appIntent = new Intent(topActivity, LoginActivity.class);
+        Intent appIntent = new Intent();
+        try {
+            appIntent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.LoginActivity"));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         appIntent.setAction(Intent.ACTION_MAIN);
         appIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 

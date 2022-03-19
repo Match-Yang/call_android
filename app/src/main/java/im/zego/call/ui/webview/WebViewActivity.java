@@ -9,13 +9,10 @@ import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.ColorUtils;
-import com.blankj.utilcode.util.SizeUtils;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.WebChromeClient;
 import im.zego.call.databinding.ActivityWebViewBinding;
 import im.zego.call.ui.BaseActivity;
-import im.zego.call.ui.entry.EntryActivity;
 
 public class WebViewActivity extends BaseActivity<ActivityWebViewBinding> {
 

@@ -23,8 +23,6 @@ import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import im.zego.call.R;
 import im.zego.call.ui.call.CallStateManager;
-import im.zego.call.ui.common.ReceiveCallView.OnReceiveCallViewClickedListener;
-import im.zego.call.ui.login.LoginActivity;
 import im.zego.call.utils.PermissionHelper;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -36,7 +34,7 @@ public class ReceiveCallDialog {
     private WindowManager windowManager;
     private WindowManager.LayoutParams lp;
     private Dialog floatDialog;
-    private OnReceiveCallViewClickedListener listener;
+    private ReceiveCallView.OnReceiveCallViewClickedListener listener;
     private AlertDialog floatPermissionDialog;
     private Handler handler = new Handler(Looper.getMainLooper());
 
@@ -59,7 +57,7 @@ public class ReceiveCallDialog {
         lp.y = 0;
 
         receiveCallView = new ReceiveCallView(topActivity);
-        receiveCallView.setListener(new OnReceiveCallViewClickedListener() {
+        receiveCallView.setListener(new ReceiveCallView.OnReceiveCallViewClickedListener() {
             @Override
             public void onAcceptAudioClicked() {
                 dismissReceiveCallWindow();
@@ -148,7 +146,7 @@ public class ReceiveCallDialog {
 
     private void showAppDialog() {
         Activity topActivity = ActivityUtils.getTopActivity();
-        if (topActivity instanceof LoginActivity) {
+        if (topActivity.getComponentName().getClassName().contains("LoginActivity")) {
             return;
         }
 
@@ -181,7 +179,7 @@ public class ReceiveCallDialog {
         handler.removeCallbacksAndMessages(null);
     }
 
-    public void setListener(OnReceiveCallViewClickedListener listener) {
+    public void setListener(ReceiveCallView.OnReceiveCallViewClickedListener listener) {
         this.listener = listener;
     }
 

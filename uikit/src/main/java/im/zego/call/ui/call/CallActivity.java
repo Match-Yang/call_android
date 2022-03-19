@@ -32,7 +32,6 @@ import im.zego.call.constant.Constants;
 import im.zego.call.databinding.ActivityCallBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
-import im.zego.call.ui.common.LoadingDialog;
 import im.zego.call.ui.dialog.VideoSettingsDialog;
 import im.zego.call.ui.viewmodel.VideoConfigViewModel;
 import im.zego.call.utils.AvatarHelper;
@@ -83,10 +82,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private long time;
     private CallStateChangedListener callStateChangedListener;
-    private LoadingDialog loadingDialog;
     private VideoSettingsDialog videoSettingsDialog;
-
-    private VideoConfigViewModel videoConfigViewModel;
 
     public static void startCallActivity(ZegoUserInfo userInfo) {
         Log.d(TAG, "startCallActivity() called with: userInfo = [" + userInfo + "]");
@@ -134,7 +130,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         super.onCreate(savedInstanceState);
         ImmersionBar.with(this).reset().init();
 
-        videoConfigViewModel = new ViewModelProvider(this).get(VideoConfigViewModel.class);
+        VideoConfigViewModel videoConfigViewModel = new ViewModelProvider(this).get(VideoConfigViewModel.class);
         videoConfigViewModel.init();
         videoConfigViewModel.updateVideoConfig();
         videoSettingsDialog = new VideoSettingsDialog(this, videoConfigViewModel);
@@ -355,27 +351,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
     }
 
-    private void showLoading() {
-        if (loadingDialog == null) {
-            loadingDialog = new LoadingDialog(this);
-            loadingDialog.setLoadingText(getString(R.string.call_page_call_disconnected));
-        }
-        if (!loadingDialog.isShowing()) {
-            loadingDialog.show();
-        }
-    }
-
-    private void dismissLoading() {
-        if (loadingDialog != null) {
-            loadingDialog.dismiss();
-        }
-    }
-
     public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
         if (state == ZIMConnectionState.CONNECTED) {
             dismissLoading();
         } else {
-            showLoading();
+            showLoading(getString(R.string.call_page_call_disconnected));
         }
     }
 }

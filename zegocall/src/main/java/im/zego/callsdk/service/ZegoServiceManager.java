@@ -3,6 +3,12 @@ package im.zego.callsdk.service;
 import android.app.Application;
 import android.util.Log;
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -22,9 +28,6 @@ import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 import im.zego.zim.enums.ZIMRoomEvent;
 import im.zego.zim.enums.ZIMRoomState;
-import java.util.ArrayList;
-import java.util.HashMap;
-import org.json.JSONObject;
 
 /**
  * Class LiveAudioRoom business logic management.
@@ -73,8 +76,6 @@ public class ZegoServiceManager {
      *
      * @param appID       refers to the project ID. To get this, go to ZEGOCLOUD Admin Console:
      *                    https://console.zego.im/dashboard?lang=en
-     * @param appSign     refers to the secret key for authentication. To get this, go to ZEGOCLOUD Admin Console:
-     *                    https://console.zego.im/dashboard?lang=en
      * @param application th app context
      */
     public void init(long appID, String appSign, Application application) {
@@ -85,7 +86,6 @@ public class ZegoServiceManager {
 
         ZegoEngineProfile profile = new ZegoEngineProfile();
         profile.appID = appID;
-        profile.appSign = appSign;
         profile.scenario = ZegoScenario.COMMUNICATION;
         profile.application = application;
         ZegoExpressEngine.createEngine(profile, new IZegoEventHandler() {

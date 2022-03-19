@@ -2,16 +2,20 @@ package im.zego.call.auth;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.blankj.utilcode.util.ToastUtils;
-import im.zego.callsdk.auth.TokenServerAssistant;
-import im.zego.callsdk.auth.ZegoRTCServerAssistant;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import org.json.JSONException;
-import org.json.JSONObject;
+
+import im.zego.callsdk.auth.TokenServerAssistant;
+import im.zego.callsdk.auth.ZegoRTCServerAssistant;
 
 public class AuthInfoManager {
 

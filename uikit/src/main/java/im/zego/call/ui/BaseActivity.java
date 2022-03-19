@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
 
 import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.Utils;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -20,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import im.zego.call.ui.common.LoadingDialog;
 import im.zego.call.ui.common.TipsDialog;
 import im.zego.call.ui.common.TipsDialog.TipsMessageType;
 
@@ -30,6 +32,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     private static final Handler tipsHandler = new Handler(Looper.getMainLooper());
     public static final int TIPS_TIME = 3 * 1000;
     protected TipsDialog tipsDialog;
+    protected LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +110,28 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
         }
     }
 
-    public void hideTips() {
+    private void hideTips() {
         tipsDialog.dismiss();
+    }
+    protected void showLoading() {
+        this.showLoading(null);
+    }
+
+    protected void showLoading(String content) {
+        if (loadingDialog == null) {
+            loadingDialog = new LoadingDialog(this);
+            if (!StringUtils.isEmpty(content)) {
+                loadingDialog.setLoadingText(content);
+            }
+        }
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    protected void dismissLoading() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+        }
     }
 }

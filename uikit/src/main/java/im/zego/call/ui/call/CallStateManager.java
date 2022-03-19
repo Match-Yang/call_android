@@ -10,10 +10,13 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
 import android.util.Log;
+
 import com.blankj.utilcode.util.ActivityUtils;
-import im.zego.callsdk.model.ZegoUserInfo;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import im.zego.callsdk.model.ZegoUserInfo;
 
 public class CallStateManager {
 

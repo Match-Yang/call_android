@@ -5,7 +5,7 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent"
   android:background="#CC333333"
-  tools:context=".ui.call.CallActivity">
+  tools:context="im.zego.call.ui.call.CallActivity">
 
   <ImageView
     android:id="@+id/call_user_bg"

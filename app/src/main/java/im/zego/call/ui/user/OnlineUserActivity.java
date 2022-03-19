@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
+import im.zego.call.ZegoCallKit;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
 import im.zego.call.ui.BaseActivity;
-import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoRoomCallback;
@@ -67,12 +67,9 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
-                    CallActivity.startCallActivity(userInfo);
-
+                    ZegoCallKit.getInstance().callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
                 } else if (itemChild.getId() == R.id.item_online_user_video) {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
-                    CallActivity.startCallActivity(userInfo);
+                    ZegoCallKit.getInstance().callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
                 }
             }
         });
