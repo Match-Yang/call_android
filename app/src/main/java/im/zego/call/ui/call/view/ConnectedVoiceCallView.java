@@ -5,17 +5,23 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.blankj.utilcode.util.ToastUtils;
+import com.jeremyliao.liveeventbus.LiveEventBus;
+
+import java.util.Objects;
+
 import im.zego.call.R;
+import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutConnectedVoiceCallBinding;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoUserService;
-import java.util.Objects;
 
 public class ConnectedVoiceCallView extends ConstraintLayout {
 
@@ -38,7 +44,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
     }
 
     public ConnectedVoiceCallView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
-        int defStyleRes) {
+                                  int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView();
     }
@@ -74,6 +80,12 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
 //            boolean selected = v.isSelected();
 //            v.setSelected(!selected);
 //            userService.speakerOperate(!selected);
+//        });
+//        binding.callVoiceMinimal.setOnClickListener(v -> {
+//            LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
+//        });
+//        binding.callVoiceSettings.setOnClickListener(v -> {
+//            LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(false);
 //        });
     }
 

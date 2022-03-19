@@ -21,7 +21,9 @@
     <activity
       android:name=".ui.call.CallActivity"
       android:exported="true"
-      android:screenOrientation="portrait" />
+      android:launchMode="singleInstance"
+      android:screenOrientation="portrait"
+      android:taskAffinity="im.zego.call.ui.call.CallActivity" />
     <activity
       android:name=".ui.user.OnlineUserActivity"
       android:screenOrientation="portrait"

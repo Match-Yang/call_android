@@ -4,21 +4,27 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
+
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.Utils;
 import com.gyf.immersionbar.ImmersionBar;
-import im.zego.call.ui.common.TipsDialog;
-import im.zego.call.ui.common.TipsDialog.TipsMessageType;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import im.zego.call.ui.common.TipsDialog;
+import im.zego.call.ui.common.TipsDialog.TipsMessageType;
+
 public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
+    private static final String TAG = "BaseActivity";
 
     protected T binding;
     private static final Handler tipsHandler = new Handler(Looper.getMainLooper());
@@ -49,7 +55,14 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     }
 
     @Override
+    public boolean moveTaskToBack(boolean nonRoot) {
+        Log.d(TAG, "moveTaskToBack() called with: nonRoot = [" + nonRoot + "]");
+        return super.moveTaskToBack(nonRoot);
+    }
+
+    @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy() called");
         super.onDestroy();
         tipsHandler.removeCallbacksAndMessages(null);
         if (tipsDialog != null) {

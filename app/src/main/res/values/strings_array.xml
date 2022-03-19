@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="video_resolution">
+        <item>1080x1920</item>
+        <item>720x1280</item>
+        <item>540x960</item>
+        <item>360x640</item>
+        <item>270x480</item>
+        <item>180x320</item>
+    </string-array>
+
+    <string-array name="audio_bitrate">
+        <item>48kbps</item>
+        <item>96kbps</item>
+        <item>128kbps</item>
+    </string-array>
+
+</resources>

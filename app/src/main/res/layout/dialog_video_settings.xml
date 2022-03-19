@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="375dp"
+    android:background="@drawable/white_fill_half_round_rectangle_bg"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="5dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="7dp"
+        android:background="@drawable/white_divider_bg" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:gravity="start"
+        android:text="@string/room_settings_page_settings"
+        android:textColor="@color/settings_text"
+        android:textSize="16sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <im.zego.call.view.VideoSettingCellView
+                android:id="@+id/settings_background_noise_reduction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:cell_view_title="@string/room_settings_page_noise_suppression"
+                app:cell_view_type="text_with_switch" />
+
+            <im.zego.call.view.VideoSettingCellView
+                android:id="@+id/settings_echo_cancellation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:cell_view_title="@string/room_settings_page_echo_cancellation"
+                app:cell_view_type="text_with_switch" />
+
+            <im.zego.call.view.VideoSettingCellView
+                android:id="@+id/settings_mic_volume_auto_adjustment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:cell_view_title="@string/room_settings_page_mic_volume"
+                app:cell_view_type="text_with_switch" />
+
+            <im.zego.call.view.VideoSettingCellView
+                android:id="@+id/settings_mirroring"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:cell_view_title="@string/room_settings_page_mirroring"
+                app:cell_view_type="text_with_switch" />
+
+            <im.zego.call.view.VideoSettingCellView
+                android:id="@+id/settings_resolution_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:cell_view_content="1080x1920"
+                app:cell_view_title="@string/room_settings_page_video_resolution"
+                app:cell_view_type="text_with_arrow" />
+
+            <im.zego.call.view.VideoSettingCellView
+                android:id="@+id/settings_audio_bitrate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                app:cell_view_content="48kbps"
+                app:cell_view_title="@string/room_settings_page_audio_bitrate"
+                app:cell_view_type="text_with_arrow" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

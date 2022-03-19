@@ -13,17 +13,28 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
+
 import androidx.annotation.StringRes;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
+import com.jeremyliao.liveeventbus.LiveEventBus;
+
+import java.util.Locale;
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
+import im.zego.call.constant.Constants;
 import im.zego.call.databinding.ActivityCallBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.call.ui.common.LoadingDialog;
+import im.zego.call.ui.dialog.VideoSettingsDialog;
+import im.zego.call.ui.viewmodel.VideoConfigViewModel;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
@@ -32,8 +43,6 @@ import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
-import java.util.Locale;
-import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
@@ -65,6 +74,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 timeFormat = String.format(Locale.getDefault(), "%02d:%02d", time / 60, time % 60);
             }
             binding.callTime.setText(timeFormat);
+            LiveEventBus
+                    .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
+                    .post(timeFormat);
             handler.postDelayed(timeCountRunnable, 1000);
         }
     };
@@ -72,6 +84,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private long time;
     private CallStateChangedListener callStateChangedListener;
     private LoadingDialog loadingDialog;
+    private VideoSettingsDialog videoSettingsDialog;
+
+    private VideoConfigViewModel videoConfigViewModel;
 
     public static void startCallActivity(ZegoUserInfo userInfo) {
         Log.d(TAG, "startCallActivity() called with: userInfo = [" + userInfo + "]");
@@ -119,7 +134,27 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         super.onCreate(savedInstanceState);
         ImmersionBar.with(this).reset().init();
 
+        videoConfigViewModel = new ViewModelProvider(this).get(VideoConfigViewModel.class);
+        videoConfigViewModel.init();
+        videoConfigViewModel.updateVideoConfig();
+        videoSettingsDialog = new VideoSettingsDialog(this, videoConfigViewModel);
+
         initView();
+        startObserve();
+    }
+
+    private void startObserve() {
+        LiveEventBus
+                .get(Constants.EVENT_MINIMAL, Boolean.class)
+                .observe(this, isMinimal -> {
+                    if (isMinimal) {
+                        moveTaskToBack(true);
+                    }
+                });
+        LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).observe(this, isVideoCall -> {
+            videoSettingsDialog.setIsVideoCall(isVideoCall);
+            videoSettingsDialog.show();
+        });
     }
 
     private void initView() {

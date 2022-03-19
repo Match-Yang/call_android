@@ -59,7 +59,13 @@
   <string name="me">Me</string>
   <string name="loading">loading...</string>
 
-
+  <string name="room_settings_page_settings">Settings</string>
+  <string name="room_settings_page_noise_suppression">Noise suppression</string>
+  <string name="room_settings_page_echo_cancellation">Echo cancellation</string>
+  <string name="room_settings_page_mic_volume">Mic volume auto-adjustment</string>
+  <string name="room_settings_page_mirroring">Mirroring</string>
+  <string name="room_settings_page_video_resolution">Resolution</string>
+  <string name="room_settings_page_audio_bitrate">Audio bitrate</string>
 
   <string name="toast_kickout_error">This account has already logged in from another device.</string>
   <string name="create_user_failed">create user failed,errorCode :%d</string>

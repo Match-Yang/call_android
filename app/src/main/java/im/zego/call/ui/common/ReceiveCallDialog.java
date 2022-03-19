@@ -12,12 +12,10 @@ import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.RequiresApi;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
@@ -37,7 +35,7 @@ public class ReceiveCallDialog {
     private boolean isViewAddedToWindow;
     private WindowManager windowManager;
     private WindowManager.LayoutParams lp;
-    private Dialog callDialog;
+    private Dialog floatDialog;
     private OnReceiveCallViewClickedListener listener;
     private AlertDialog floatPermissionDialog;
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -154,9 +152,9 @@ public class ReceiveCallDialog {
             return;
         }
 
-        callDialog = new CallDialog(topActivity, receiveCallView);
-        if (!callDialog.isShowing()) {
-            callDialog.show();
+        floatDialog = new FloatDialog(topActivity, receiveCallView);
+        if (!floatDialog.isShowing()) {
+            floatDialog.show();
         }
     }
 
@@ -166,8 +164,8 @@ public class ReceiveCallDialog {
     }
 
     public void dismissReceiveCallWindow() {
-        if (callDialog != null && callDialog.isShowing()) {
-            callDialog.dismiss();
+        if (floatDialog != null && floatDialog.isShowing()) {
+            floatDialog.dismiss();
         }
         if (isViewAddedToWindow) {
             windowManager.removeViewImmediate(receiveCallView);
@@ -193,28 +191,5 @@ public class ReceiveCallDialog {
 
     public ZegoUserInfo getUserInfo() {
         return receiveCallView.getUserInfo();
-    }
-
-
-    static class CallDialog extends Dialog {
-
-        public CallDialog(@NonNull Context context, View view) {
-            super(context, R.style.TipsStyle);
-            initDialog(view);
-        }
-
-        private void initDialog(View view) {
-            setCanceledOnTouchOutside(false);
-            setCancelable(false);
-            setContentView(view);
-
-            view.measure(0, 0);
-
-            Window window = getWindow();
-            WindowManager.LayoutParams lp = window.getAttributes();
-            lp.width = LayoutParams.MATCH_PARENT;
-            lp.gravity = Gravity.TOP;
-            window.setAttributes(lp);
-        }
     }
 }

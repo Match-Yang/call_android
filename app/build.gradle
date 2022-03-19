@@ -75,6 +75,9 @@ dependencies {
     implementation 'com.scwang.smart:refresh-layout-kernel:2.0.3'
     implementation 'com.scwang.smart:refresh-header-material:2.0.3'
 
+    // live data bus
+    implementation 'io.github.jeremyliao:live-event-bus-x:1.8.0'
+
     api project(path: ':zegocall')
     // Google Sign In SDK (only required for Google Sign In)
     implementation 'com.google.android.gms:play-services-auth:20.1.0'

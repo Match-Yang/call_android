@@ -6,19 +6,25 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.blankj.utilcode.util.ToastUtils;
+import com.jeremyliao.liveeventbus.LiveEventBus;
+
+import java.util.Objects;
+
 import im.zego.call.R;
+import im.zego.call.constant.Constants;
+import im.zego.call.databinding.LayoutOutgoingCallBinding;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
-import im.zego.call.databinding.LayoutOutgoingCallBinding;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoUserService;
-import java.util.Objects;
 
 public class OutgoingCallView extends ConstraintLayout {
 
@@ -67,6 +73,12 @@ public class OutgoingCallView extends ConstraintLayout {
 //                v.setSelected(!selected);
 //                userService.useFrontCamera(selected);
 //            }
+//        });
+//        binding.callMinimal.setOnClickListener(v -> {
+//            LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
+//        });
+//        binding.callSettings.setOnClickListener(v -> {
+//            LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(isVideoCall());
 //        });
     }
 
