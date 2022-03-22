@@ -1,0 +1,107 @@
+{
+  "project_info": {
+    "project_number": "637474508182",
+    "firebase_url": "https://zegocall-604e2-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "zegocall-604e2",
+    "storage_bucket": "zegocall-604e2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637474508182:android:573d88aec89badff54a1b7",
+        "android_client_info": {
+          "package_name": "com.zegocloud.call"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637474508182-m0ji575hhksmj366mp5pjo1g0r8c5uf3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zegocloud.call",
+            "certificate_hash": "4827bdd3ab283d0e0348b52155f57ee03ddb8810"
+          }
+        },
+        {
+          "client_id": "637474508182-qbq1dk10ee7hsiduafu0uqbkdlgco512.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zegocloud.call",
+            "certificate_hash": "e53ad67bf8befa35b01ff91c2e7402bf87dfbd7a"
+          }
+        },
+        {
+          "client_id": "637474508182-1hoov11svfvsp7vi0onnh6vmjl0rl4rv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_u74l50F3im5pMuOMX6da1J33-lbpK-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637474508182-1hoov11svfvsp7vi0onnh6vmjl0rl4rv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "637474508182-kk97hljtrn98k7qdvdcltpu7s3e3sv1e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "im.zego.call"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637474508182:android:9fd23c15e0f8ce7254a1b7",
+        "android_client_info": {
+          "package_name": "im.zego.call"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637474508182-9koekn74ukv381ahk4pnpo76fk2866gp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "im.zego.call",
+            "certificate_hash": "dac4df33efcb93c1f49255cc2e2295e57116a419"
+          }
+        },
+        {
+          "client_id": "637474508182-1hoov11svfvsp7vi0onnh6vmjl0rl4rv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_u74l50F3im5pMuOMX6da1J33-lbpK-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637474508182-1hoov11svfvsp7vi0onnh6vmjl0rl4rv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "637474508182-kk97hljtrn98k7qdvdcltpu7s3e3sv1e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "im.zego.call"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

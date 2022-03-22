@@ -2,8 +2,9 @@ package im.zego.callsdk.service;
 
 import android.app.Application;
 import android.util.Log;
+import com.google.gson.Gson;
 import im.zego.callsdk.ZegoZIMManager;
-import im.zego.callsdk.callback.ZegoRoomCallback;
+import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoScenario;
@@ -30,11 +31,11 @@ import org.json.JSONObject;
  * <p> Description: This class contains the LiveAudioRoom business logics, manages the service instances of different
  * modules, and also distributing the data delivered by the SDK.
  */
-public class ZegoRoomManager {
+public class ZegoServiceManager {
 
-    private static volatile ZegoRoomManager singleton = null;
+    private static volatile ZegoServiceManager singleton = null;
 
-    private ZegoRoomManager() {
+    private ZegoServiceManager() {
     }
 
     /**
@@ -44,11 +45,11 @@ public class ZegoRoomManager {
      *
      * @return
      */
-    public static ZegoRoomManager getInstance() {
+    public static ZegoServiceManager getInstance() {
         if (singleton == null) {
-            synchronized (ZegoRoomManager.class) {
+            synchronized (ZegoServiceManager.class) {
                 if (singleton == null) {
-                    singleton = new ZegoRoomManager();
+                    singleton = new ZegoServiceManager();
                 }
             }
         }
@@ -60,8 +61,11 @@ public class ZegoRoomManager {
      * information and other business logics.
      */
     public ZegoUserService userService;
-
-    private static final String TAG = "RoomManager";
+    public ZegoCallService callService;
+    public ZegoRoomService roomService;
+    public ZegoDeviceService deviceService;
+    public Gson mGson = new Gson();
+    private static final String TAG = "ZegoService";
 
     /**
      * Initialize the SDK.
@@ -74,7 +78,10 @@ public class ZegoRoomManager {
      * @param application th app context
      */
     public void init(long appID, String appSign, Application application) {
-        userService = new ZegoUserService();
+        userService = new ZegoUserServiceImpl();
+        callService = new ZegoCallServiceImpl();
+        roomService = new ZegoRoomServiceImpl();
+        deviceService = new ZegoDeviceServiceImpl();
 
         ZegoEngineProfile profile = new ZegoEngineProfile();
         profile.appID = appID;
@@ -86,9 +93,7 @@ public class ZegoRoomManager {
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
                 ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-                if (userService != null) {
-                    userService.onNetworkQuality(userID,upstreamQuality,downstreamQuality);
-                }
+
             }
 
             @Override
@@ -113,87 +118,6 @@ public class ZegoRoomManager {
                 }
             }
         });
-
-        ZegoZIMManager.getInstance().createZIM(appID, application);
-        // distribute to specific services which listening what they want
-        ZegoZIMManager.getInstance().zim.setEventHandler(new ZIMEventHandler() {
-            @Override
-            public void onConnectionStateChanged(ZIM zim, ZIMConnectionState state, ZIMConnectionEvent event,
-                JSONObject extendedData) {
-                super.onConnectionStateChanged(zim, state, event, extendedData);
-                Log.d(TAG,
-                    "onConnectionStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = ["
-                        + event + "], extendedData = [" + extendedData + "]");
-                if (userService != null) {
-                    userService.onConnectionStateChanged(zim, state, event, extendedData);
-                }
-            }
-
-            @Override
-            public void onError(ZIM zim, ZIMError errorInfo) {
-                super.onError(zim, errorInfo);
-            }
-
-            @Override
-            public void onTokenWillExpire(ZIM zim, int second) {
-                super.onTokenWillExpire(zim, second);
-            }
-
-            @Override
-            public void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
-                super.onReceivePeerMessage(zim, messageList, fromUserID);
-                if (userService != null) {
-                    userService.onReceivePeerMessage(zim, messageList, fromUserID);
-                }
-            }
-
-            @Override
-            public void onReceiveRoomMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromRoomID) {
-                super.onReceiveRoomMessage(zim, messageList, fromRoomID);
-            }
-
-            @Override
-            public void onRoomMemberJoined(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
-                super.onRoomMemberJoined(zim, memberList, roomID);
-                if (userService != null) {
-                    userService.onRoomMemberJoined(zim, memberList, roomID);
-                }
-            }
-
-            @Override
-            public void onRoomMemberLeft(ZIM zim, ArrayList<ZIMUserInfo> memberList, String roomID) {
-                super.onRoomMemberLeft(zim, memberList, roomID);
-                if (userService != null) {
-                    userService.onRoomMemberLeft(zim, memberList, roomID);
-                }
-            }
-
-            @Override
-            public void onRoomStateChanged(ZIM zim, ZIMRoomState state, ZIMRoomEvent event, JSONObject extendedData,
-                String roomID) {
-                super.onRoomStateChanged(zim, state, event, extendedData, roomID);
-                Log.d(TAG,
-                    "onRoomStateChanged() called with: zim = [" + zim + "], state = [" + state + "], event = [" + event
-                        + "], extendedData = [" + extendedData + "], roomID = [" + roomID + "]");
-                if (userService != null) {
-                    userService.onRoomStateChanged(zim, state, event, extendedData, roomID);
-                }
-            }
-
-            @Override
-            public void onRoomAttributesUpdated(ZIM zim, ZIMRoomAttributesUpdateInfo info, String roomID) {
-                super.onRoomAttributesUpdated(zim, info, roomID);
-                if (userService != null) {
-                    userService.onRoomAttributesUpdated(zim, info, roomID);
-                }
-            }
-
-            @Override
-            public void onRoomAttributesBatchUpdated(ZIM zim, ArrayList<ZIMRoomAttributesUpdateInfo> infos,
-                String roomID) {
-                super.onRoomAttributesBatchUpdated(zim, infos, roomID);
-            }
-        });
     }
 
     /**
@@ -216,9 +140,9 @@ public class ZegoRoomManager {
      * @param callback refers to the callback that be triggered when the logs are upload successfully or failed to
      *                 upload logs.
      */
-    public void uploadLog(final ZegoRoomCallback callback) {
+    public void uploadLog(final ZegoCallback callback) {
         ZegoZIMManager.getInstance().zim
-            .uploadLog(errorInfo -> callback.onRoomCallback(errorInfo.code.value()));
+            .uploadLog(errorInfo -> callback.onResult(errorInfo.code.value()));
         ZegoExpressEngine.getEngine().uploadLog();
     }
 }

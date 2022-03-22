@@ -29,7 +29,6 @@ import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
@@ -45,10 +44,10 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private ZegoUserInfo userInfo;
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable missCallRunnable = () -> {
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.cancelCall(ZegoCancelType.TIMEOUT, userInfo.userID, errorCode -> {
-            CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
-        });
+//        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//        userService.cancelCall(ZegoCancelType.TIMEOUT, userInfo.userID, errorCode -> {
+//            CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
+//        });
     };
     private Runnable finishRunnable = () -> {
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
@@ -144,8 +143,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     handler.post(timeCountRunnable);
                     handler.removeCallbacks(missCallRunnable);
                     handler.removeCallbacks(finishRunnable);
-                    ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                    userService.speakerOperate(false);
+//                    ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//                    userService.speakerOperate(false);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
                     updateStateText(R.string.call_page_status_canceled);
                     finishActivityDelayed();
@@ -171,74 +170,74 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     private void initDeviceState(int typeOfCall) {
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.useFrontCamera(true);
-
-        String userID = userService.localUserInfo.userID;
-        String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
-        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
-            userService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
-                if (errorCode == 0) {
-                    userService.enableMic(true, errorCode1 -> {
-                        if (errorCode1 == 0) {
-                        } else {
-                            ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
-                        }
-                    });
-                    handler.postDelayed(missCallRunnable, 60 * 1000);
-                } else {
-                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
-                    finishActivityDelayed();
-                }
-            });
-        } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
-            userService.callUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
-                if (errorCode == 0) {
-                    TextureView textureView = binding.layoutOutgoingCall.getTextureView();
-                    userService.enableCamera(true, errorCode1 -> {
-                        if (errorCode1 == 0) {
-                            userService.enableMic(true, errorCode2 -> {
-                                if (errorCode2 == 0) {
-                                }
-                            });
-                        } else {
-                            ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
-                        }
-                        userService.startPlaying(userService.localUserInfo.userID, textureView);
-                    });
-                    handler.postDelayed(missCallRunnable, 60 * 1000);
-                } else {
-                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
-                    finishActivityDelayed();
-                }
-            });
-        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
-            handler.postDelayed(finishRunnable, 62 * 1000);
-        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
-            handler.postDelayed(finishRunnable, 62 * 1000);
-        } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
-            handler.post(timeCountRunnable);
-            userService.enableMic(true, errorCode -> {
-                if (errorCode == 0) {
-                    userService.speakerOperate(false);
-                }
-            });
-            handler.removeCallbacks(missCallRunnable);
-            handler.removeCallbacks(finishRunnable);
-        } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
-            handler.post(timeCountRunnable);
-            userService.enableMic(true, errorCode -> {
-                if (errorCode == 0) {
-                    userService.enableCamera(true, errorCode1 -> {
-                        if (errorCode1 == 0) {
-                            userService.speakerOperate(false);
-                        }
-                    });
-                }
-            });
-            handler.removeCallbacks(missCallRunnable);
-            handler.removeCallbacks(finishRunnable);
-        }
+//        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//        userService.useFrontCamera(true);
+//
+//        String userID = userService.localUserInfo.userID;
+//        String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
+//        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+//            userService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
+//                if (errorCode == 0) {
+//                    userService.enableMic(true, errorCode1 -> {
+//                        if (errorCode1 == 0) {
+//                        } else {
+//                            ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
+//                        }
+//                    });
+//                    handler.postDelayed(missCallRunnable, 60 * 1000);
+//                } else {
+//                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
+//                    finishActivityDelayed();
+//                }
+//            });
+//        } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+//            userService.callUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
+//                if (errorCode == 0) {
+//                    TextureView textureView = binding.layoutOutgoingCall.getTextureView();
+//                    userService.enableCamera(true, errorCode1 -> {
+//                        if (errorCode1 == 0) {
+//                            userService.enableMic(true, errorCode2 -> {
+//                                if (errorCode2 == 0) {
+//                                }
+//                            });
+//                        } else {
+//                            ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
+//                        }
+//                        userService.startPlaying(userService.localUserInfo.userID, textureView);
+//                    });
+//                    handler.postDelayed(missCallRunnable, 60 * 1000);
+//                } else {
+//                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
+//                    finishActivityDelayed();
+//                }
+//            });
+//        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
+//            handler.postDelayed(finishRunnable, 62 * 1000);
+//        } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
+//            handler.postDelayed(finishRunnable, 62 * 1000);
+//        } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
+//            handler.post(timeCountRunnable);
+//            userService.enableMic(true, errorCode -> {
+//                if (errorCode == 0) {
+//                    userService.speakerOperate(false);
+//                }
+//            });
+//            handler.removeCallbacks(missCallRunnable);
+//            handler.removeCallbacks(finishRunnable);
+//        } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
+//            handler.post(timeCountRunnable);
+//            userService.enableMic(true, errorCode -> {
+//                if (errorCode == 0) {
+//                    userService.enableCamera(true, errorCode1 -> {
+//                        if (errorCode1 == 0) {
+//                            userService.speakerOperate(false);
+//                        }
+//                    });
+//                }
+//            });
+//            handler.removeCallbacks(missCallRunnable);
+//            handler.removeCallbacks(finishRunnable);
+//        }
     }
 
     private void updateUi(int type) {

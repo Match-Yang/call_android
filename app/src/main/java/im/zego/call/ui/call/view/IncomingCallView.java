@@ -16,7 +16,6 @@ import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMErrorCode;
 import java.util.Objects;
@@ -52,56 +51,56 @@ public class IncomingCallView extends ConstraintLayout {
         binding.callAcceptVideo.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-                userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
-                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        userService.enableMic(true, errorCode1 -> {
-                            if (errorCode1 == 0) {
-                                userService.enableCamera(true, errorCode2 -> {
-                                    if (errorCode2 == 0) {
-                                    }
-                                });
-                            }
-                        });
-                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
-                    } else {
-                        ToastUtils.showShort(R.string.response_failed, errorCode);
-                    }
-                });
+//                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+//                userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+//                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+//                        userService.enableMic(true, errorCode1 -> {
+//                            if (errorCode1 == 0) {
+//                                userService.enableCamera(true, errorCode2 -> {
+//                                    if (errorCode2 == 0) {
+//                                    }
+//                                });
+//                            }
+//                        });
+//                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
+//                    } else {
+//                        ToastUtils.showShort(R.string.response_failed, errorCode);
+//                    }
+//                });
             }
         });
         binding.callAcceptVoice.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
-                userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
-                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        userService.enableMic(true, errorCode1 -> {
-                            if (errorCode1 == 0) {
-                            } else {
-                                ToastUtils.showShort(R.string.mic_operate_failed, errorCode1);
-                            }
-                        });
-                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
-                    } else {
-                        ToastUtils.showShort("responseCall " + errorCode);
-                    }
-                });
+//                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+//                userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
+//                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+//                        userService.enableMic(true, errorCode1 -> {
+//                            if (errorCode1 == 0) {
+//                            } else {
+//                                ToastUtils.showShort(R.string.mic_operate_failed, errorCode1);
+//                            }
+//                        });
+//                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
+//                    } else {
+//                        ToastUtils.showShort("responseCall " + errorCode);
+//                    }
+//                });
             }
         });
         binding.callDecline.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
-                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
-                    } else {
-                        ToastUtils.showShort("Decline Call" + errorCode);
-                    }
-                });
+//                ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//                userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
+//                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+//                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+//                    } else {
+//                        ToastUtils.showShort("Decline Call" + errorCode);
+//                    }
+//                });
             }
         });
     }

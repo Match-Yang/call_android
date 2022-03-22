@@ -9,15 +9,15 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
-import im.zego.call.http.WebClientManager;
-import im.zego.call.http.bean.UserBean;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoRoomCallback;
+import im.zego.callsdk.listener.ZegoUserLisCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.service.ZegoUserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -79,22 +79,14 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
     }
 
     private void getUserList(ZegoRoomCallback callback) {
-        WebClientManager.getInstance().getUserList((errorCode, message, response) -> {
-            if (callback != null) {
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        userService.getOnlineUserList(new ZegoUserLisCallback() {
+            @Override
+            public void onGetUserList(int errorCode, List<ZegoUserInfo> userInfoList) {
+                userInfoList.remove(userService.localUserInfo);
+                onlineUserAdapter.updateList(userInfoList);
                 callback.onRoomCallback(errorCode);
             }
-            List<ZegoUserInfo> userInfoList = new ArrayList<>();
-            ZegoUserInfo localUserInfo = ZegoRoomManager.getInstance().userService.localUserInfo;
-            for (UserBean userBean : response) {
-                if (Objects.equals(userBean.userID, localUserInfo.userID)) {
-                    continue;
-                }
-                ZegoUserInfo userInfo = new ZegoUserInfo();
-                userInfo.userID = userBean.userID;
-                userInfo.userName = userBean.userName;
-                userInfoList.add(userInfo);
-            }
-            onlineUserAdapter.updateList(userInfoList);
         });
     }
 }
