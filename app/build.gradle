@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
 }
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdk 31
@@ -75,4 +76,6 @@ dependencies {
     implementation 'com.scwang.smart:refresh-header-material:2.0.3'
 
     api project(path: ':zegocall')
+    // Google Sign In SDK (only required for Google Sign In)
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
 }

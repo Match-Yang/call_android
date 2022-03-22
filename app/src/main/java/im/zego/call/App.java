@@ -4,7 +4,7 @@ import android.app.Application;
 import com.blankj.utilcode.util.Utils;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.auth.AuthInfoManager;
-import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoServiceManager;
 
 public class App extends Application {
 
@@ -18,6 +18,6 @@ public class App extends Application {
 
         long appID = AuthInfoManager.getInstance().getAppID();
         String appSign = AuthInfoManager.getInstance().getAppSign();
-        ZegoRoomManager.getInstance().init(appID, appSign, this);
+        ZegoServiceManager.getInstance().init(appID, appSign, this);
     }
 }

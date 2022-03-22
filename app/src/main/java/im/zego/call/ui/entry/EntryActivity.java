@@ -25,7 +25,6 @@ import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
-import im.zego.call.http.WebClientManager;
 import im.zego.call.service.ForegroundService;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
@@ -44,7 +43,7 @@ import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
@@ -90,7 +89,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
         });
 
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoUserInfo localUserInfo = userService.localUserInfo;
 
         binding.entryUserId.setText("ID:" + localUserInfo.userID);
@@ -99,147 +98,147 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         binding.entryUserAvatar.setImageDrawable(userIcon);
 
         dialog = new ReceiveCallDialog();
-        userService.setListener(new ZegoUserServiceListener() {
-            @Override
-            public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-                Log.d(TAG, "onUserInfoUpdated() called with: userInfo = [" + userInfo + "]");
-                Activity topActivity = ActivityUtils.getTopActivity();
-                if (topActivity instanceof CallActivity) {
-                    CallActivity callActivity = (CallActivity) topActivity;
-                    callActivity.onUserInfoUpdated(userInfo);
-                }
-            }
-
-            @Override
-            public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
-                Activity topActivity = ActivityUtils.getTopActivity();
-                Log.d(TAG,
-                    "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], topActivity = [" + topActivity
-                        + "]");
-                boolean inACallStream = CallStateManager.getInstance().isInACallStream();
-                if (inACallStream || topActivity instanceof CallActivity) {
-                    // means call is happening,reject other calls
-                    userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
-
-                    });
-                    return;
-                }
-                dialog.updateData(userInfo, type);
-                int state;
-                if (type == ZegoCallType.Voice) {
-                    state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
-                } else {
-                    state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
-                }
-                CallStateManager.getInstance().setCallState(userInfo, state);
-
-                //show notification on lock-screen
-                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                boolean isScreenOff = !powerManager.isInteractive();
-                boolean isBackground = !AppUtils.isAppForeground();
-                boolean hasOverlayPermission = PermissionHelper.checkFloatWindowPermission();
-                if (isScreenOff || (isBackground && !hasOverlayPermission)) {
-                    showNotification(userInfo);
-                }
-                dialog.showReceiveCallWindow();
-            }
-
-            @Override
-            public void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType) {
-                Log.d(TAG,
-                    "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
-                        + "]");
-                boolean connected = CallStateManager.getInstance().isConnected();
-                ZegoUserInfo userInfo1 = CallStateManager.getInstance().getUserInfo();
-                if (connected && userInfo1 != userInfo) {
-                    return;
-                }
-                if (cancelType == ZegoCancelType.INTENT) {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
-                } else {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
-                }
-                dialog.dismissReceiveCallWindow();
-                dismissNotification(notificationId);
-            }
-
-            @Override
-            public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
-                Log.d(TAG, "onReceiveCallResponse() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
-                boolean connected = CallStateManager.getInstance().isConnected();
-                ZegoUserInfo userInfo1 = CallStateManager.getInstance().getUserInfo();
-                if (connected && userInfo1 != userInfo) {
-                    return;
-                }
-                if (type == ZegoResponseType.Reject) {
-                    userService.endCall(errorCode -> {
-                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
-                    });
-                } else {
-                    int callState = CallStateManager.getInstance().getCallState();
-                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
-                        callState = CallStateManager.TYPE_CONNECTED_VOICE;
-                    } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
-                        callState = CallStateManager.TYPE_CONNECTED_VIDEO;
-                    }
-                    CallStateManager.getInstance().setCallState(userInfo, callState);
-                }
-            }
-
-            @Override
-            public void onReceiveCallEnded() {
-                Log.d(TAG, "onEndCallReceived() called");
-                userService.endCall(errorCode -> {
-                    int callState = CallStateManager.getInstance().getCallState();
-                    if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
-                        callState == CallStateManager.TYPE_CONNECTED_VOICE) {
-                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
-                    } else {
-                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_CANCELED);
-                    }
-                });
-            }
-
-            @Override
-            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-                if (event == ZIMConnectionEvent.KICKED_OUT) {
-                    ToastUtils.showShort(R.string.toast_kickout_error);
-                    logout();
-                    return;
-                }
-                if (state == ZIMConnectionState.DISCONNECTED) {
-                    logout();
-                } else if (state == ZIMConnectionState.CONNECTED) {
-                    WebClientManager.getInstance().tryReLogin((errorCode, message, response) -> {
-                        if (errorCode != 0) {
-                            logout();
-                        }
-                    });
-                    Activity topActivity = ActivityUtils.getTopActivity();
-                    if (topActivity instanceof CallActivity) {
-                        CallActivity callActivity = (CallActivity) topActivity;
-                        callActivity.onConnectionStateChanged(state, event);
-                    }
-                } else {
-                    Activity topActivity = ActivityUtils.getTopActivity();
-                    if (topActivity instanceof CallActivity) {
-                        CallActivity callActivity = (CallActivity) topActivity;
-                        callActivity.onConnectionStateChanged(state, event);
-                    }
-                }
-            }
-
-            @Override
-            public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
-                if (Objects.equals(userID, localUserInfo.userID) || userID == null) {
-                    Activity topActivity = ActivityUtils.getTopActivity();
-                    if (topActivity instanceof CallActivity) {
-                        CallActivity callActivity = (CallActivity) topActivity;
-                        callActivity.onNetworkQuality(userID, quality);
-                    }
-                }
-            }
-        });
+//        userService.setListener(new ZegoUserServiceListener() {
+//            @Override
+//            public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+//                Log.d(TAG, "onUserInfoUpdated() called with: userInfo = [" + userInfo + "]");
+//                Activity topActivity = ActivityUtils.getTopActivity();
+//                if (topActivity instanceof CallActivity) {
+//                    CallActivity callActivity = (CallActivity) topActivity;
+//                    callActivity.onUserInfoUpdated(userInfo);
+//                }
+//            }
+//
+//            @Override
+//            public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
+//                Activity topActivity = ActivityUtils.getTopActivity();
+//                Log.d(TAG,
+//                    "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], topActivity = [" + topActivity
+//                        + "]");
+//                boolean inACallStream = CallStateManager.getInstance().isInACallStream();
+//                if (inACallStream || topActivity instanceof CallActivity) {
+//                    // means call is happening,reject other calls
+//                    userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
+//
+//                    });
+//                    return;
+//                }
+//                dialog.updateData(userInfo, type);
+//                int state;
+//                if (type == ZegoCallType.Voice) {
+//                    state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
+//                } else {
+//                    state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
+//                }
+//                CallStateManager.getInstance().setCallState(userInfo, state);
+//
+//                //show notification on lock-screen
+//                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+//                boolean isScreenOff = !powerManager.isInteractive();
+//                boolean isBackground = !AppUtils.isAppForeground();
+//                boolean hasOverlayPermission = PermissionHelper.checkFloatWindowPermission();
+//                if (isScreenOff || (isBackground && !hasOverlayPermission)) {
+//                    showNotification(userInfo);
+//                }
+//                dialog.showReceiveCallWindow();
+//            }
+//
+//            @Override
+//            public void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType) {
+//                Log.d(TAG,
+//                    "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
+//                        + "]");
+//                boolean connected = CallStateManager.getInstance().isConnected();
+//                ZegoUserInfo userInfo1 = CallStateManager.getInstance().getUserInfo();
+//                if (connected && userInfo1 != userInfo) {
+//                    return;
+//                }
+//                if (cancelType == ZegoCancelType.INTENT) {
+//                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+//                } else {
+//                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_MISSED);
+//                }
+//                dialog.dismissReceiveCallWindow();
+//                dismissNotification(notificationId);
+//            }
+//
+//            @Override
+//            public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
+//                Log.d(TAG, "onReceiveCallResponse() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+//                boolean connected = CallStateManager.getInstance().isConnected();
+//                ZegoUserInfo userInfo1 = CallStateManager.getInstance().getUserInfo();
+//                if (connected && userInfo1 != userInfo) {
+//                    return;
+//                }
+//                if (type == ZegoResponseType.Reject) {
+//                    userService.endCall(errorCode -> {
+//                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+//                    });
+//                } else {
+//                    int callState = CallStateManager.getInstance().getCallState();
+//                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+//                        callState = CallStateManager.TYPE_CONNECTED_VOICE;
+//                    } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+//                        callState = CallStateManager.TYPE_CONNECTED_VIDEO;
+//                    }
+//                    CallStateManager.getInstance().setCallState(userInfo, callState);
+//                }
+//            }
+//
+//            @Override
+//            public void onReceiveCallEnded() {
+//                Log.d(TAG, "onEndCallReceived() called");
+//                userService.endCall(errorCode -> {
+//                    int callState = CallStateManager.getInstance().getCallState();
+//                    if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
+//                        callState == CallStateManager.TYPE_CONNECTED_VOICE) {
+//                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
+//                    } else {
+//                        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_CANCELED);
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
+//                if (event == ZIMConnectionEvent.KICKED_OUT) {
+//                    ToastUtils.showShort(R.string.toast_kickout_error);
+//                    logout();
+//                    return;
+//                }
+//                if (state == ZIMConnectionState.DISCONNECTED) {
+//                    logout();
+//                } else if (state == ZIMConnectionState.CONNECTED) {
+//                    WebClientManager.getInstance().tryReLogin((errorCode, message, response) -> {
+//                        if (errorCode != 0) {
+//                            logout();
+//                        }
+//                    });
+//                    Activity topActivity = ActivityUtils.getTopActivity();
+//                    if (topActivity instanceof CallActivity) {
+//                        CallActivity callActivity = (CallActivity) topActivity;
+//                        callActivity.onConnectionStateChanged(state, event);
+//                    }
+//                } else {
+//                    Activity topActivity = ActivityUtils.getTopActivity();
+//                    if (topActivity instanceof CallActivity) {
+//                        CallActivity callActivity = (CallActivity) topActivity;
+//                        callActivity.onConnectionStateChanged(state, event);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
+//                if (Objects.equals(userID, localUserInfo.userID) || userID == null) {
+//                    Activity topActivity = ActivityUtils.getTopActivity();
+//                    if (topActivity instanceof CallActivity) {
+//                        CallActivity callActivity = (CallActivity) topActivity;
+//                        callActivity.onNetworkQuality(userID, quality);
+//                    }
+//                }
+//            }
+//        });
 
         createNotificationChannel();
         AppUtils.registerAppStatusChangedListener(new OnAppStatusChangedListener() {
@@ -249,11 +248,11 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 // some phone will freeze app when phone is desktop,even if we start foreground service,
                 // such as vivo.
                 // so when app back to foreground, if heartbeat failed,relogin.
-                WebClientManager.getInstance().tryReLogin((errorCode, message, response) -> {
-                    if (errorCode != 0) {
-                        logout();
-                    }
-                });
+//                WebClientManager.getInstance().tryReLogin((errorCode, message, response) -> {
+//                    if (errorCode != 0) {
+//                        logout();
+//                    }
+//                });
             }
 
             @Override
@@ -353,8 +352,8 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy() called");
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        userService.setListener(null);
+//        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//        userService.setListener(null);
         stopService(new Intent(this, ForegroundService.class));
     }
 
@@ -364,12 +363,12 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     }
 
     private void logout() {
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        String userID = userService.localUserInfo.userID;
-        userService.logout();
-        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
-        WebClientManager.getInstance().logout(userID, null);
-        MMKV.defaultMMKV().encode("autoLogin", false);
+//        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+//        String userID = userService.localUserInfo.userID;
+//        userService.logout();
+//        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
+//        WebClientManager.getInstance().logout(userID, null);
+//        MMKV.defaultMMKV().encode("autoLogin", false);
         ActivityUtils.finishToActivity(LoginActivity.class, false);
     }
 }
