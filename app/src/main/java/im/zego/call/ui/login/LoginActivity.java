@@ -136,7 +136,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 showLoading();
                 ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-                userService.login(null, account.getIdToken(), errorCode -> {
+                userService.login(account.getIdToken(), errorCode -> {
                     dismissLoading();
                     if (errorCode == 0) {
                         ActivityUtils.startActivity(EntryActivity.class);

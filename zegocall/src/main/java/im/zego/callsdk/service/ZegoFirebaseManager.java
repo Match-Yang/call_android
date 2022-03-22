@@ -63,6 +63,13 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
     private void signOutFirebaseAuth(ZegoRequestCallback callback) {
         FirebaseAuth.getInstance().signOut();
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        String userID = userService.localUserInfo.userID;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference onlineUserRef = database.getReference("online_user").child(userID);
+        onlineUserRef.removeValue();
+        DatabaseReference pushTokenRef = database.getReference("push_token").child(userID);
+        pushTokenRef.removeValue();
         if (callback != null) {
             callback.onResult(0, null);
         }
@@ -86,23 +93,35 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                             @Override
                             public void onComplete(@NonNull Task<String> task) {
                                 if (!task.isSuccessful()) {
-                                    Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                                    Log.w(TAG, "Fetching FCM registration databasePushToken failed", task.getException());
                                     FirebaseAuth.getInstance().signOut();
                                     if (callback != null) {
                                         callback.onResult(-1000, null);
                                     }
                                     return;
                                 }
-                                DatabaseReference onlineUserRef = FirebaseDatabase.getInstance().getReference("online_user")
+                                // Get new FCM registration databasePushToken
+                                String pushToken = task.getResult();
+                                Log.d(TAG, "onComplete() called with: databasePushToken = [" + pushToken + "]");
+
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                DatabaseReference onlineUserRef = database.getReference("online_user")
                                     .child(currentUser.getUid());
                                 DatabaseUser databaseUser = new DatabaseUser();
                                 databaseUser.display_name = currentUser.getDisplayName();
                                 databaseUser.user_id = currentUser.getUid();
                                 databaseUser.last_changed = ServerValue.TIMESTAMP;
+                                databaseUser.token_id = pushToken;
                                 onlineUserRef.setValue(databaseUser);
-                                // Get new FCM registration token
-                                String fcmToken = task.getResult();
-                                Log.d(TAG, "onComplete() called with: token = [" + fcmToken + "]");
+                                DatabaseReference pushTokenRef = database.getReference("push_token")
+                                    .child(pushToken);
+                                DatabasePushToken databasePushToken = new DatabasePushToken();
+                                databasePushToken.user_id = currentUser.getUid();
+                                databasePushToken.token_id = pushToken;
+                                databasePushToken.device_type = "android";
+                                pushTokenRef.setValue(databasePushToken);
+
+
                                 if (callback != null) {
                                     callback.onResult(0, null);
                                 }
