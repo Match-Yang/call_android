@@ -25,8 +25,7 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="15dp"
         android:padding="4dp"
-        android:src="@drawable/icon_nav_back"
-        android:tint="@color/settings_text"
+        android:src="@drawable/icon_arrow_left"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view_divider" />
 

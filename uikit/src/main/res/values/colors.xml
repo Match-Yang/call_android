@@ -10,8 +10,8 @@
   <color name="settings_text">#2A2A2A</color>
   <color name="settings_tips_text">#A4A4A4</color>
 
-  <color name="item_string_selected_color">#2A2A2A</color>
-  <color name="item_string_default_color">#A4A4A4</color>
+  <color name="item_string_selected_color">@color/settings_text</color>
+  <color name="item_string_default_color">@color/settings_tips_text</color>
 
   <color name="light_red">#FF4A50</color>
   <color name="light_green">#55BC9E</color>
