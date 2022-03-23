@@ -12,9 +12,8 @@ import im.zego.call.R;
 import im.zego.call.ZegoCallKit;
 import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.ui.BaseActivity;
-import im.zego.call.ui.login.LoginActivity;
+import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
-import im.zego.callsdk.callback.ZegoRoomCallback;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zim.ZIM;
 import im.zego.zim.enums.ZIMErrorCode;
@@ -54,14 +53,11 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         binding.uploadLog.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoCallKit.getInstance().uploadLog(new ZegoRoomCallback() {
-                    @Override
-                    public void onRoomCallback(int errorCode) {
-                        if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                            showNormalTips(getString(R.string.toast_upload_log_success));
-                        } else {
-                            showWarnTips(getString(R.string.toast_upload_log_fail, errorCode));
-                        }
+                ZegoCallKit.getInstance().uploadLog(errorCode -> {
+                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                        showNormalTips(getString(R.string.toast_upload_log_success));
+                    } else {
+                        showWarnTips(getString(R.string.toast_upload_log_fail, errorCode));
                     }
                 });
             }
@@ -70,11 +66,10 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         binding.logOut.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userID = ZegoCallKit.getInstance().getLocalUserInfo().userID;
-                ZegoCallKit.getInstance().logout();
+                ZegoCallKit.getInstance().uiKitService.logout();
 
                 MMKV.defaultMMKV().encode("autoLogin", false);
-                ActivityUtils.finishToActivity(LoginActivity.class, false);
+                ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
             }
         });
     }

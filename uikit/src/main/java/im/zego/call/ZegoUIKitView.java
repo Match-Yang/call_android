@@ -9,7 +9,7 @@ import im.zego.callsdk.model.ZegoUserInfo;
 /**
  * Created by rocket_wang on 2022/3/19.
  */
-public class ZegoCallView {
+public class ZegoUIKitView {
     private ReceiveCallDialog receiveCallDialog;
     private MinimalDialog minimalDialog;
 

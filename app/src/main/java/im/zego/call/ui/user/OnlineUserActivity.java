@@ -3,10 +3,15 @@ package im.zego.call.ui.user;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
 import com.scwang.smart.refresh.header.MaterialHeader;
+
+import java.util.List;
+
 import im.zego.call.R;
 import im.zego.call.ZegoCallKit;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
@@ -18,9 +23,6 @@ import im.zego.callsdk.listener.ZegoUserLisCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> {
 

@@ -16,7 +16,7 @@ import im.zego.call.ZegoCallKit;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
-import im.zego.call.ui.login.LoginActivity;
+import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.setting.SettingActivity;
 import im.zego.call.ui.user.OnlineUserActivity;
 import im.zego.call.ui.webview.WebViewActivity;
@@ -103,9 +103,9 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     }
 
     private void logout() {
-        ZegoCallKit.getInstance().logout();
+        ZegoCallKit.getInstance().uiKitService.logout();
 
         MMKV.defaultMMKV().encode("autoLogin", false);
-        ActivityUtils.finishToActivity(LoginActivity.class, false);
+        ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
     }
 }

@@ -20,7 +20,12 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".ui.login.GoogleLoginActivity"
-            android:exported="true"></activity>
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.user.OnlineUserActivity"
             android:exported="true"
@@ -37,15 +42,6 @@
             android:name=".ui.entry.EntryActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.login.LoginActivity"
-            android:exported="true"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <!-- [START firebase_service] -->
         <service

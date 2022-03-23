@@ -15,7 +15,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import im.zego.callsdk.auth.TokenServerAssistant;
-import im.zego.callsdk.auth.ZegoRTCServerAssistant;
 
 public class AuthInfoManager {
 
@@ -34,8 +33,6 @@ public class AuthInfoManager {
 
     private String serverSecret;
     private long appID;
-    private String appSign;
-    private Context context;
 
     private static final String TAG = "AuthInfoManager";
 
@@ -43,12 +40,7 @@ public class AuthInfoManager {
         return appID;
     }
 
-    public String getAppSign() {
-        return appSign;
-    }
-
     public void init(Context context) {
-        this.context = context;
         String fileJson = readJsonFile(context, "KeyCenter.json");
         if (fileJson == null || fileJson.isEmpty()) {
             ToastUtils.showLong("please check if \"KeyCenter.json\" file is existed.");
@@ -60,13 +52,12 @@ public class AuthInfoManager {
         try {
             jsonObject = new JSONObject(fileJson);
             appID = jsonObject.getLong("appID");
-            appSign = jsonObject.getString("appSign");
             serverSecret = jsonObject.getString("serverSecret");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         Log.d(TAG, "init() called with: appID = [" + appID
-            + "],appSign:" + appSign + ",serverSecret:" + serverSecret);
+            + "]" + ",serverSecret:" + serverSecret);
     }
 
     private String readJsonFile(Context context, String fileName) {
@@ -89,30 +80,7 @@ public class AuthInfoManager {
         }
     }
 
-    public String generateCreateRoomToken(String roomID, String userID) {
-        ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
-        privileges.canLoginRoom = true;
-        privileges.canPublishStream = true;
-        long appID = AuthInfoManager.getInstance().getAppID();
-        String appSign = AuthInfoManager.getInstance().getAppSign();
-        try {
-            return ZegoRTCServerAssistant.generateToken(appID, roomID, userID, privileges, appSign, 660).data;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public String generateJoinRoomToken(String userID) {
-        try {
-            return TokenServerAssistant.generateToken(appID, userID, serverSecret, 60 * 60 * 24).data;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public String generateLoginToken(String userID) {
+    public String generateToken(String userID) {
         try {
             return TokenServerAssistant.generateToken(appID, userID, serverSecret, 60 * 60 * 24).data;
         } catch (JSONException e) {

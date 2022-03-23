@@ -23,19 +23,21 @@ import com.blankj.utilcode.util.ToastUtils;
 
 import java.util.Objects;
 
+import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.service.ForegroundService;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView;
 import im.zego.call.utils.PermissionHelper;
-import im.zego.callsdk.callback.ZegoRoomCallback;
+import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoRoomManager;
+import im.zego.callsdk.service.ZegoCallService;
+import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
@@ -46,8 +48,8 @@ public class ZegoCallKit {
     private static volatile ZegoCallKit singleton = null;
 
     private ZegoCallKit() {
-        callService = new ZegoCallService();
-        callView = new ZegoCallView();
+        uiKitService = new ZegoUIKitService();
+        callView = new ZegoUIKitView();
     }
 
     public static ZegoCallKit getInstance() {
@@ -61,8 +63,8 @@ public class ZegoCallKit {
         return singleton;
     }
 
-    private final ZegoCallService callService;
-    private final ZegoCallView callView;
+    public final ZegoUIKitService uiKitService;
+    private final ZegoUIKitView callView;
 
     private String CHANNEL_ID = "channel 1";
     private String CHANNEL_NAME = "channel name";
@@ -70,13 +72,16 @@ public class ZegoCallKit {
     private int notificationId = 999;
 
     public void init(Application application) {
-        callService.init(application);
+        AuthInfoManager.getInstance().init(application);
+        long appID = AuthInfoManager.getInstance().getAppID();
+        ZegoServiceManager.getInstance().init(appID, application);
     }
 
     public void startListen(Activity activity) {
         callView.init();
         ZegoUserInfo localUserInfo = ZegoCallKit.getInstance().getLocalUserInfo();
-        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         userService.setListener(new ZegoUserServiceListener() {
             @Override
             public void onUserInfoUpdated(ZegoUserInfo userInfo) {
@@ -97,9 +102,9 @@ public class ZegoCallKit {
                 boolean inACallStream = CallStateManager.getInstance().isInACallStream();
                 if (inACallStream || topActivity instanceof CallActivity) {
                     // means call is happening,reject other calls
-                    userService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
-
-                    });
+//                    callService.respondCall(ZegoResponseType.Reject, userInfo.userID, null, errorCode -> {
+//
+//                    });
                     return;
                 }
                 callView.updateData(userInfo, type);
@@ -150,7 +155,7 @@ public class ZegoCallKit {
                     return;
                 }
                 if (type == ZegoResponseType.Reject) {
-                    userService.endCall(errorCode -> {
+                    callService.endCall(errorCode -> {
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                     });
                 } else {
@@ -167,7 +172,7 @@ public class ZegoCallKit {
             @Override
             public void onReceiveCallEnded() {
                 Log.d(TAG, "onEndCallReceived() called");
-                userService.endCall(errorCode -> {
+                callService.endCall(errorCode -> {
                     int callState = CallStateManager.getInstance().getCallState();
                     if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
                             callState == CallStateManager.TYPE_CONNECTED_VOICE) {
@@ -182,11 +187,11 @@ public class ZegoCallKit {
             public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
                 if (event == ZIMConnectionEvent.KICKED_OUT) {
                     ToastUtils.showShort(R.string.toast_kickout_error);
-                    logout();
+                    uiKitService.logout();
                     return;
                 }
                 if (state == ZIMConnectionState.DISCONNECTED) {
-                    logout();
+                    uiKitService.logout();
                 } else if (state == ZIMConnectionState.CONNECTED) {
                     Activity topActivity = ActivityUtils.getTopActivity();
                     if (topActivity instanceof CallActivity) {
@@ -241,17 +246,8 @@ public class ZegoCallKit {
         ContextCompat.startForegroundService(activity, intent);
     }
 
-    public void login(ZegoUserInfo userInfo, ZegoRoomCallback callback) {
-        callService.login(userInfo, callback);
-    }
-
-    public void logout() {
-        callService.logout();
-        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
-    }
-
-    public void uploadLog(final ZegoRoomCallback callback) {
-        callService.uploadLog(callback);
+    public void uploadLog(final ZegoCallback callback) {
+        ZegoServiceManager.getInstance().uploadLog(callback);
     }
 
     public void callUser(ZegoUserInfo userInfo, int callState) {
@@ -260,7 +256,7 @@ public class ZegoCallKit {
     }
 
     public ZegoUserInfo getLocalUserInfo() {
-        return callService.getLocalUserInfo();
+        return ZegoServiceManager.getInstance().userService.localUserInfo;
     }
 
     private void createNotificationChannel() {
@@ -327,7 +323,7 @@ public class ZegoCallKit {
     }
 
     public void stopListen(Activity activity) {
-        ZegoRoomManager.getInstance().userService.setListener(null);
+        ZegoServiceManager.getInstance().userService.setListener(null);
         activity.stopService(new Intent(activity, ForegroundService.class));
     }
 }
