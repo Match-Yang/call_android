@@ -2,8 +2,22 @@ package im.zego.callsdk.service;
 
 import android.util.Log;
 import android.view.TextureView;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONObject;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+
 import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoRoomCallback;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
@@ -37,16 +51,6 @@ import im.zego.zim.enums.ZIMMessageType;
 import im.zego.zim.enums.ZIMRoomAttributesUpdateAction;
 import im.zego.zim.enums.ZIMRoomEvent;
 import im.zego.zim.enums.ZIMRoomState;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import org.json.JSONObject;
 
 /**
  * Class user information management
