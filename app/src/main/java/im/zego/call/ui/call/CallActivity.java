@@ -13,11 +13,17 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
+
 import androidx.annotation.StringRes;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
+
+import java.util.Locale;
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityCallBinding;
@@ -33,8 +39,6 @@ import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
-import java.util.Locale;
-import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
@@ -175,7 +179,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         userService.useFrontCamera(true);
 
         String userID = userService.localUserInfo.userID;
-        String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
+        String token = AuthInfoManager.getInstance().generateToken(userID);
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             userService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {

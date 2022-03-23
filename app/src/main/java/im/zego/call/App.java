@@ -17,7 +17,6 @@ public class App extends Application {
         MMKV.initialize(this);
 
         long appID = AuthInfoManager.getInstance().getAppID();
-        String appSign = AuthInfoManager.getInstance().getAppSign();
-        ZegoRoomManager.getInstance().init(appID, appSign, this);
+        ZegoRoomManager.getInstance().init(appID, this);
     }
 }

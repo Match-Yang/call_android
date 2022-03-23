@@ -5,10 +5,15 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.blankj.utilcode.util.ToastUtils;
+
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.LayoutIncomingCallBinding;
@@ -19,7 +24,6 @@ import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMErrorCode;
-import java.util.Objects;
 
 public class IncomingCallView extends ConstraintLayout {
 
@@ -53,7 +57,7 @@ public class IncomingCallView extends ConstraintLayout {
             @Override
             public void onClick(View v) {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+                String token = AuthInfoManager.getInstance().generateToken(userService.localUserInfo.userID);
                 userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         userService.enableMic(true, errorCode1 -> {
@@ -75,7 +79,7 @@ public class IncomingCallView extends ConstraintLayout {
             @Override
             public void onClick(View v) {
                 ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+                String token = AuthInfoManager.getInstance().generateToken(userService.localUserInfo.userID);
                 userService.respondCall(ZegoResponseType.Accept, userInfo.userID, token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         userService.enableMic(true, errorCode1 -> {

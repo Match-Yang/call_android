@@ -9,13 +9,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.tencent.mmkv.MMKV;
+
+import java.util.Random;
+
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityLoginBinding;
@@ -32,7 +37,6 @@ import im.zego.call.utils.PermissionHelper.IPermissionCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
-import java.util.Random;
 
 public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
@@ -185,7 +189,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     ZegoUserInfo userInfo = new ZegoUserInfo();
                     userInfo.userName = userName;
                     userInfo.userID = userID;
-                    String token = AuthInfoManager.getInstance().generateLoginToken(userID);
+                    String token = AuthInfoManager.getInstance().generateToken(userID);
                     ZegoUserService userService = ZegoRoomManager.getInstance().userService;
                     userService.login(userInfo, token, code -> {
                         Log.d(TAG, "login: " + code);
