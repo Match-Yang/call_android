@@ -14,7 +14,6 @@ import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class OnlineUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

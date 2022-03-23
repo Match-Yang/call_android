@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    tools:background="#fff">
+
+    <TextView
+        android:id="@+id/cell_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:textColor="@color/settings_text"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Encoding type" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/cell_iv_arrow"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/icon_arrow_right"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/cell_tv_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cell_tv_title" />
+
+    <TextView
+        android:id="@+id/cell_tv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:textColor="@color/settings_tips_text"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/cell_tv_title"
+        app:layout_constraintEnd_toStartOf="@id/cell_iv_arrow"
+        app:layout_constraintTop_toTopOf="@id/cell_tv_title"
+        tools:text="H.264" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/cell_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:checked="false"
+        android:thumb="@drawable/cell_switch_thumb"
+        app:layout_constraintBottom_toBottomOf="@id/cell_tv_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cell_tv_title"
+        app:track="@drawable/cell_switch_bg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

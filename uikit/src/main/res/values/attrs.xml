@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SettingCellView">
+        <attr name="cell_view_type">
+            <enum name="text_with_arrow" value="1" />
+            <enum name="text_with_switch" value="2" />
+        </attr>
+        <attr name="cell_view_title" format="string" />
+        <attr name="cell_view_content" format="string" />
+        <attr name="cell_view_switch_checked" format="boolean" />
+    </declare-styleable>
+</resources>

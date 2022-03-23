@@ -1,16 +1,21 @@
 package im.zego.callsdk.service;
 
+import java.util.List;
+
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoUserLisCallback;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
-import java.util.List;
 
 public abstract class ZegoUserService {
 
     public ZegoUserInfo localUserInfo;
     private List<ZegoUserInfo> userInfoList;
-    private ZegoUserServiceListener listener;
+    protected ZegoUserServiceListener listener;
+
+    public void setListener(ZegoUserServiceListener listener) {
+        this.listener = listener;
+    }
 
     public abstract void login(String authToken, ZegoCallback callback);
 

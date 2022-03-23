@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#CC333333"
+  tools:context="im.zego.call.ui.call.CallActivity">
+
+  <ImageView
+    android:id="@+id/call_user_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="centerCrop" />
+
+
+
+  <im.zego.call.ui.call.view.IncomingCallView
+    android:id="@+id/layout_incoming_call"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <im.zego.call.ui.call.view.OutgoingCallView
+    android:id="@+id/layout_outgoing_call"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <im.zego.call.ui.call.view.ConnectedVoiceCallView
+    android:id="@+id/layout_connected_voice_call"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <im.zego.call.ui.call.view.ConnectedVideoCallView
+    android:id="@+id/layout_connected_video_call"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
+
+  <TextView
+    android:id="@+id/call_time"
+    android:layout_width="wrap_content"
+    android:layout_height="44dp"
+    android:layout_marginTop="33dp"
+    android:gravity="center"
+    android:textColor="#FFFFFF"
+    android:textSize="16sp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+
+  <TextView
+    android:id="@+id/call_net_state"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="130dp"
+    android:visibility="gone"
+    android:text="@string/call_page_call_quality_poor"
+    android:textColor="@color/white"
+    android:textSize="13sp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
