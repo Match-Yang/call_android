@@ -19,7 +19,7 @@ Before getting started with the ZEGO Call application, **contact us to activate 
 
 1. Clone the ZEGO Call Github repository.
 2. Open Terminal, navigate to the cloned project repository.
-3. Run the configuration script with the `./configure.sh` command. And fill in the AppID, AppSign, and ServerSecret, which can be obtained in the [ZEGO Admin Console](https://console.zegocloud.com/).  
+3. Run the configuration script with the `./configure.sh` command. And fill in the AppID, and ServerSecret, which can be obtained in the [ZEGO Admin Console](https://console.zegocloud.com/).  
 **Note**: If you are using Windows system, double-click the `configure.bat` to run the configuration script.   
 <img width="700px" src="images/configure_android.png"/>
 
