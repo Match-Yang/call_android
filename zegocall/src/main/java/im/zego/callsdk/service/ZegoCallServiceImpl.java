@@ -9,6 +9,9 @@ import im.zego.callsdk.command.ZegoRespondCallCommand;
 import im.zego.callsdk.listener.ZegoListener;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoResponseType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ZegoCallServiceImpl extends ZegoCallService {
 
@@ -20,15 +23,19 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             String selfUserID = userService.localUserInfo.userID;
+            String callID = selfUserID + System.currentTimeMillis();
+            List<String> target = Collections.singletonList(userID);
             ZegoCallCommand callCommand = new ZegoCallCommand();
-            callCommand.fromUserID = selfUserID;
-            callCommand.toUserID = userID;
-            callCommand.callType = callType;
-            callCommand.token = createRoomToken;
+            callCommand.putParameter("userID", selfUserID);
+            callCommand.putParameter("callID", callID);
+            callCommand.putParameter("callees", target);
+            callCommand.putParameter("callType", callType);
             callCommand.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
-
+                    if (callback != null) {
+                        callback.onResult(errorCode);
+                    }
                 }
             });
         } else {

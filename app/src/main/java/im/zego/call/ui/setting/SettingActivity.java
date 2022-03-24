@@ -34,7 +34,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         });
         binding.expressSdkVersion.setText(ZegoExpressEngine.getVersion());
         binding.zimSdkVersion.setText(ZIM.getVersion());
-        binding.appVersion.setText(BuildConfig.VERSION_NAME);
+//        binding.appVersion.setText(BuildConfig.VERSION_NAME);
 
         binding.termsService.setOnClickListener(new OnClickListener() {
             @Override

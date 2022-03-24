@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "637474508182-1q02t7eth99r80tvp8c00tvjth5gphv7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zegocloud.call",
+            "certificate_hash": "6da4078a96d9f3935a0ae1f520fd7ce3e89971ee"
+          }
+        },
+        {
           "client_id": "637474508182-m0ji575hhksmj366mp5pjo1g0r8c5uf3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
