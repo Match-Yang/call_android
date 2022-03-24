@@ -3,7 +3,7 @@ package im.zego.callsdk.service;
 import java.util.List;
 
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.listener.ZegoUserLisCallback;
+import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
 
@@ -21,7 +21,7 @@ public abstract class ZegoUserService {
 
     public abstract void logout();
 
-    public abstract void getOnlineUserList(ZegoUserLisCallback callback);
+    public abstract void getOnlineUserList(ZegoUserListCallback callback);
 
     public abstract void validateAccount();
 }

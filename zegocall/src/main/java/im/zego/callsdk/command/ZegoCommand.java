@@ -5,7 +5,7 @@ import im.zego.callsdk.service.ZegoCommandManager;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ZegoCommand {
+public class ZegoCommand {
 
     protected String path;
     protected Map<String, Object> parameter;
@@ -37,7 +37,7 @@ public abstract class ZegoCommand {
         return parameter;
     }
 
-    public void putParameter(String key, String value) {
+    public void putParameter(String key, Object value) {
         if (parameter == null) {
             parameter = new HashMap<>();
         }

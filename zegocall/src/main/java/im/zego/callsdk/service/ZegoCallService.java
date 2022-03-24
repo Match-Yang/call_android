@@ -3,15 +3,14 @@ package im.zego.callsdk.service;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
-import im.zego.callsdk.model.ZegoCallStatus;
+import im.zego.callsdk.model.ZegoLocalUserStatus;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoResponseType;
 
 public abstract class ZegoCallService {
 
     private ZegoCallServiceListener listener;
-    private ZegoCallStatus status;
+    private ZegoLocalUserStatus status;
     private ZegoCallInfo callInfo;
 
     /**

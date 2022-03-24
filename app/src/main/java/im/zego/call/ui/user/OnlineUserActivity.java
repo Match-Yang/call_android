@@ -1,6 +1,7 @@
 package im.zego.call.ui.user;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -10,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.scwang.smart.refresh.header.MaterialHeader;
 
+import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.service.ZegoCallService;
 import java.util.List;
 
 import im.zego.call.R;
@@ -19,7 +23,7 @@ import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoRoomCallback;
-import im.zego.callsdk.listener.ZegoUserLisCallback;
+import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
@@ -69,7 +73,14 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    ZegoCallKit.getInstance().callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
+                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                    callService.callUser(userInfo.userID, ZegoCallType.Video, null, new ZegoCallback() {
+                        @Override
+                        public void onResult(int errorCode) {
+                            Log.d("callUser", "onResult() called with: errorCode = [" + errorCode + "]");
+                        }
+                    });
+//                    ZegoCallKit.getInstance().callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
                 } else if (itemChild.getId() == R.id.item_online_user_video) {
                     ZegoCallKit.getInstance().callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
                 }
@@ -79,7 +90,7 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
 
     private void getUserList(ZegoRoomCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        userService.getOnlineUserList(new ZegoUserLisCallback() {
+        userService.getOnlineUserList(new ZegoUserListCallback() {
             @Override
             public void onGetUserList(int errorCode, List<ZegoUserInfo> userInfoList) {
                 userInfoList.remove(userService.localUserInfo);

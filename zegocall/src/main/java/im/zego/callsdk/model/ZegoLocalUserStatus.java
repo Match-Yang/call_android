@@ -1,10 +1,10 @@
 package im.zego.callsdk.model;
 
-public enum ZegoCallStatus {
+public enum ZegoLocalUserStatus {
     Free(1),
     Outgoing(2),
     Incoming(3),
-    Calling(3);
+    Calling(4);
 
     private final int value;
 
@@ -12,7 +12,7 @@ public enum ZegoCallStatus {
         return value;
     }
 
-    ZegoCallStatus(int value) {
+    ZegoLocalUserStatus(int value) {
         this.value = value;
     }
 }

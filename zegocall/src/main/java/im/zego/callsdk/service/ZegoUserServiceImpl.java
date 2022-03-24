@@ -7,7 +7,7 @@ import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.command.ZegoLoginCommand;
 import im.zego.callsdk.command.ZegoLogoutCommand;
 import im.zego.callsdk.command.ZegoUserListCommand;
-import im.zego.callsdk.listener.ZegoUserLisCallback;
+import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     @Override
     public void login(String authToken, ZegoCallback callback) {
         ZegoLoginCommand command = new ZegoLoginCommand();
-        command.putParameter("token", authToken);
+        command.putParameter("authToken", authToken);
         command.execute(new ZegoRequestCallback() {
             @Override
             public void onResult(int errorCode, Object obj) {
@@ -50,7 +50,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     }
 
     @Override
-    public void getOnlineUserList(ZegoUserLisCallback callback) {
+    public void getOnlineUserList(ZegoUserListCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             ZegoUserListCommand command = new ZegoUserListCommand();
