@@ -6,6 +6,12 @@ import com.blankj.utilcode.util.StringUtils;
 
 import im.zego.call.R;
 import im.zego.call.ui.model.VideoSettingConfig;
+import im.zego.callsdk.model.ZegoAudioBitrate;
+import im.zego.callsdk.model.ZegoDevicesType;
+import im.zego.callsdk.model.ZegoVideoResolution;
+import im.zego.callsdk.service.ZegoDeviceService;
+import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.zegoexpress.constants.ZegoVideoConfigPreset;
 
 public class VideoConfigViewModel extends ViewModel {
 
@@ -28,25 +34,25 @@ public class VideoConfigViewModel extends ViewModel {
     }
 
     public void updateVideoConfig() {
-//        ZegoDeviceService deviceService = ZegoRoomManager.getInstance().deviceService;
-//
-//        int index = 0;
-//        for (int i = 0; i < ZegoVideoConfigPreset.values().length; i++) {
-//            String enumName = ZegoVideoConfigPreset.values()[i].name();
-//            if (settingConfig.getVideoResolution().contains(enumName.replaceAll("\\D+", ""))) {
-//                index = i;
-//                break;
-//            }
-//        }
-//        deviceService.setVideoResolution(ZegoVideoResolution.getVideoResolution(index));
-//
-//        int audioBitrate = VideoSettingConfig.calculateAudioBitrate(settingConfig.getAudioBitrate());
-//        deviceService.setAudioBitrate(ZegoAudioBitrate.getAudioBitrate(audioBitrate));
-//
-//        deviceService.setDeviceStatus(ZegoDevicesType.NOISE_SUPPRESSION, settingConfig.isBackgroundNoiseReduction());
-//
-//        deviceService.setDeviceStatus(ZegoDevicesType.ECHO_CANCELLATION, settingConfig.isEchoCancellation());
-//
-//        deviceService.setDeviceStatus(ZegoDevicesType.VOLUME_ADJUSTMENT, settingConfig.isMicVolumeAutoAdjustment());
+        ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+
+        int index = 0;
+        for (int i = 0; i < ZegoVideoConfigPreset.values().length; i++) {
+            String enumName = ZegoVideoConfigPreset.values()[i].name();
+            if (settingConfig.getVideoResolution().contains(enumName.replaceAll("\\D+", ""))) {
+                index = i;
+                break;
+            }
+        }
+        deviceService.setVideoResolution(ZegoVideoResolution.getVideoResolution(index));
+
+        int audioBitrate = VideoSettingConfig.calculateAudioBitrate(settingConfig.getAudioBitrate());
+        deviceService.setAudioBitrate(ZegoAudioBitrate.getAudioBitrate(audioBitrate));
+
+        deviceService.setDeviceStatus(ZegoDevicesType.NOISE_SUPPRESSION, settingConfig.isBackgroundNoiseReduction());
+
+        deviceService.setDeviceStatus(ZegoDevicesType.ECHO_CANCELLATION, settingConfig.isEchoCancellation());
+
+        deviceService.setDeviceStatus(ZegoDevicesType.VOLUME_ADJUSTMENT, settingConfig.isMicVolumeAutoAdjustment());
     }
 }
