@@ -10,18 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.blankj.utilcode.util.ToastUtils;
-import com.jeremyliao.liveeventbus.LiveEventBus;
-
-import java.util.Objects;
-
-import im.zego.call.R;
-import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutConnectedVoiceCallBinding;
-import im.zego.call.ui.call.CallStateManager;
+import im.zego.call.utils.AudioHelper;
 import im.zego.call.utils.AvatarHelper;
+import im.zego.callsdk.listener.ZegoDeviceServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.zegoexpress.constants.ZegoAudioRoute;
 
 public class ConnectedVoiceCallView extends ConstraintLayout {
 
@@ -87,6 +82,13 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
 //        binding.callVoiceSettings.setOnClickListener(v -> {
 //            LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(false);
 //        });
+        AudioHelper.updateAudioSelect(binding.callVoiceSpeaker, ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
+        ZegoServiceManager.getInstance().deviceService.setListener(new ZegoDeviceServiceListener() {
+            @Override
+            public void onAudioRouteChange(ZegoAudioRoute audioRoute) {
+                AudioHelper.updateAudioSelect(binding.callVoiceSpeaker, audioRoute);
+            }
+        });
     }
 
     @Override

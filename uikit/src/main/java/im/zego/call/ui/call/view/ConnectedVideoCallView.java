@@ -1,7 +1,6 @@
 package im.zego.call.ui.call.view;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,18 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.blankj.utilcode.util.ToastUtils;
-import com.jeremyliao.liveeventbus.LiveEventBus;
-
-import java.util.Objects;
-
-import im.zego.call.R;
-import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutConnectedVideoCallBinding;
-import im.zego.call.ui.call.CallStateManager;
-import im.zego.call.utils.AvatarHelper;
+import im.zego.call.utils.AudioHelper;
+import im.zego.callsdk.listener.ZegoDeviceServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.zegoexpress.constants.ZegoAudioRoute;
 
 public class ConnectedVideoCallView extends ConstraintLayout {
 
@@ -121,6 +114,13 @@ public class ConnectedVideoCallView extends ConstraintLayout {
 //        binding.callVideoSettings.setOnClickListener(v -> {
 //            LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(true);
 //        });
+        AudioHelper.updateAudioSelect(binding.callVideoSpeaker, ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
+        ZegoServiceManager.getInstance().deviceService.setListener(new ZegoDeviceServiceListener() {
+            @Override
+            public void onAudioRouteChange(ZegoAudioRoute audioRoute) {
+                AudioHelper.updateAudioSelect(binding.callVideoSpeaker, audioRoute);
+            }
+        });
     }
 
     @Override
