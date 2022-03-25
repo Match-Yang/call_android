@@ -114,10 +114,10 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
         tipsDialog.dismiss();
     }
     protected void showLoading() {
-        this.showLoading(null);
+        this.showLoading(null, true);
     }
 
-    protected void showLoading(String content) {
+    protected void showLoading(String content, boolean progressVisible) {
         if (loadingDialog == null) {
             loadingDialog = new LoadingDialog(this);
             if (!StringUtils.isEmpty(content)) {
@@ -125,6 +125,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
             }
         }
         if (!loadingDialog.isShowing()) {
+            loadingDialog.setProgressVisibility(progressVisible);
             loadingDialog.show();
         }
     }

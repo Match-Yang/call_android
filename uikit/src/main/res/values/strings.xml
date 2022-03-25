@@ -23,6 +23,9 @@
   <string name="network_reconnect">Network error. Reconnecting...</string>
   <string name="network_connect_failed">Network connection failed. Please re-login and try again.</string>
   <string name="network_connect_failed_title">Network error.</string>
+  <string name="network_connnect_me_unstable">Your connection is unstable.</string>
+  <string name="network_connnect_other_unstable">Other user\'s connection is unstable.</string>
+  <string name="banner_call_title">One-on-one call</string>
   <string name="dialog_tips_title">Note</string>
   <string name="dialog_login_page_mic_cant_open">The Mic is off.</string>
   <string name="dialog_login_page_mic_permission">Please allow access to your microphone to continue.</string>

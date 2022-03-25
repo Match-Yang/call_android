@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -27,7 +26,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import im.zego.call.R;
-import im.zego.call.auth.AuthInfoManager;
+import im.zego.call.ZegoCallKit;
 import im.zego.call.constant.Constants;
 import im.zego.call.databinding.ActivityCallBinding;
 import im.zego.call.ui.BaseActivity;
@@ -35,11 +34,8 @@ import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.call.ui.dialog.VideoSettingsDialog;
 import im.zego.call.ui.viewmodel.VideoConfigViewModel;
 import im.zego.call.utils.AvatarHelper;
-import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 
@@ -345,9 +341,13 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
         if (quality == ZegoNetWorkQuality.Bad) {
-            binding.callNetState.setVisibility(View.VISIBLE);
+            if (userID.equals(ZegoCallKit.getInstance().getLocalUserInfo().userID)) {
+                showLoading(getString(R.string.network_connnect_me_unstable), false);
+            } else {
+                showLoading(getString(R.string.network_connnect_other_unstable), false);
+            }
         } else {
-            binding.callNetState.setVisibility(View.GONE);
+            dismissLoading();
         }
     }
 
@@ -355,7 +355,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         if (state == ZIMConnectionState.CONNECTED) {
             dismissLoading();
         } else {
-            showLoading(getString(R.string.call_page_call_disconnected));
+            showLoading(getString(R.string.call_page_call_disconnected), true);
         }
     }
 }
