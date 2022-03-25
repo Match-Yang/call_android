@@ -2,11 +2,12 @@ package im.zego.callsdk.service;
 
 
 import android.view.TextureView;
+
 import im.zego.callsdk.model.ZegoAudioBitrate;
 import im.zego.callsdk.model.ZegoDevicesType;
 import im.zego.callsdk.model.ZegoVideoResolution;
 import im.zego.zegoexpress.ZegoExpressEngine;
-import im.zego.zegoexpress.constants.ZegoOrientation;
+import im.zego.zegoexpress.constants.ZegoAudioRoute;
 import im.zego.zegoexpress.constants.ZegoVideoConfigPreset;
 import im.zego.zegoexpress.constants.ZegoViewMode;
 import im.zego.zegoexpress.entity.ZegoAudioConfig;
@@ -123,7 +124,7 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
 
     @Override
     public void enableSpeaker(boolean enable) {
-
+        ZegoExpressEngine.getEngine().setAudioRouteToSpeaker(enable);
     }
 
     /**
@@ -155,5 +156,10 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
 //            String streamID = ZegoLiveHelper.getStreamID(userID);
 //            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
 //        }
+    }
+
+    @Override
+    public ZegoAudioRoute getAudioRouteType() {
+        return ZegoExpressEngine.getEngine().getAudioRouteType();
     }
 }

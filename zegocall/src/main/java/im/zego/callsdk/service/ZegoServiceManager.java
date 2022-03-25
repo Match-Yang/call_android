@@ -14,6 +14,7 @@ import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
+import im.zego.zegoexpress.constants.ZegoAudioRoute;
 import im.zego.zegoexpress.constants.ZegoScenario;
 import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zegoexpress.constants.ZegoUpdateType;
@@ -106,6 +107,14 @@ public class ZegoServiceManager {
                 super.onRoomStreamUpdate(roomID, updateType, streamList, extendedData);
                 for (ZegoStream zegoStream : streamList) {
                     Log.d(TAG, "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
+                }
+            }
+
+            @Override
+            public void onAudioRouteChange(ZegoAudioRoute audioRoute) {
+                super.onAudioRouteChange(audioRoute);
+                if (deviceService.listener != null) {
+                    deviceService.listener.onAudioRouteChange(audioRoute);
                 }
             }
         });

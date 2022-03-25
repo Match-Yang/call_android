@@ -6,41 +6,26 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.PowerManager;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.StringUtils;
-import com.blankj.utilcode.util.ToastUtils;
-
-import java.util.Objects;
 
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.service.ForegroundService;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView;
-import im.zego.call.utils.PermissionHelper;
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.listener.ZegoUserServiceListener;
-import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoCancelType;
-import im.zego.callsdk.model.ZegoNetWorkQuality;
-import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
-import im.zego.zim.enums.ZIMConnectionEvent;
-import im.zego.zim.enums.ZIMConnectionState;
 
 public class ZegoCallKit {
     private static final String TAG = "ZegoCallKit";
@@ -209,12 +194,10 @@ public class ZegoCallKit {
 //
 //            @Override
 //            public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
-//                if (Objects.equals(userID, localUserInfo.userID) || userID == null) {
-//                    Activity topActivity = ActivityUtils.getTopActivity();
-//                    if (topActivity instanceof CallActivity) {
-//                        CallActivity callActivity = (CallActivity) topActivity;
-//                        callActivity.onNetworkQuality(userID, quality);
-//                    }
+//                Activity topActivity = ActivityUtils.getTopActivity();
+//                if (topActivity instanceof CallActivity) {
+//                    CallActivity callActivity = (CallActivity) topActivity;
+//                    callActivity.onNetworkQuality(userID, quality);
 //                }
 //            }
 //        });
