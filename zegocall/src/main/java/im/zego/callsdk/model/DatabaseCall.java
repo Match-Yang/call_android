@@ -1,6 +1,5 @@
 package im.zego.callsdk.model;
 
-import java.util.List;
 import java.util.Map;
 
 public class DatabaseCall {

@@ -139,6 +139,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
 
         // some brands kill process will not really kill process,
         // which cause login twice
-        ZegoCallKit.getInstance().uiKitService.logout();
+//        ZegoCallKit.getInstance().uiKitService.logout();
     }
 }

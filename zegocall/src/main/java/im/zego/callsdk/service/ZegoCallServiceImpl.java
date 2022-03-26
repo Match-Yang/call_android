@@ -2,14 +2,14 @@ package im.zego.callsdk.service;
 
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
+import im.zego.callsdk.command.ZegoAcceptCallCommand;
 import im.zego.callsdk.command.ZegoCallCommand;
 import im.zego.callsdk.command.ZegoCancelCallCommand;
 import im.zego.callsdk.command.ZegoEndCallCommand;
-import im.zego.callsdk.command.ZegoRespondCallCommand;
+import im.zego.callsdk.command.ZegoDeclineCallCommand;
 import im.zego.callsdk.listener.ZegoListener;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoResponseType;
-import java.util.ArrayList;
+import im.zego.callsdk.model.ZegoDeclineType;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,7 +56,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
-
+                    if (callback != null) {
+                        callback.onResult(errorCode);
+                    }
                 }
             });
         } else {
@@ -67,19 +69,36 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     }
 
     @Override
-    public void respondCall(String userID, String joinRoomToken, ZegoResponseType type, ZegoCallback callback) {
+    public void acceptCall(String joinToken, ZegoCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
-            String selfUserID = userService.localUserInfo.userID;
-            ZegoRespondCallCommand command = new ZegoRespondCallCommand();
-            command.fromUserID = selfUserID;
-            command.toUserID = userID;
-            command.responseType = type;
-            command.token = joinRoomToken;
+            ZegoAcceptCallCommand command = new ZegoAcceptCallCommand();
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
+                    if (callback != null) {
+                        callback.onResult(errorCode);
+                    }
+                }
+            });
+        } else {
+            if (callback != null) {
+                callback.onResult(-1000);
+            }
+        }
+    }
 
+    @Override
+    public void declineCall(String userID, ZegoDeclineType type, ZegoCallback callback) {
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        if (userService.localUserInfo != null) {
+            ZegoDeclineCallCommand command = new ZegoDeclineCallCommand();
+            command.execute(new ZegoRequestCallback() {
+                @Override
+                public void onResult(int errorCode, Object obj) {
+                    if (callback != null) {
+                        callback.onResult(errorCode);
+                    }
                 }
             });
         } else {
@@ -99,7 +118,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
-
+                    if (callback != null) {
+                        callback.onResult(errorCode);
+                    }
                 }
             });
         } else {
