@@ -3,6 +3,7 @@ package im.zego.callsdk.service;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
+import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoResponseType;
@@ -11,7 +12,7 @@ public abstract class ZegoCallService {
 
     private ZegoCallServiceListener listener;
     private ZegoLocalUserStatus status;
-    private ZegoCallInfo callInfo;
+    public ZegoCallInfo callInfo = new ZegoCallInfo();
 
     /**
      * Make an outbound call
@@ -39,28 +40,14 @@ public abstract class ZegoCallService {
      * <p>
      * Call this method at: After the user login
      *
-     * @param userID     refers to the ID of the user you are calling.
-     * @param cancelType cancel type
-     * @param callback:  refers to the callback for cancel a call.
+     * @param userID    refers to the ID of the user you are calling.
+     * @param callback: refers to the callback for cancel a call.
      */
     public abstract void cancelCall(String userID, ZegoCallback callback);
 
+    public abstract void acceptCall(String joinToken, ZegoCallback callback);
 
-    /**
-     * Respond to an incoming call
-     * <p>
-     * Description: This method can be used to accept or decline an incoming call. You will need to call this method to
-     * respond to the call within 60 seconds upon receiving.
-     * <p>
-     * Call this method at: After the user login
-     *
-     * @param type     refers to the answer of the incoming call.  ZegoResponseTypeAccept: Accept.
-     *                 ZegoResponseTypeDecline: Decline.
-     * @param userID   refers to the ID of the caller.
-     * @param callback refers to the callback for respond to an incoming call.
-     */
-    public abstract void respondCall(String userID, String joinRoomToken,ZegoResponseType type,
-        ZegoCallback callback);
+    public abstract void declineCall(String userID, ZegoDeclineType type, ZegoCallback callback);
 
     /**
      * End a call
