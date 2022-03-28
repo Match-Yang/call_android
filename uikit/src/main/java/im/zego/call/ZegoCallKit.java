@@ -26,11 +26,14 @@ import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView;
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.callback.ZegoNotifyListener;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
+import im.zego.callsdk.service.ZegoListenerManager;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
+import java.util.Map;
 
 public class ZegoCallKit {
 
@@ -74,6 +77,23 @@ public class ZegoCallKit {
         ZegoUserInfo localUserInfo = ZegoCallKit.getInstance().getLocalUserInfo();
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoListenerManager.getInstance().addListener(ZegoListenerManager.DECLINE_CALL, new ZegoNotifyListener() {
+            @Override
+            public void onNotifyInvoked(Object obj) {
+                Log.d(TAG, "onNotifyInvoked() called with: DECLINE_CALL = [" + obj + "]");
+                Map<String, String> parameter = (Map<String, String>) obj;
+                String callee_id = parameter.get("callee_id");
+                String call_id = parameter.get("call_id");
+                String type = parameter.get("type");
+            }
+        });
+        ZegoListenerManager.getInstance().addListener(ZegoListenerManager.CANCEL_CALL, new ZegoNotifyListener() {
+            @Override
+            public void onNotifyInvoked(Object obj) {
+                Log.d(TAG, "onNotifyInvoked() called with: CANCEL_CALL = [" + obj + "]");
+            }
+        });
+
         //        userService.setListener(new ZegoUserServiceListener() {
         //            @Override
         //            public void onUserInfoUpdated(ZegoUserInfo userInfo) {
