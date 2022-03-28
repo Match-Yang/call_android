@@ -23,6 +23,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
+import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
@@ -141,8 +142,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String callID = data.get("call_id");
         String callType = data.get("call_type");
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-        callService.callInfo.caller = caller;
-        callService.callInfo.callID = callID;
+        ZegoCallInfo callInfo = new ZegoCallInfo();
+        callInfo.caller = caller;
+        callInfo.callID = callID;
+        callService.setCallInfo(callInfo);
 
         ZegoCallType type = ZegoCallType.Voice;
         for (ZegoCallType zegoCallType : ZegoCallType.values()) {

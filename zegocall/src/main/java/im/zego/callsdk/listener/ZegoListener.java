@@ -1,10 +1,10 @@
 package im.zego.callsdk.listener;
 
-import im.zego.callsdk.callback.ZegoRequestCallback;
+import im.zego.callsdk.callback.ZegoNotifyListener;
 
 public interface ZegoListener {
 
-    void registerListener(Object listener, String path, ZegoRequestCallback callback);
+    void addListener(String path, ZegoNotifyListener listener);
 
-    void removeListener(Object listener, String path);
+    void removeListener(String path, ZegoNotifyListener listener);
 }

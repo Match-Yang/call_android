@@ -12,7 +12,7 @@ public abstract class ZegoCallService {
 
     private ZegoCallServiceListener listener;
     private ZegoLocalUserStatus status;
-    public ZegoCallInfo callInfo = new ZegoCallInfo();
+    private ZegoCallInfo callInfo = new ZegoCallInfo();
 
     /**
      * Make an outbound call
@@ -60,4 +60,12 @@ public abstract class ZegoCallService {
      * @param callback refers to the callback for end a call.
      */
     public abstract void endCall(ZegoCallback callback);
+
+    public void setCallInfo(ZegoCallInfo callInfo) {
+        this.callInfo = callInfo;
+    }
+
+    public ZegoCallInfo getCallInfo() {
+        return callInfo;
+    }
 }

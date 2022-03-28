@@ -40,10 +40,11 @@ public class DatabaseCall {
         WAIT(1),
         CONNECTED(2),
         FINISHED(3),
-        REJECTED(4),
-        CANCELED(5),
-        TIMEOUT_WAIT(6),
-        TIMEOUT_CONNECTED(7);
+        DECLINED(4),
+        BUSY(5),
+        CANCELED(6),
+        TIMEOUT_WAIT(7),
+        TIMEOUT_CONNECTED(8);
 
         private final int value;
 
