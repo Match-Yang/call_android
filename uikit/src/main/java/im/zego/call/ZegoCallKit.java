@@ -10,16 +10,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PowerManager;
 import android.util.Log;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
-
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.service.ForegroundService;
 import im.zego.call.ui.call.CallActivity;
@@ -77,20 +73,62 @@ public class ZegoCallKit {
         ZegoUserInfo localUserInfo = ZegoCallKit.getInstance().getLocalUserInfo();
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+
+        ZegoListenerManager.getInstance().addListener(ZegoListenerManager.CANCEL_CALL, new ZegoNotifyListener() {
+            @Override
+            public void onNotifyInvoked(Object obj) {
+                Log.d(TAG, "onNotifyInvoked() called with: CANCEL_CALL = [" + obj + "]");
+                Map<String, String> parameter = (Map<String, String>) obj;
+                String call_id = parameter.get("call_id");
+                if (callService.getCallInfo().callID.equals(call_id)) {
+                    ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+                    callView.dismissReceiveCallWindow();
+                    dismissNotification(activity);
+
+                }
+
+            }
+        });
+        ZegoListenerManager.getInstance().addListener(ZegoListenerManager.ACCEPT_CALL, new ZegoNotifyListener() {
+            @Override
+            public void onNotifyInvoked(Object obj) {
+                Log.d(TAG, "onNotifyInvoked() called with: ACCEPT_CALL = [" + obj + "]");
+                Map<String, String> parameter = (Map<String, String>) obj;
+                String call_id = parameter.get("call_id");
+                if (callService.getCallInfo().callID.equals(call_id)) {
+                    int callState = CallStateManager.getInstance().getCallState();
+                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+                        callState = CallStateManager.TYPE_CONNECTED_VOICE;
+                    } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+                        callState = CallStateManager.TYPE_CONNECTED_VIDEO;
+                    }
+                    ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
+                    CallStateManager.getInstance().setCallState(userInfo, callState);
+                }
+            }
+        });
         ZegoListenerManager.getInstance().addListener(ZegoListenerManager.DECLINE_CALL, new ZegoNotifyListener() {
             @Override
             public void onNotifyInvoked(Object obj) {
                 Log.d(TAG, "onNotifyInvoked() called with: DECLINE_CALL = [" + obj + "]");
                 Map<String, String> parameter = (Map<String, String>) obj;
-                String callee_id = parameter.get("callee_id");
                 String call_id = parameter.get("call_id");
-                String type = parameter.get("type");
+                if (call_id.equals(callService.getCallInfo().callID)) {
+                    ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+                }
             }
         });
-        ZegoListenerManager.getInstance().addListener(ZegoListenerManager.CANCEL_CALL, new ZegoNotifyListener() {
+        ZegoListenerManager.getInstance().addListener(ZegoListenerManager.END_CALL, new ZegoNotifyListener() {
             @Override
             public void onNotifyInvoked(Object obj) {
-                Log.d(TAG, "onNotifyInvoked() called with: CANCEL_CALL = [" + obj + "]");
+                Log.d(TAG, "onNotifyInvoked() called with: DECLINE_CALL = [" + obj + "]");
+                Map<String, String> parameter = (Map<String, String>) obj;
+                String call_id = parameter.get("call_id");
+                if (call_id.equals(callService.getCallInfo().callID)) {
+                    CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
+                }
             }
         });
 

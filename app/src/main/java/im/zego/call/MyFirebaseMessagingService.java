@@ -15,6 +15,7 @@ package im.zego.call;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -23,8 +24,10 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
+import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
 import im.zego.callsdk.service.ZegoServiceManager;
@@ -132,6 +135,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     /**
      * Handle time allotted to BroadcastReceivers.
+     *
      * @param data
      */
     private void handleNow(Map<String, String> data) {
@@ -142,6 +146,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String callID = data.get("call_id");
         String callType = data.get("call_type");
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+        String currentCallID = callService.getCallInfo().callID;
+        if (!TextUtils.isEmpty(currentCallID)) {
+            callService.declineCall(caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
+                @Override
+                public void onResult(int errorCode) {
+                    Log.d(TAG, "declineCall Busy,called with: errorCode = [" + errorCode + "]");
+                }
+            });
+            return;
+        }
         ZegoCallInfo callInfo = new ZegoCallInfo();
         callInfo.caller = caller;
         callInfo.callID = callID;

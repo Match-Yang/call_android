@@ -73,10 +73,10 @@ public class CallStateManager {
         int beforeState = this.callState;
         this.userInfo = userInfo;
         this.callState = callState;
+        Log.d("sss",
+                    "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
         if (beforeState != callState && listeners.size() > 0) {
             for (CallStateChangedListener listener : listeners) {
-                Log.d("sss",
-                    "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
                 listener.onCallStateChanged(beforeState, callState);
             }
         }

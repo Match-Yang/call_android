@@ -20,6 +20,7 @@ public class ZegoCommand {
     public static final String ACCEPT_CALL = "/call/accept_call";
     public static final String DECLINE_CALL = "/call/decline_call";
     public static final String END_CALL = "/call/end_call";
+    public static final String Listener_CALL = "/call/listen_call";
 
     public ZegoCommand(String path) {
         this.path = path;

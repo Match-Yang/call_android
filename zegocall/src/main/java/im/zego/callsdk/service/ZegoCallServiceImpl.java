@@ -1,5 +1,6 @@
 package im.zego.callsdk.service;
 
+import android.text.TextUtils;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.command.ZegoAcceptCallCommand;
@@ -7,6 +8,7 @@ import im.zego.callsdk.command.ZegoCallCommand;
 import im.zego.callsdk.command.ZegoCancelCallCommand;
 import im.zego.callsdk.command.ZegoEndCallCommand;
 import im.zego.callsdk.command.ZegoDeclineCallCommand;
+import im.zego.callsdk.command.ZegoListenCallCommand;
 import im.zego.callsdk.listener.ZegoListener;
 import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
@@ -51,6 +53,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             ZegoCancelCallCommand command = new ZegoCancelCallCommand();
+            command.putParameter("userID", userID);
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
@@ -69,7 +72,6 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     @Override
     public void acceptCall(String joinToken, ZegoCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         if (userService.localUserInfo != null) {
             ZegoAcceptCallCommand command = new ZegoAcceptCallCommand();
             command.execute(new ZegoRequestCallback() {
@@ -92,6 +94,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             ZegoDeclineCallCommand command = new ZegoDeclineCallCommand();
+            command.putParameter("type", type.getValue());
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
@@ -111,9 +114,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     public void endCall(ZegoCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
-            String selfUserID = userService.localUserInfo.userID;
             ZegoEndCallCommand command = new ZegoEndCallCommand();
-            command.fromUserID = selfUserID;
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
@@ -132,5 +133,12 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     @Override
     public void setCallInfo(ZegoCallInfo callInfo) {
         super.setCallInfo(callInfo);
+        // listen for cancel action when receive call
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        if (userService.localUserInfo != null && callInfo != null) {
+            ZegoListenCallCommand command = new ZegoListenCallCommand();
+            command.putParameter("callID", callInfo.callID);
+            command.execute(null);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package im.zego.callsdk.service;
 
+import android.util.Log;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
@@ -62,7 +63,13 @@ public abstract class ZegoCallService {
     public abstract void endCall(ZegoCallback callback);
 
     public void setCallInfo(ZegoCallInfo callInfo) {
-        this.callInfo = callInfo;
+        Log.d("sss", "setCallInfo() called with: callInfo = [" + callInfo + "]");
+        if (callInfo == null) {
+            this.callInfo = new ZegoCallInfo();
+            status = ZegoLocalUserStatus.Free;
+        } else {
+            this.callInfo = callInfo;
+        }
     }
 
     public ZegoCallInfo getCallInfo() {
