@@ -10,7 +10,7 @@ import im.zego.callsdk.model.ZegoUserInfo;
 public abstract class ZegoUserService {
 
     public ZegoUserInfo localUserInfo;
-    private List<ZegoUserInfo> userInfoList;
+    protected List<ZegoUserInfo> userInfoList;
     protected ZegoUserServiceListener listener;
 
     public void setListener(ZegoUserServiceListener listener) {

@@ -7,6 +7,7 @@ import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoUserInfo;
 
 public interface ZegoCallServiceListener {
+
     /**
      * Callback for receive an incoming call
      * <p>
@@ -39,5 +40,5 @@ public interface ZegoCallServiceListener {
      */
     void onReceiveCallEnded();
 
-    void onReceiveCallTimeout(ZegoCallTimeoutType type);
+    void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type);
 }

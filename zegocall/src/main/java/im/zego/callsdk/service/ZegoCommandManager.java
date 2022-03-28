@@ -26,5 +26,4 @@ public class ZegoCommandManager {
     public void execute(ZegoCommand command, ZegoRequestCallback callback) {
         service.request(command.getPath(), command.getParameter(), callback);
     }
-
 }

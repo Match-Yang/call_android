@@ -1,18 +1,19 @@
 package im.zego.callsdk.service;
 
+import android.util.Log;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
+import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
-import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoResponseType;
 
 public abstract class ZegoCallService {
 
-    private ZegoCallServiceListener listener;
+    protected ZegoCallServiceListener listener;
     private ZegoLocalUserStatus status;
     private ZegoCallInfo callInfo = new ZegoCallInfo();
+    private static final String TAG = "ZegoCallService";
 
     /**
      * Make an outbound call
@@ -62,10 +63,24 @@ public abstract class ZegoCallService {
     public abstract void endCall(ZegoCallback callback);
 
     public void setCallInfo(ZegoCallInfo callInfo) {
-        this.callInfo = callInfo;
+        Log.d("sss", "setCallInfo() called with: callInfo = [" + callInfo + "]");
+        if (callInfo == null) {
+            this.callInfo = new ZegoCallInfo();
+            status = ZegoLocalUserStatus.Free;
+        } else {
+            this.callInfo = callInfo;
+        }
     }
 
     public ZegoCallInfo getCallInfo() {
         return callInfo;
+    }
+
+    public void setListener(ZegoCallServiceListener listener) {
+        this.listener = listener;
+    }
+
+    public ZegoCallServiceListener getListener() {
+        return listener;
     }
 }

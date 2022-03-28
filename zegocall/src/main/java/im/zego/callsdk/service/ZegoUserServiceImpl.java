@@ -10,7 +10,9 @@ import im.zego.callsdk.command.ZegoUserListCommand;
 import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ZegoUserServiceImpl extends ZegoUserService {
 
@@ -21,6 +23,12 @@ public class ZegoUserServiceImpl extends ZegoUserService {
         command.execute(new ZegoRequestCallback() {
             @Override
             public void onResult(int errorCode, Object obj) {
+                if (errorCode == 0) {
+                    Map<String, String> user = (HashMap<String, String>) obj;
+                    localUserInfo = new ZegoUserInfo();
+                    localUserInfo.userID = user.get("userID");
+                    localUserInfo.userName = user.get("userName");
+                }
                 if (callback != null) {
                     callback.onResult(errorCode);
                 }
@@ -43,6 +51,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
         if (userService.localUserInfo != null) {
             String selfUserID = userService.localUserInfo.userID;
             ZegoLogoutCommand command = new ZegoLogoutCommand();
+            command.putParameter("selfUserID",selfUserID);
             command.execute((errorCode, obj) -> {
 
             });
@@ -57,8 +66,8 @@ public class ZegoUserServiceImpl extends ZegoUserService {
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
-                    List<ZegoUserInfo> onlineUserList = (List<ZegoUserInfo>) obj;
-                    callback.onGetUserList(errorCode, onlineUserList);
+                    userInfoList = (List<ZegoUserInfo>) obj;
+                    callback.onGetUserList(errorCode, userInfoList);
                 }
             });
         } else {

@@ -73,30 +73,11 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                    callService.callUser(userInfo.userID, ZegoCallType.Voice, null, new ZegoCallback() {
-                        @Override
-                        public void onResult(int errorCode) {
-                            Log.d("callUser", "onResult() called with: errorCode = [" + errorCode + "]");
-                            if (errorCode == 0) {
-                                ZegoCallKit.getInstance()
-                                    .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
-                            }
-                        }
-                    });
-
+                    ZegoCallKit.getInstance()
+                        .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
                 } else if (itemChild.getId() == R.id.item_online_user_video) {
-                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                    callService.callUser(userInfo.userID, ZegoCallType.Video, null, new ZegoCallback() {
-                        @Override
-                        public void onResult(int errorCode) {
-                            Log.d("callUser", "onResult() called with: errorCode = [" + errorCode + "]");
-                            if (errorCode == 0) {
-                                ZegoCallKit.getInstance()
-                                    .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
-                            }
-                        }
-                    });
+                    ZegoCallKit.getInstance()
+                        .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
                 }
             }
         });

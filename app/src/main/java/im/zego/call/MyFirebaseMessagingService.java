@@ -15,6 +15,7 @@ package im.zego.call;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -23,8 +24,11 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
+import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
 import im.zego.callsdk.service.ZegoServiceManager;
@@ -132,6 +136,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     /**
      * Handle time allotted to BroadcastReceivers.
+     *
      * @param data
      */
     private void handleNow(Map<String, String> data) {
@@ -141,12 +146,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         caller.userName = data.get("caller_name");
         String callID = data.get("call_id");
         String callType = data.get("call_type");
-        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-        ZegoCallInfo callInfo = new ZegoCallInfo();
-        callInfo.caller = caller;
-        callInfo.callID = callID;
-        callService.setCallInfo(callInfo);
 
+        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+        if (!TextUtils.isEmpty(callService.getCallInfo().callID)) {
+            callService.declineCall(caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
+                @Override
+                public void onResult(int errorCode) {
+                    Log.d(TAG, "declineCall Busy,called with: errorCode = [" + errorCode + "]");
+                }
+            });
+            return;
+        }
         ZegoCallType type = ZegoCallType.Voice;
         for (ZegoCallType zegoCallType : ZegoCallType.values()) {
             if (zegoCallType.getValue() == Integer.parseInt(callType)) {
@@ -154,14 +164,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 break;
             }
         }
-        int state;
-        if (type == ZegoCallType.Voice) {
-            state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
-        } else {
-            state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
+        ZegoCallInfo callInfo = new ZegoCallInfo();
+        callInfo.caller = caller;
+        callInfo.callID = callID;
+        callService.setCallInfo(callInfo);
+        ZegoCallServiceListener listener = callService.getListener();
+        if (listener != null) {
+            listener.onReceiveCallInvite(caller, type);
         }
-        CallStateManager.getInstance().setCallState(caller, state);
-        ZegoCallKit.getInstance().showCallDialog(caller, type);
     }
 
     /**
