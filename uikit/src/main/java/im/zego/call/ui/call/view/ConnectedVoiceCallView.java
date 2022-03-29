@@ -5,11 +5,16 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
+
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutConnectedVoiceCallBinding;
@@ -19,10 +24,11 @@ import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
+import im.zego.callsdk.service.ZegoDeviceService;
 import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.service.ZegoStreamService;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
-import java.util.Objects;
 
 public class ConnectedVoiceCallView extends ConstraintLayout {
 
@@ -53,6 +59,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
     private void initView() {
         binding = LayoutConnectedVoiceCallBinding.inflate(LayoutInflater.from(getContext()), this);
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         binding.callVoiceHangUp.setOnClickListener(new OnClickListener() {
             @Override
@@ -70,18 +77,13 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callVoiceMic.setSelected(localUserInfo.mic);
         binding.callVoiceMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-            //            userService.enableMic(!selected, errorCode -> {
-            //                if (errorCode == 0) {
-            //                    v.setSelected(!selected);
-            //                }else {
-            //                    ToastUtils.showShort(R.string.camera_operate_failed,errorCode);
-            //                }
-            //            });
+            v.setSelected(!selected);
+            deviceService.muteMic(!selected);
         });
         binding.callVoiceSpeaker.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);
-            //            userService.speakerOperate(!selected);
+            deviceService.enableSpeaker(!selected);
         });
         binding.callVoiceMinimal.setOnClickListener(v -> {
             LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
@@ -102,12 +104,12 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        //        if (changedView == this) {
-        //            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-        //            if (visibility == View.VISIBLE) {
-        //                userService.startPlaying(userInfo.userID, null);
-        //            }
-        //        }
+        if (changedView == this) {
+            ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
+            if (visibility == View.VISIBLE) {
+                streamService.startPlaying(userInfo.userID, null);
+            }
+        }
     }
 
     public void setUserInfo(ZegoUserInfo userInfo) {

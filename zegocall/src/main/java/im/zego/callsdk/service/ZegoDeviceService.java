@@ -1,7 +1,5 @@
 package im.zego.callsdk.service;
 
-import android.view.TextureView;
-
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
 import im.zego.callsdk.model.ZegoAudioBitrate;
 import im.zego.callsdk.model.ZegoDevicesType;
@@ -30,15 +28,11 @@ public abstract class ZegoDeviceService {
 
     public abstract void enableCamera(boolean enable);
 
-    public abstract void muteMic(boolean enable);
+    public abstract void muteMic(boolean mute);
 
     public abstract void useFrontCamera(boolean isFront);
 
     public abstract void enableSpeaker(boolean enable);
-
-    public abstract void playVideoStream(String userID, TextureView textureView);
-
-    public abstract void stopPlayStream(String userID);
 
     public abstract ZegoAudioRoute getAudioRouteType();
 

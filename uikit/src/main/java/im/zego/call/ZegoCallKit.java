@@ -22,9 +22,11 @@ import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
+import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
@@ -72,6 +74,34 @@ public class ZegoCallKit {
         callView.init();
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        userService.setListener(new ZegoUserServiceListener() {
+            @Override
+            public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+                Activity topActivity = ActivityUtils.getTopActivity();
+                if (topActivity instanceof CallActivity) {
+                    CallActivity callActivity = (CallActivity) topActivity;
+                    callActivity.onUserInfoUpdated(userInfo);
+                }
+            }
+
+            @Override
+            public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
+                Activity topActivity = ActivityUtils.getTopActivity();
+                if (topActivity instanceof CallActivity) {
+                    CallActivity callActivity = (CallActivity) topActivity;
+                    callActivity.onNetworkQuality(userID, quality);
+                }
+            }
+
+            @Override
+            public void onReceiveUserError(int errorCode) {
+            }
+
+            @Override
+            public void onReceiveCallingUserDisconnected(ZegoUserInfo userInfo, String callID) {
+            }
+        });
+
         callService.setListener(new ZegoCallServiceListener() {
             @Override
             public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
@@ -224,6 +254,7 @@ public class ZegoCallKit {
     }
 
     public void stopListen(Activity activity) {
+        ZegoServiceManager.getInstance().callService.setListener(null);
         ZegoServiceManager.getInstance().userService.setListener(null);
         activity.stopService(new Intent(activity, ForegroundService.class));
     }

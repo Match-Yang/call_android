@@ -6,11 +6,16 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
+
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutConnectedVideoCallBinding;
@@ -20,10 +25,11 @@ import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
+import im.zego.callsdk.service.ZegoDeviceService;
 import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.service.ZegoStreamService;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
-import java.util.Objects;
 
 public class ConnectedVideoCallView extends ConstraintLayout {
 
@@ -55,6 +61,8 @@ public class ConnectedVideoCallView extends ConstraintLayout {
     private void initView() {
         binding = LayoutConnectedVideoCallBinding.inflate(LayoutInflater.from(getContext()), this);
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+        ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         binding.callVideoHangUp.setOnClickListener(new OnClickListener() {
             @Override
@@ -72,47 +80,37 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoCamera.setSelected(localUserInfo.camera);
         binding.callVideoCamera.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-//            userService.enableCamera(!selected, errorCode -> {
-//                if (errorCode == 0) {
-//                    v.setSelected(!selected);
-//                } else {
-//                    ToastUtils.showShort(R.string.camera_operate_failed, errorCode);
-//                }
-//            });
+            v.setSelected(!selected);
+            deviceService.enableCamera(!selected);
         });
         binding.callVideoMic.setSelected(localUserInfo.mic);
         binding.callVideoMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
-//            userService.enableMic(!selected, errorCode -> {
-//                if (errorCode == 0) {
-//                    v.setSelected(!selected);
-//                } else {
-//                    ToastUtils.showShort(R.string.mic_operate_failed, errorCode);
-//                }
-//            });
+            v.setSelected(!selected);
+            deviceService.muteMic(!selected);
         });
         binding.callVideoCameraSwitch.setSelected(true);
         binding.callVideoCameraSwitch.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);
-//            userService.useFrontCamera(!selected);
+            deviceService.useFrontCamera(!selected);
         });
         binding.callVideoSpeaker.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);
-//            userService.speakerOperate(!selected);
+            deviceService.enableSpeaker(!selected);
         });
         binding.callVideoViewSmallLayout.setOnClickListener(v -> {
             isSelfCenter = !isSelfCenter;
-//            if (isSelfCenter) {
-//                binding.callVideoViewSmallName.setText(userInfo.userName);
-//                userService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
-//                userService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
-//            } else {
-//                binding.callVideoViewSmallName.setText(R.string.me);
-//                userService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-//                userService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
-//            }
+            if (isSelfCenter) {
+                binding.callVideoViewSmallName.setText(userInfo.userName);
+                streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
+            } else {
+                binding.callVideoViewSmallName.setText(R.string.me);
+                streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
+            }
             onUserInfoUpdated(userInfo);
             onUserInfoUpdated(localUserInfo);
         });
@@ -135,18 +133,17 @@ public class ConnectedVideoCallView extends ConstraintLayout {
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
         if (changedView == this) {
-//            ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-//            if (visibility == View.VISIBLE) {
-//                if (isSelfCenter) {
-//                    userService
-//                        .startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
-//                    userService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
-//                } else {
-//                    userService
-//                        .startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
-//                    userService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
-//                }
-//            }
+            ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+            ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
+            if (visibility == View.VISIBLE) {
+                if (isSelfCenter) {
+                    streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                    streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
+                } else {
+                    streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                    streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
+                }
+            }
         }
     }
 

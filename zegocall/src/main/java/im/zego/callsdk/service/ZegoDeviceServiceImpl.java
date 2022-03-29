@@ -1,17 +1,13 @@
 package im.zego.callsdk.service;
 
 
-import android.view.TextureView;
-
 import im.zego.callsdk.model.ZegoAudioBitrate;
 import im.zego.callsdk.model.ZegoDevicesType;
 import im.zego.callsdk.model.ZegoVideoResolution;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
 import im.zego.zegoexpress.constants.ZegoVideoConfigPreset;
-import im.zego.zegoexpress.constants.ZegoViewMode;
 import im.zego.zegoexpress.entity.ZegoAudioConfig;
-import im.zego.zegoexpress.entity.ZegoCanvas;
 import im.zego.zegoexpress.entity.ZegoVideoConfig;
 
 /**
@@ -125,37 +121,6 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
     @Override
     public void enableSpeaker(boolean enable) {
         ZegoExpressEngine.getEngine().setAudioRouteToSpeaker(enable);
-    }
-
-    /**
-     * Playback video streams data
-     * <p>
-     * Description: This can be used to intuitively play the video stream data, the audio stream data is played by
-     * default. Call this method at: After joining a room
-     *
-     * @param userID      refers to the ID of the user you want to play the video streams from.
-     * @param textureView refers to the target view that you want to be rendered.
-     */
-    public void playVideoStream(String userID, TextureView textureView) {
-        ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
-        zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
-
-//        if (UserInfoHelper.isUserIDSelf(userID)) {
-//            ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
-//            ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
-//        } else {
-//            String streamID = ZegoLiveHelper.getStreamID(userID);
-//            ZegoExpressEngine.getEngine().startPlayingStream(streamID, zegoCanvas);
-//        }
-    }
-
-    public void stopPlayStream(String userID) {
-//        if (UserInfoHelper.isUserIDSelf(userID)) {
-//            ZegoExpressEngine.getEngine().stopPreview();
-//        } else {
-//            String streamID = ZegoLiveHelper.getStreamID(userID);
-//            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
-//        }
     }
 
     @Override
