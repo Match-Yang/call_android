@@ -15,8 +15,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
-import im.zego.callsdk.service.ZegoCallService;
-import im.zego.callsdk.service.ZegoServiceManager;
 import java.util.Objects;
 
 import im.zego.call.R;
@@ -24,9 +22,10 @@ import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutOutgoingCallBinding;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
-import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.service.ZegoCallService;
+import im.zego.callsdk.service.ZegoDeviceService;
+import im.zego.callsdk.service.ZegoServiceManager;
 
 public class OutgoingCallView extends ConstraintLayout {
 
@@ -56,8 +55,9 @@ public class OutgoingCallView extends ConstraintLayout {
 
     private void initView() {
         binding = LayoutOutgoingCallBinding.inflate(LayoutInflater.from(getContext()), this);
-        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+        ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+
         binding.callingHangUp.setOnClickListener(v -> {
             callService.cancelCall(userInfo.userID, errorCode -> {
                 if (errorCode == 0) {
@@ -68,21 +68,21 @@ public class OutgoingCallView extends ConstraintLayout {
                 }
             });
         });
-        //        binding.cameraSwitch.setSelected(true);
-        //        binding.cameraSwitch.setOnClickListener(new OnClickListener() {
-        //            @Override
-        //            public void onClick(View v) {
-        //                boolean selected = v.isSelected();
-        //                v.setSelected(!selected);
-        //                userService.useFrontCamera(selected);
-        //            }
-        //        });
-        //        binding.callMinimal.setOnClickListener(v -> {
-        //            LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
-        //        });
-        //        binding.callSettings.setOnClickListener(v -> {
-        //            LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(isVideoCall());
-        //        });
+        binding.cameraSwitch.setSelected(true);
+        binding.cameraSwitch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean selected = v.isSelected();
+                v.setSelected(!selected);
+                deviceService.useFrontCamera(selected);
+            }
+        });
+        binding.callMinimal.setOnClickListener(v -> {
+            LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
+        });
+        binding.callSettings.setOnClickListener(v -> {
+            LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(isVideoCall());
+        });
     }
 
     public void setUserInfo(ZegoUserInfo userInfo) {

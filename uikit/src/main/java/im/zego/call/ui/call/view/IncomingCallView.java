@@ -5,10 +5,15 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.blankj.utilcode.util.ToastUtils;
+
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.LayoutIncomingCallBinding;
@@ -17,10 +22,10 @@ import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
+import im.zego.callsdk.service.ZegoDeviceService;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
 import im.zego.zim.enums.ZIMErrorCode;
-import java.util.Objects;
 
 public class IncomingCallView extends ConstraintLayout {
 
@@ -55,17 +60,13 @@ public class IncomingCallView extends ConstraintLayout {
             public void onClick(View v) {
                 ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+
                 String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        //                        userService.enableMic(true, errorCode1 -> {
-                        //                            if (errorCode1 == 0) {
-                        //                                userService.enableCamera(true, errorCode2 -> {
-                        //                                    if (errorCode2 == 0) {
-                        //                                    }
-                        //                                });
-                        //                            }
-                        //                        });
+                        deviceService.muteMic(false);
+                        deviceService.enableCamera(true);
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
                     } else {
                         ToastUtils.showShort(R.string.response_failed, errorCode);
@@ -78,15 +79,12 @@ public class IncomingCallView extends ConstraintLayout {
             public void onClick(View v) {
                 ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+
                 String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        //                        userService.enableMic(true, errorCode1 -> {
-                        //                            if (errorCode1 == 0) {
-                        //                            } else {
-                        //                                ToastUtils.showShort(R.string.mic_operate_failed, errorCode1);
-                        //                            }
-                        //                        });
+                        deviceService.muteMic(false);
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
                     } else {
                         ToastUtils.showShort("responseCall " + errorCode);
@@ -97,7 +95,6 @@ public class IncomingCallView extends ConstraintLayout {
         binding.callDecline.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 callService.declineCall(userInfo.userID, ZegoDeclineType.Decline, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
