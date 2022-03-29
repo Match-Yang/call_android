@@ -1,9 +1,8 @@
 package im.zego.callsdk.service;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
+import im.zego.callsdk.command.ZegoGetUserCommand;
 import im.zego.callsdk.command.ZegoLoginCommand;
 import im.zego.callsdk.command.ZegoLogoutCommand;
 import im.zego.callsdk.command.ZegoUserListCommand;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class ZegoUserServiceImpl extends ZegoUserService {
 
@@ -37,21 +37,12 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     }
 
     @Override
-    public void validateAccount() {
-        ZegoCommandManager.getInstance();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        localUserInfo = new ZegoUserInfo();
-        localUserInfo.userID = currentUser.getUid();
-        localUserInfo.userName = currentUser.getDisplayName();
-    }
-
-    @Override
     public void logout() {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             String selfUserID = userService.localUserInfo.userID;
             ZegoLogoutCommand command = new ZegoLogoutCommand();
-            command.putParameter("selfUserID",selfUserID);
+            command.putParameter("selfUserID", selfUserID);
             command.execute((errorCode, obj) -> {
 
             });
@@ -75,6 +66,25 @@ public class ZegoUserServiceImpl extends ZegoUserService {
                 callback.onGetUserList(-1000, new ArrayList<>());
             }
         }
+    }
+
+    @Override
+    public ZegoUserInfo getLocalUserInfo() {
+        CountDownLatch latch = new CountDownLatch(1);
+        ZegoGetUserCommand command = new ZegoGetUserCommand();
+        command.execute(new ZegoRequestCallback() {
+            @Override
+            public void onResult(int errorCode, Object obj) {
+                localUserInfo = (ZegoUserInfo) obj;
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return localUserInfo;
     }
 
 }

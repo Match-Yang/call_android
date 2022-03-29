@@ -62,7 +62,7 @@ public class IncomingCallView extends ConstraintLayout {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.getLocalUserInfo().userID);
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         deviceService.muteMic(false);
@@ -81,7 +81,7 @@ public class IncomingCallView extends ConstraintLayout {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.localUserInfo.userID);
+                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.getLocalUserInfo().userID);
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         deviceService.muteMic(false);

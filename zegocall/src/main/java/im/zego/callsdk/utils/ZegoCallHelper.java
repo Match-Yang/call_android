@@ -13,12 +13,12 @@ public class ZegoCallHelper {
     @NonNull
     public static boolean isUserIDSelf(String userID) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        return Objects.equals(userService.localUserInfo.userID, userID);
+        return Objects.equals(userService.getLocalUserInfo().userID, userID);
     }
 
     @NonNull
     public static String getSelfStreamID() {
-        String selfUserID = ZegoServiceManager.getInstance().userService.localUserInfo.userID;
+        String selfUserID = ZegoServiceManager.getInstance().userService.getLocalUserInfo().userID;
         return getStreamID(selfUserID);
     }
     @NonNull

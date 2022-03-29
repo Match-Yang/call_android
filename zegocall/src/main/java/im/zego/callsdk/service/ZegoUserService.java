@@ -9,7 +9,7 @@ import im.zego.callsdk.model.ZegoUserInfo;
 
 public abstract class ZegoUserService {
 
-    public ZegoUserInfo localUserInfo;
+    protected ZegoUserInfo localUserInfo;
     protected List<ZegoUserInfo> userInfoList;
     protected ZegoUserServiceListener listener;
 
@@ -23,5 +23,5 @@ public abstract class ZegoUserService {
 
     public abstract void getOnlineUserList(ZegoUserListCallback callback);
 
-    public abstract void validateAccount();
+    public abstract ZegoUserInfo getLocalUserInfo();
 }

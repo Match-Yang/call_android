@@ -76,7 +76,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
                 });
             }
         });
-        ZegoUserInfo localUserInfo = userService.localUserInfo;
+        ZegoUserInfo localUserInfo = userService.getLocalUserInfo();
         binding.callVideoCamera.setSelected(localUserInfo.camera);
         binding.callVideoCamera.setOnClickListener(v -> {
             boolean selected = v.isSelected();
@@ -104,11 +104,11 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             isSelfCenter = !isSelfCenter;
             if (isSelfCenter) {
                 binding.callVideoViewSmallName.setText(userInfo.userName);
-                streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewCenterTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
                 binding.callVideoViewSmallName.setText(R.string.me);
-                streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewSmallTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
             }
             onUserInfoUpdated(userInfo);
@@ -137,10 +137,10 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
             if (visibility == View.VISIBLE) {
                 if (isSelfCenter) {
-                    streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewCenterTexture);
+                    streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewCenterTexture);
                     streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
                 } else {
-                    streamService.startPlaying(userService.localUserInfo.userID, binding.callVideoViewSmallTexture);
+                    streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewSmallTexture);
                     streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
                 }
             }
@@ -155,7 +155,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
         Log.d("userInfo", "onUserInfoUpdated() called with: userInfo = [" + userInfo + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (Objects.equals(userService.localUserInfo, userInfo)) {
+        if (Objects.equals(userService.getLocalUserInfo(), userInfo)) {
             binding.callVideoMic.setSelected(userInfo.mic);
             binding.callVideoCamera.setSelected(userInfo.camera);
             if (isSelfCenter) {

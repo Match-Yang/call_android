@@ -212,7 +212,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
         deviceService.useFrontCamera(true);
 
-        String userID = userService.localUserInfo.userID;
+        String userID = userService.getLocalUserInfo().userID;
         String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             callService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
@@ -230,7 +230,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     TextureView textureView = binding.layoutOutgoingCall.getTextureView();
                     deviceService.muteMic(false);
                     deviceService.enableCamera(true);
-                    streamService.startPlaying(userService.localUserInfo.userID, textureView);
+                    streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);
                     handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_page_call_fail, errorCode));

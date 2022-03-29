@@ -21,6 +21,4 @@ public interface ZegoUserServiceListener {
     void onNetworkQuality(String userID, ZegoNetWorkQuality quality);
 
     void onReceiveUserError(int errorCode);
-
-    void onReceiveCallingUserDisconnected(ZegoUserInfo userInfo,String callID);
 }

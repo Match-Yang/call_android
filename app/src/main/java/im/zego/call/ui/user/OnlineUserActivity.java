@@ -1,7 +1,6 @@
 package im.zego.call.ui.user;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -11,9 +10,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.scwang.smart.refresh.header.MaterialHeader;
 
-import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.service.ZegoCallService;
 import java.util.List;
 
 import im.zego.call.R;
@@ -88,7 +84,7 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
         userService.getOnlineUserList(new ZegoUserListCallback() {
             @Override
             public void onGetUserList(int errorCode, List<ZegoUserInfo> userInfoList) {
-                userInfoList.remove(userService.localUserInfo);
+                userInfoList.remove(userService.getLocalUserInfo());
                 onlineUserAdapter.updateList(userInfoList);
                 callback.onRoomCallback(errorCode);
             }

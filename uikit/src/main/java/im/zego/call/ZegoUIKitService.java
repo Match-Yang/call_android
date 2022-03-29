@@ -14,8 +14,4 @@ public class ZegoUIKitService {
         ZegoServiceManager.getInstance().userService.logout();
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
     }
-
-    public void validateAccount() {
-        ZegoServiceManager.getInstance().userService.validateAccount();
-    }
 }

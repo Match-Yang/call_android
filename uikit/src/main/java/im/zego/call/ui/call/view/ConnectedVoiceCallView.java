@@ -73,7 +73,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
                 });
             }
         });
-        ZegoUserInfo localUserInfo = userService.localUserInfo;
+        ZegoUserInfo localUserInfo = userService.getLocalUserInfo();
         binding.callVoiceMic.setSelected(localUserInfo.mic);
         binding.callVoiceMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
@@ -122,7 +122,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (Objects.equals(userService.localUserInfo, userInfo)) {
+        if (Objects.equals(userService.getLocalUserInfo(), userInfo)) {
             binding.callVoiceMic.setSelected(userInfo.mic);
         }
     }
