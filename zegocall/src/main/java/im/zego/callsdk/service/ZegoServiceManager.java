@@ -14,6 +14,7 @@ import java.util.Objects;
 import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
@@ -147,7 +148,7 @@ public class ZegoServiceManager {
     }
 
     private ZegoUserInfo updateUserInfo(String streamID, ZegoRemoteDeviceState state, int type) {
-        String userID = streamID.split("_")[1];
+        String userID = ZegoCallHelper.getUserID(streamID);
         ZegoUserInfo userInfo = null;
         for (ZegoUserInfo zegoUserInfo : userService.userInfoList) {
             if (Objects.equals(zegoUserInfo.userID, userID)) {

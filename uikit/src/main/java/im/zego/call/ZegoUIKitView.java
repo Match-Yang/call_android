@@ -1,5 +1,7 @@
 package im.zego.call;
 
+import android.app.Activity;
+
 import im.zego.call.ui.common.MinimalDialog;
 import im.zego.call.ui.common.ReceiveCallDialog;
 import im.zego.call.ui.common.ReceiveCallView;
@@ -13,10 +15,10 @@ public class ZegoUIKitView {
     private ReceiveCallDialog receiveCallDialog;
     private MinimalDialog minimalDialog;
 
-    public void init() {
-        receiveCallDialog = new ReceiveCallDialog();
+    public void init(Activity activity) {
+        receiveCallDialog = new ReceiveCallDialog(activity);
 
-        minimalDialog = new MinimalDialog();
+        minimalDialog = new MinimalDialog(activity);
         minimalDialog.showMinimalWindow();
     }
 

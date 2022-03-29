@@ -54,9 +54,8 @@ public class MinimalDialog {
         }
     };
 
-    public MinimalDialog() {
-        Activity topActivity = ActivityUtils.getTopActivity();
-        windowManager = (WindowManager) topActivity.getSystemService(Context.WINDOW_SERVICE);
+    public MinimalDialog(Activity activity) {
+        windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         lp = new WindowManager.LayoutParams();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -72,7 +71,7 @@ public class MinimalDialog {
 
         lp.y = SizeUtils.dp2px(66);
 
-        minimalView = new MinimalView(topActivity);
+        minimalView = new MinimalView(activity);
     }
 
     public void showMinimalWindow() {
