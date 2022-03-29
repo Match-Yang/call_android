@@ -96,10 +96,6 @@ public class ZegoCallKit {
             @Override
             public void onReceiveUserError(int errorCode) {
             }
-
-            @Override
-            public void onReceiveCallingUserDisconnected(ZegoUserInfo userInfo, String callID) {
-            }
         });
 
         callService.setListener(new ZegoCallServiceListener() {
@@ -187,7 +183,7 @@ public class ZegoCallKit {
     }
 
     public ZegoUserInfo getLocalUserInfo() {
-        return ZegoServiceManager.getInstance().userService.localUserInfo;
+        return ZegoServiceManager.getInstance().userService.getLocalUserInfo();
     }
 
     private void createNotificationChannel() {

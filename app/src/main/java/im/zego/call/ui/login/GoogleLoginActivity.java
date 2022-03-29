@@ -24,7 +24,10 @@ import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.call.utils.PermissionHelper;
+import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoListenerManager;
+import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.service.ZegoUserService;
 
 public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding> {
     private static final String TAG = "GoogleLoginActivity";
@@ -55,11 +58,11 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             }
             PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
                 if (isAllGranted) {
-                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                    ZegoUserInfo currentUser = userService.getLocalUserInfo();
                     if (currentUser == null) {
                         signIn();
                     } else {
-                        ZegoCallKit.getInstance().uiKitService.validateAccount();
                         ActivityUtils.startActivity(EntryActivity.class);
                     }
                 }
@@ -80,9 +83,9 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     private void systemPermissionCheck() {
         PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
             if (isAllGranted) {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                ZegoUserInfo currentUser = userService.getLocalUserInfo();
                 if (currentUser != null) {
-                    ZegoCallKit.getInstance().uiKitService.validateAccount();
                     ActivityUtils.startActivity(EntryActivity.class);
                 }
             }
@@ -92,7 +95,8 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoUserInfo currentUser = userService.getLocalUserInfo();
         if (currentUser == null) {
             mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
             });

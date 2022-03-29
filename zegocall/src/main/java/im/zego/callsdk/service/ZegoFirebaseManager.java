@@ -70,7 +70,26 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         } else if (ZegoCommand.Listener_CALL.equals(path)) {
             String callID = (String) parameter.get("callID");
             addCallListener(callID);
+        } else if (ZegoCommand.GET_USER.equals(path)) {
+            getCurrentUser(callback);
         }
+    }
+
+    private void getCurrentUser(ZegoRequestCallback callback) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            ZegoUserInfo userInfo = new ZegoUserInfo();
+            userInfo.userID = currentUser.getUid();
+            userInfo.userName = currentUser.getDisplayName();
+            if (callback != null) {
+                callback.onResult(0, userInfo);
+            }
+        } else {
+            if (callback != null) {
+                callback.onResult(0, null);
+            }
+        }
+
     }
 
     private void startCallUser(Map<String, Object> parameter, ZegoRequestCallback callback) {
