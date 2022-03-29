@@ -47,7 +47,7 @@ public class ForegroundService extends Service {
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent appIntent = new Intent();
         try {
-            appIntent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.LoginActivity"));
+            appIntent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.GoogleLoginActivity"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

@@ -38,9 +38,8 @@ public class ReceiveCallDialog {
     private AlertDialog floatPermissionDialog;
     private Handler handler = new Handler(Looper.getMainLooper());
 
-    public ReceiveCallDialog() {
-        Activity topActivity = ActivityUtils.getTopActivity();
-        windowManager = (WindowManager) topActivity.getSystemService(Context.WINDOW_SERVICE);
+    public ReceiveCallDialog(Activity activity) {
+        windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         lp = new WindowManager.LayoutParams();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -56,7 +55,7 @@ public class ReceiveCallDialog {
         lp.x = 0;
         lp.y = 0;
 
-        receiveCallView = new ReceiveCallView(topActivity);
+        receiveCallView = new ReceiveCallView(activity);
         receiveCallView.setListener(new ReceiveCallView.OnReceiveCallViewClickedListener() {
             @Override
             public void onAcceptAudioClicked() {

@@ -18,11 +18,13 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
 import com.google.firebase.messaging.RemoteMessage.Notification;
-import im.zego.call.ui.call.CallStateManager;
+
+import java.util.Map;
+
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
@@ -32,8 +34,6 @@ import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
 import im.zego.callsdk.service.ZegoServiceManager;
-import java.util.Map;
-import okhttp3.internal.Internal;
 
 /**
  * NOTE: There can only be one service in each app that receives FCM messages. If multiple are declared in the Manifest
@@ -170,7 +170,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         callService.setCallInfo(callInfo);
         ZegoCallServiceListener listener = callService.getListener();
         if (listener != null) {
-            listener.onReceiveCallInvite(caller, type);
+            ZegoCallType finalType = type;
+            ThreadUtils.runOnUiThread(() -> {
+                listener.onReceiveCallInvite(caller, finalType);
+            });
         }
     }
 

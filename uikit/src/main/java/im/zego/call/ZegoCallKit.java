@@ -10,11 +10,14 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
+
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.service.ForegroundService;
 import im.zego.call.ui.call.CallActivity;
@@ -30,8 +33,11 @@ import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
+import im.zego.callsdk.service.ZegoDeviceService;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.utils.ZegoCallHelper;
+import im.zego.zegoexpress.ZegoExpressEngine;
 
 public class ZegoCallKit {
 
@@ -57,6 +63,31 @@ public class ZegoCallKit {
 
     public final ZegoUIKitService uiKitService;
     private final ZegoUIKitView callView;
+
+    private final CallStateManager.CallStateChangedListener callStateChangedListener = (before, after) -> {
+        boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
+                (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
+        boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_VOICE) ||
+                (before == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
+        boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
+                (after == CallStateManager.TYPE_CONNECTED_VIDEO);
+        if ((beforeIsOutgoing || beforeIsInComing) && afterIsAccept) {
+            ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+            deviceService.enableSpeaker(false);
+
+            String streamID = ZegoCallHelper.getSelfStreamID();
+            ZegoExpressEngine.getEngine().startPublishingStream(streamID);
+        } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
+            ZegoExpressEngine.getEngine().stopPublishingStream();
+        } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
+            ZegoExpressEngine.getEngine().stopPublishingStream();
+        } else if (after == CallStateManager.TYPE_CALL_MISSED) {
+            ZegoExpressEngine.getEngine().stopPublishingStream();
+        } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
+            ZegoExpressEngine.getEngine().stopPublishingStream();
+        }
+    };
+
     private Handler handler = new Handler(Looper.getMainLooper());
 
     private String CHANNEL_ID = "channel 1";
@@ -71,7 +102,7 @@ public class ZegoCallKit {
     }
 
     public void startListen(Activity activity) {
-        callView.init();
+        callView.init(activity);
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         userService.setListener(new ZegoUserServiceListener() {
@@ -169,6 +200,8 @@ public class ZegoCallKit {
             }
         });
 
+        CallStateManager.getInstance().addListener(callStateChangedListener);
+
         Intent intent = new Intent(activity, ForegroundService.class);
         ContextCompat.startForegroundService(activity, intent);
     }
@@ -218,24 +251,24 @@ public class ZegoCallKit {
         String notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         int callState = CallStateManager.getInstance().getCallState();
         if (callState == CallStateManager.TYPE_INCOMING_CALLING_VIDEO ||
-            callState == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
+                callState == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
             notificationText = StringUtils.getString(R.string.receive_call_notification, userInfo.userName);
         } else if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
-            callState == CallStateManager.TYPE_CONNECTED_VOICE) {
+                callState == CallStateManager.TYPE_CONNECTED_VOICE) {
             notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO ||
-            callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+                callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             notificationText = StringUtils.getString(R.string.request_call_notification, userInfo.userName);
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(topActivity, CHANNEL_ID)
-            .setSmallIcon(R.drawable.icon_dialog_voice_accept)
-            .setContentTitle(StringUtils.getString(R.string.app_name))
-            .setContentText(notificationText)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setAutoCancel(true);
+                .setSmallIcon(R.drawable.icon_dialog_voice_accept)
+                .setContentTitle(StringUtils.getString(R.string.app_name))
+                .setContentText(notificationText)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(topActivity);
         Notification build = builder.build();
@@ -252,6 +285,7 @@ public class ZegoCallKit {
     public void stopListen(Activity activity) {
         ZegoServiceManager.getInstance().callService.setListener(null);
         ZegoServiceManager.getInstance().userService.setListener(null);
+        CallStateManager.getInstance().removeListener(callStateChangedListener);
         activity.stopService(new Intent(activity, ForegroundService.class));
     }
 
