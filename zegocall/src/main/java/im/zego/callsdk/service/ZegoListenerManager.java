@@ -35,6 +35,7 @@ public class ZegoListenerManager implements ZegoListener, ZegoListenerUpdater {
     public static final String ACCEPT_CALL = "/call/notify_call_accept";
     public static final String DECLINE_CALL = "/call/notify_call_decline";
     public static final String END_CALL = "/call/notify_call_end";
+    public static final String TIMEOUT_CALL = "/call/notify_timeout";
 
     @Override
     public void receiveUpdate(String path, Object parameter) {
