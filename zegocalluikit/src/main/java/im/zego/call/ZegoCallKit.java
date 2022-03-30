@@ -23,6 +23,7 @@ import im.zego.call.service.ForegroundService;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView;
+import im.zego.call.view.ZegoCallKitView;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
@@ -39,6 +40,10 @@ import im.zego.callsdk.service.ZegoUserService;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
 
+/**
+ * ZegoCall UIKit管理类
+ * Demo层只需调用并关注此类的实现，即可快速实现一套呼叫对讲业务逻辑
+ */
 public class ZegoCallKit {
 
     private static final String TAG = "ZegoCallKit";
@@ -46,8 +51,8 @@ public class ZegoCallKit {
     private static volatile ZegoCallKit singleton = null;
 
     private ZegoCallKit() {
-        uiKitService = new ZegoUIKitService();
-        callView = new ZegoUIKitView();
+        callKitService = new ZegoCallKitService();
+        callView = new ZegoCallKitView();
     }
 
     public static ZegoCallKit getInstance() {
@@ -61,8 +66,10 @@ public class ZegoCallKit {
         return singleton;
     }
 
-    public final ZegoUIKitService uiKitService;
-    private final ZegoUIKitView callView;
+    // CallKit服务类
+    public final ZegoCallKitService callKitService;
+    // 通用的View：最小化View、呼叫界面弹窗等等
+    private final ZegoCallKitView callView;
 
     private final CallStateManager.CallStateChangedListener callStateChangedListener = (before, after) -> {
         boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
@@ -88,19 +95,27 @@ public class ZegoCallKit {
         }
     };
 
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
-    private String CHANNEL_ID = "channel 1";
-    private String CHANNEL_NAME = "channel name";
-    private String CHANNEL_DESC = "channel desc";
-    private int notificationId = 999;
+    private final String CHANNEL_ID = "channel 1";
+    private final String CHANNEL_NAME = "channel name";
+    private final String CHANNEL_DESC = "channel desc";
+    private final int notificationId = 999;
 
+    /**
+     * 初始化sdk与rtc引擎
+     * 调用时机：应用启动时
+     */
     public void init(Application application) {
         AuthInfoManager.getInstance().init(application);
         long appID = AuthInfoManager.getInstance().getAppID();
         ZegoServiceManager.getInstance().init(appID, application);
     }
 
+    /**
+     * 启动监听呼叫响应
+     * 调用时机：成功登录之后
+     */
     public void startListen(Activity activity) {
         callView.init(activity);
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
@@ -139,7 +154,7 @@ public class ZegoCallKit {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VIDEO;
                 }
                 CallStateManager.getInstance().setCallState(userInfo, state);
-                ZegoCallKit.getInstance().showCallDialog(userInfo, type);
+                showCallDialog(userInfo, type);
             }
 
             @Override
@@ -206,36 +221,46 @@ public class ZegoCallKit {
         ContextCompat.startForegroundService(activity, intent);
     }
 
+    /**
+     * 停止监听呼叫响应
+     * 调用时机：退出登录之后
+     */
+    public void stopListen(Activity activity) {
+        ZegoServiceManager.getInstance().callService.setListener(null);
+        ZegoServiceManager.getInstance().userService.setListener(null);
+        CallStateManager.getInstance().removeListener(callStateChangedListener);
+        activity.stopService(new Intent(activity, ForegroundService.class));
+    }
+
+    /**
+     * 上传日志
+     * @param callback
+     */
     public void uploadLog(final ZegoCallback callback) {
         ZegoServiceManager.getInstance().uploadLog(callback);
     }
 
+    /**
+     * 主动呼叫用户
+     * @param userInfo 用户信息
+     * @param callState 呼叫类型，语音/视频
+     */
     public void callUser(ZegoUserInfo userInfo, int callState) {
         CallStateManager.getInstance().setCallState(userInfo, callState);
         CallActivity.startCallActivity(userInfo);
     }
 
+    /**
+     * 获取本地用户信息
+     */
     public ZegoUserInfo getLocalUserInfo() {
         return ZegoServiceManager.getInstance().userService.getLocalUserInfo();
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = CHANNEL_NAME;
-            String description = CHANNEL_DESC;
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            Activity topActivity = ActivityUtils.getTopActivity();
-            NotificationManager notificationManager = topActivity.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
+    /**
+     * 展示前台服务通知
+     * 调用时机：应用切换到后台后
+     */
     public void showNotification(ZegoUserInfo userInfo) {
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent intent = new Intent();
@@ -277,19 +302,33 @@ public class ZegoCallKit {
         notificationManager.notify(notificationId, build);
     }
 
+    /**
+     * 隐藏前台服务通知
+     * 调用时机：应用切换到前台后
+     */
     public void dismissNotification(Activity activity) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(activity);
         notificationManager.cancel(notificationId);
     }
 
-    public void stopListen(Activity activity) {
-        ZegoServiceManager.getInstance().callService.setListener(null);
-        ZegoServiceManager.getInstance().userService.setListener(null);
-        CallStateManager.getInstance().removeListener(callStateChangedListener);
-        activity.stopService(new Intent(activity, ForegroundService.class));
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = CHANNEL_NAME;
+            String description = CHANNEL_DESC;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            Activity topActivity = ActivityUtils.getTopActivity();
+            NotificationManager notificationManager = topActivity.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
-    public void showCallDialog(ZegoUserInfo userInfo, ZegoCallType type) {
+    private void showCallDialog(ZegoUserInfo userInfo, ZegoCallType type) {
         handler.post(() -> {
             callView.updateData(userInfo, type);
             callView.showReceiveCallWindow();

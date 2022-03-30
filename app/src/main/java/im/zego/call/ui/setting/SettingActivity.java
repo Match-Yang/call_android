@@ -7,7 +7,6 @@ import android.view.View.OnClickListener;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.tencent.mmkv.MMKV;
 
-import im.zego.call.BuildConfig;
 import im.zego.call.R;
 import im.zego.call.ZegoCallKit;
 import im.zego.call.databinding.ActivitySettingBinding;
@@ -66,7 +65,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         binding.logOut.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoCallKit.getInstance().uiKitService.logout();
+                ZegoCallKit.getInstance().callKitService.logout();
 
                 MMKV.defaultMMKV().encode("autoLogin", false);
                 ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);

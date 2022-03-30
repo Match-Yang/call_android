@@ -62,5 +62,5 @@ dependencies {
 
     // Google Sign In SDK (only required for Google Sign In)
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
-    implementation project(path: ':uikit')
+    implementation project(path: ':zegocalluikit')
 }

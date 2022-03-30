@@ -103,7 +103,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     }
 
     private void logout() {
-        ZegoCallKit.getInstance().uiKitService.logout();
+        ZegoCallKit.getInstance().callKitService.logout();
 
         MMKV.defaultMMKV().encode("autoLogin", false);
         ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);

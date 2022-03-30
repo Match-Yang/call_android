@@ -1,4 +1,4 @@
-package im.zego.call;
+package im.zego.call.view;
 
 import android.app.Activity;
 
@@ -8,10 +8,7 @@ import im.zego.call.ui.common.ReceiveCallView;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 
-/**
- * Created by rocket_wang on 2022/3/19.
- */
-public class ZegoUIKitView {
+public class ZegoCallKitView {
     private ReceiveCallDialog receiveCallDialog;
     private MinimalDialog minimalDialog;
 
