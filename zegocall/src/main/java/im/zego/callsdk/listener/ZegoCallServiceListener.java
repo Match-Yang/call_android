@@ -37,8 +37,15 @@ public interface ZegoCallServiceListener {
 
     /**
      * call end because of room destroy,people hangup(leave room),etc.
+     * <p>
+     * Description: this callback will be triggered when a call has been ended.
      */
     void onReceiveCallEnded();
 
+    /**
+     * Callback for a call timed out
+     * <p>
+     * Description: this callback will be triggered when a call didn't get answered for a long time/ the caller or callee timed out during the call.
+     */
     void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type);
 }

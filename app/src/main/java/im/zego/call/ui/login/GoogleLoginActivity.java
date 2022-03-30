@@ -14,8 +14,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import im.zego.call.R;
 import im.zego.call.ZegoCallKit;
@@ -120,7 +118,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 showLoading();
-                ZegoCallKit.getInstance().uiKitService.login(account.getIdToken(), errorCode -> {
+                ZegoCallKit.getInstance().callKitService.login(account.getIdToken(), errorCode -> {
                     dismissLoading();
                     if (errorCode == 0) {
                         ActivityUtils.startActivity(EntryActivity.class);
