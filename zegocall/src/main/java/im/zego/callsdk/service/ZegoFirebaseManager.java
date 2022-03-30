@@ -1,5 +1,6 @@
 package im.zego.callsdk.service;
 
+import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,7 +30,6 @@ import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,56 +157,61 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     removeCallListener(callID);
                     return;
                 }
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    if ("users".equals(child.getKey())) {
-                        HashMap<String, HashMap<String, Object>> value =
-                            (HashMap<String, HashMap<String, Object>>) child.getValue();
-                        Collection<HashMap<String, Object>> values = value.values();
-                        for (HashMap<String, Object> hashMap : values) {
-                            // not caller user node
-                            if (!hashMap.containsKey("user_id") || !hashMap.containsKey("caller_id")) {
-                                return;
-                            }
-                            String targetUserID = (String) hashMap.get("user_id");
-                            String callerUserID = (String) hashMap.get("caller_id");
-                            int status = ((Long) hashMap.get("status")).intValue();
-                            if (!targetUserID.equals(callerUserID)) {
-                                if (Status.WAIT.getValue() == status) {
-                                    HashMap<String, String> data = new HashMap<>();
-                                    data.put("callee_id", targetUserID);
-                                    data.put("call_id", callID);
-                                    updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
-                                } else if (Status.CONNECTED.getValue() == status) {
-                                    HashMap<String, String> data = new HashMap<>();
-                                    data.put("callee_id", targetUserID);
-                                    data.put("call_id", callID);
-                                    updater.receiveUpdate(ZegoListenerManager.ACCEPT_CALL, data);
-                                } else if (Status.FINISHED.getValue() == status) {
-                                    HashMap<String, String> data = new HashMap<>();
-                                    data.put("id", targetUserID);
-                                    data.put("call_id", callID);
-                                    updater.receiveUpdate(ZegoListenerManager.END_CALL, data);
-                                } else if (Status.DECLINED.getValue() == status) {
-                                    HashMap<String, String> data = new HashMap<>();
-                                    data.put("callee_id", targetUserID);
-                                    data.put("call_id", callID);
-                                    data.put("type", "1");
-                                    updater.receiveUpdate(ZegoListenerManager.DECLINE_CALL, data);
-                                } else if (Status.BUSY.getValue() == status) {
-                                    HashMap<String, String> data = new HashMap<>();
-                                    data.put("callee_id", targetUserID);
-                                    data.put("call_id", callID);
-                                    data.put("type", "2");
-                                    updater.receiveUpdate(ZegoListenerManager.DECLINE_CALL, data);
-                                } else if (Status.CANCELED.getValue() == status) {
-                                    HashMap<String, String> data = new HashMap<>();
-                                    data.put("caller_id", callerUserID);
-                                    data.put("call_id", callID);
-                                    updater.receiveUpdate(ZegoListenerManager.CANCEL_CALL, data);
-                                }
+                DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson
+                    .fromJson(snapshot.getValue().toString(), DatabaseCall.class);
+
+                for (DatabaseCallUser value : databaseCall.users.values()) {
+                    if (TextUtils.isEmpty(value.user_id)) {
+                        return;
+                    }
+                    String targetUserID = value.user_id;
+                    String callerUserID = value.caller_id;
+                    int status = value.status;
+                    if (databaseCall.call_status == Status.FINISHED.getValue()) {
+                        if (status == Status.FINISHED.getValue()) {
+                            HashMap<String, String> data = new HashMap<>();
+                            data.put("id", targetUserID);
+                            data.put("call_id", callID);
+                            updater.receiveUpdate(ZegoListenerManager.END_CALL, data);
+                            break;
+                        } else if (status == Status.TIMEOUT_CONNECTED.getValue()) {
+                            HashMap<String, String> data = new HashMap<>();
+                            data.put("call_id", callID);
+                            updater.receiveUpdate(ZegoListenerManager.TIMEOUT_CALL, data);
+                        }  else if (Status.DECLINED.getValue() == status) {
+                            HashMap<String, String> data = new HashMap<>();
+                            data.put("callee_id", targetUserID);
+                            data.put("call_id", callID);
+                            data.put("type", "1");
+                            updater.receiveUpdate(ZegoListenerManager.DECLINE_CALL, data);
+                        } else if (Status.BUSY.getValue() == status) {
+                            HashMap<String, String> data = new HashMap<>();
+                            data.put("callee_id", targetUserID);
+                            data.put("call_id", callID);
+                            data.put("type", "2");
+                            updater.receiveUpdate(ZegoListenerManager.DECLINE_CALL, data);
+                        } else if (Status.CANCELED.getValue() == status) {
+                            HashMap<String, String> data = new HashMap<>();
+                            data.put("caller_id", callerUserID);
+                            data.put("call_id", callID);
+                            updater.receiveUpdate(ZegoListenerManager.CANCEL_CALL, data);
+                        }
+                    } else {
+                        if (!targetUserID.equals(callerUserID)) {
+                            if (Status.WAIT.getValue() == status) {
+                                HashMap<String, String> data = new HashMap<>();
+                                data.put("callee_id", targetUserID);
+                                data.put("call_id", callID);
+                                updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
+                            } else if (Status.CONNECTED.getValue() == status) {
+                                HashMap<String, String> data = new HashMap<>();
+                                data.put("callee_id", targetUserID);
+                                data.put("call_id", callID);
+                                updater.receiveUpdate(ZegoListenerManager.ACCEPT_CALL, data);
                             }
                         }
                     }
+
                 }
             }
 
