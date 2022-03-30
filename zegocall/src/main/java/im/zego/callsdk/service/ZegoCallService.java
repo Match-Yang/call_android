@@ -1,6 +1,7 @@
 package im.zego.callsdk.service;
 
 import android.util.Log;
+
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
@@ -9,11 +10,14 @@ import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
 
 public abstract class ZegoCallService {
-
-    protected ZegoCallServiceListener listener;
-    private ZegoLocalUserStatus status;
-    private ZegoCallInfo callInfo = new ZegoCallInfo();
     private static final String TAG = "ZegoCallService";
+
+    // callService refers to the listener instance of call service.
+    protected ZegoCallServiceListener listener;
+    // The status of a local user.
+    private ZegoLocalUserStatus status;
+    // The call information.
+    private ZegoCallInfo callInfo = new ZegoCallInfo();
 
     /**
      * Make an outbound call
@@ -46,8 +50,28 @@ public abstract class ZegoCallService {
      */
     public abstract void cancelCall(String userID, ZegoCallback callback);
 
+    /**
+     * Accept a call
+     * <p>
+     * Description: This method can be used to accept a call. And the caller receives a callback when the call has been accepted by the callee.
+     * <p>
+     * Call this method at: After the user login
+     *
+     * @param callback refers to the callback for accept a call.
+     */
     public abstract void acceptCall(String joinToken, ZegoCallback callback);
 
+    /**
+     * Decline a call
+     * <p>
+     * Description: This method can be used to decline a call. And the caller receives a callback when the call has been declined by the callee.
+     * <p>
+     * Call this method at: after the user login
+     *
+     * @param userID   the ID of the caller
+     * @param type     refers to the response type.
+     * @param callback refers to the callback for decline a call.
+     */
     public abstract void declineCall(String userID, ZegoDeclineType type, ZegoCallback callback);
 
     /**

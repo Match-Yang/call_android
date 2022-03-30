@@ -145,6 +145,8 @@ public class ZegoServiceManager {
                 }
             }
         });
+
+        deviceService.setBestConfig();
     }
 
     private ZegoUserInfo updateUserInfo(String streamID, ZegoRemoteDeviceState state, int type) {
