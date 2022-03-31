@@ -2,6 +2,7 @@ package im.zego.callsdk.service;
 
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
+import im.zego.callsdk.command.ZegoGetTokenCommand;
 import im.zego.callsdk.command.ZegoGetUserCommand;
 import im.zego.callsdk.command.ZegoLoginCommand;
 import im.zego.callsdk.command.ZegoLogoutCommand;
@@ -64,6 +65,22 @@ public class ZegoUserServiceImpl extends ZegoUserService {
         } else {
             if (callback != null) {
                 callback.onGetUserList(-1000, new ArrayList<>());
+            }
+        }
+    }
+
+    @Override
+    public void getToken(String userID, ZegoRequestCallback callback) {
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        if (userService.localUserInfo != null) {
+            ZegoGetTokenCommand command = new ZegoGetTokenCommand();
+            command.execute(new ZegoRequestCallback() {
+                @Override
+                public void onResult(int errorCode, Object obj) {
+                }
+            });
+        } else {
+            if (callback != null) {
             }
         }
     }

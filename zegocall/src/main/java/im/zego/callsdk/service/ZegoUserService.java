@@ -1,5 +1,6 @@
 package im.zego.callsdk.service;
 
+import im.zego.callsdk.callback.ZegoRequestCallback;
 import java.util.List;
 
 import im.zego.callsdk.callback.ZegoCallback;
@@ -48,6 +49,8 @@ public abstract class ZegoUserService {
      * Call this method at: after the SDK initialization
      */
     public abstract void getOnlineUserList(ZegoUserListCallback callback);
+
+    public abstract void getToken(String userID, ZegoRequestCallback callback);
 
     public abstract ZegoUserInfo getLocalUserInfo();
 }

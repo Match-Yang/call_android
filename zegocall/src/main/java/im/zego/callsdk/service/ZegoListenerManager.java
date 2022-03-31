@@ -8,10 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ZegoListenerManager implements ZegoListener, ZegoListenerUpdater {
 
-    private Map<String, List<ZegoNotifyListener>> listenerMap = new HashMap<>();
+    private Map<String, ArrayList<ZegoNotifyListener>> listenerMap = new HashMap<>();
     private static final String TAG = "ListenerManager";
 
     private static volatile ZegoListenerManager singleton = null;
@@ -40,9 +41,10 @@ public class ZegoListenerManager implements ZegoListener, ZegoListenerUpdater {
     @Override
     public void receiveUpdate(String path, Object parameter) {
         Log.d(TAG, "receiveUpdate() called with: path = [" + path + "], parameter = [" + parameter + "]");
-        List<ZegoNotifyListener> ListenerList = listenerMap.get(path);
-        if (ListenerList != null) {
-            for (ZegoNotifyListener listener : ListenerList) {
+        ArrayList<ZegoNotifyListener> listenerList = (ArrayList<ZegoNotifyListener>) listenerMap.get(path);
+        if (listenerList != null) {
+            ArrayList<ZegoNotifyListener> clone = (ArrayList<ZegoNotifyListener>) listenerList.clone();
+            for (ZegoNotifyListener listener : clone) {
                 listener.onNotifyInvoked(parameter);
             }
         }
@@ -50,7 +52,7 @@ public class ZegoListenerManager implements ZegoListener, ZegoListenerUpdater {
 
     @Override
     public void addListener(String path, ZegoNotifyListener listener) {
-        List<ZegoNotifyListener> listenerList = listenerMap.get(path);
+        ArrayList<ZegoNotifyListener> listenerList = listenerMap.get(path);
         if (listenerList != null) {
             if (!listenerList.contains(listener)) {
                 listenerList.add(listener);

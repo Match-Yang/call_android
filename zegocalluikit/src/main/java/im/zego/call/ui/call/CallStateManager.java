@@ -73,17 +73,18 @@ public class CallStateManager {
         int beforeState = this.callState;
         this.userInfo = userInfo;
         this.callState = callState;
-        Log.d("sss",
-                    "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
-        if (beforeState != callState && listeners.size() > 0) {
-            for (CallStateChangedListener listener : listeners) {
-                listener.onCallStateChanged(beforeState, callState);
-            }
-        }
+        Log.d("TAG",
+            "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
         if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_VOICE) {
             playRingTone();
         } else {
             stopRingTone();
+        }
+        if (beforeState != callState && listeners.size() > 0) {
+            for (CallStateChangedListener listener : listeners) {
+                Log.d("TAG", "setCallState: " + listener);
+                listener.onCallStateChanged(beforeState, callState);
+            }
         }
     }
 
@@ -92,26 +93,29 @@ public class CallStateManager {
     private void playRingTone() {
         Activity topActivity = ActivityUtils.getTopActivity();
         AudioManager audioManager = (AudioManager) topActivity.getSystemService(Context.AUDIO_SERVICE);
-        vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
+        if (vibrator == null) {
+            vibrator = (Vibrator) topActivity.getSystemService(Service.VIBRATOR_SERVICE);
+        }
+
         if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
             Uri ringtoneUri = RingtoneManager.getActualDefaultRingtoneUri(topActivity, RingtoneManager.TYPE_RINGTONE);
             if (ringtoneUri != null && mediaPlayer == null) {
                 mediaPlayer = MediaPlayer.create(topActivity, ringtoneUri);
                 mediaPlayer.setLooping(true);
                 mediaPlayer.start();
-
-                if (vibrator.hasVibrator()) {
-                    vibrator.cancel();
-                    vibrator.vibrate(new long[]{1000, 600, 1000, 600}, 0);
-                }
+                vibrateDevice();
             }
         } else if (audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
-            if (vibrator.hasVibrator()) {
-                vibrator.cancel();
-                vibrator.vibrate(new long[]{600, 600, 600, 600}, 0);
-            }
+            vibrateDevice();
         } else {
 
+        }
+    }
+
+    private void vibrateDevice() {
+        if (vibrator != null && vibrator.hasVibrator()) {
+            vibrator.cancel();
+            vibrator.vibrate(new long[]{600, 600, 600, 600}, 0);
         }
     }
 
