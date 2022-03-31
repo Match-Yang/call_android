@@ -7,6 +7,7 @@ import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
 
 public abstract class ZegoUserService {
 
@@ -53,4 +54,10 @@ public abstract class ZegoUserService {
     public abstract void getToken(String userID, ZegoRequestCallback callback);
 
     public abstract ZegoUserInfo getLocalUserInfo();
+
+    public abstract void setLocalUser(String userID, String userName);
+
+    abstract void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state);
+
+    abstract void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state);
 }

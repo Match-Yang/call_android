@@ -20,6 +20,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import im.zego.call.R;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.PermissionHelper;
+import im.zego.callsdk.model.ZegoUserInfo;
 
 public class MinimalDialog {
     private MinimalView minimalView;
@@ -149,5 +150,9 @@ public class MinimalDialog {
             floatPermissionDialog.dismiss();
         }
         CallStateManager.getInstance().removeListener(callStateChangedListener);
+    }
+
+    public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        minimalView.onUserInfoUpdated(userInfo);
     }
 }

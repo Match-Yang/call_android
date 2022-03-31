@@ -35,66 +35,23 @@ import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoCallService;
-import im.zego.callsdk.service.ZegoDeviceService;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
-import im.zego.callsdk.utils.ZegoCallHelper;
-import im.zego.zegoexpress.ZegoExpressEngine;
 
 /**
- * ZegoCall UIKit管理类
- * Demo层只需调用并关注此类的实现，即可快速实现一套呼叫对讲业务逻辑
+ * Created by rocket_wang on 2022/3/31.
  */
-public class ZegoCallKit {
+public class ZegoCallManagerImpl {
 
-    private static final String TAG = "ZegoCallKit";
+    private static final String TAG = "ZegoCallManagerImpl";
 
-    private static volatile ZegoCallKit singleton = null;
-
-    private ZegoCallKit() {
-        callKitService = new ZegoCallKitService();
+    public ZegoCallManagerImpl() {
         callView = new ZegoCallKitView();
     }
 
-    public static ZegoCallKit getInstance() {
-        if (singleton == null) {
-            synchronized (ZegoCallKit.class) {
-                if (singleton == null) {
-                    singleton = new ZegoCallKit();
-                }
-            }
-        }
-        return singleton;
-    }
-
-    // CallKit服务类
-    public final ZegoCallKitService callKitService;
     // 通用的View：最小化View、呼叫界面弹窗等等
     private final ZegoCallKitView callView;
-
-    private final CallStateManager.CallStateChangedListener callStateChangedListener = (before, after) -> {
-        boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
-                (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
-        boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_VOICE) ||
-                (before == CallStateManager.TYPE_INCOMING_CALLING_VIDEO);
-        boolean afterIsAccept = (after == CallStateManager.TYPE_CONNECTED_VOICE) ||
-                (after == CallStateManager.TYPE_CONNECTED_VIDEO);
-        if ((beforeIsOutgoing || beforeIsInComing) && afterIsAccept) {
-            ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
-            deviceService.enableSpeaker(false);
-
-            String streamID = ZegoCallHelper.getSelfStreamID();
-            ZegoExpressEngine.getEngine().startPublishingStream(streamID);
-        } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
-            ZegoExpressEngine.getEngine().stopPublishingStream();
-        } else if (after == CallStateManager.TYPE_CALL_COMPLETED) {
-            ZegoExpressEngine.getEngine().stopPublishingStream();
-        } else if (after == CallStateManager.TYPE_CALL_MISSED) {
-            ZegoExpressEngine.getEngine().stopPublishingStream();
-        } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
-            ZegoExpressEngine.getEngine().stopPublishingStream();
-        }
-    };
+    private ZegoCallServiceListener listener;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
 
@@ -103,14 +60,14 @@ public class ZegoCallKit {
     private final String CHANNEL_DESC = "channel desc";
     private final int notificationId = 999;
 
-    /**
-     * 初始化sdk与rtc引擎
-     * 调用时机：应用启动时
-     */
     public void init(Application application) {
         AuthInfoManager.getInstance().init(application);
         long appID = AuthInfoManager.getInstance().getAppID();
         ZegoServiceManager.getInstance().init(appID, application);
+    }
+
+    public void setListener(ZegoCallServiceListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -129,6 +86,7 @@ public class ZegoCallKit {
                     CallActivity callActivity = (CallActivity) topActivity;
                     callActivity.onUserInfoUpdated(userInfo);
                 }
+                callView.onUserInfoUpdated(userInfo);
             }
 
             @Override
@@ -218,8 +176,6 @@ public class ZegoCallKit {
             }
         });
 
-        CallStateManager.getInstance().addListener(callStateChangedListener);
-
         Intent intent = new Intent(activity, ForegroundService.class);
         ContextCompat.startForegroundService(activity, intent);
     }
@@ -231,7 +187,6 @@ public class ZegoCallKit {
     public void stopListen(Activity activity) {
         ZegoServiceManager.getInstance().callService.setListener(null);
         ZegoServiceManager.getInstance().userService.setListener(null);
-        CallStateManager.getInstance().removeListener(callStateChangedListener);
         activity.stopService(new Intent(activity, ForegroundService.class));
     }
 
@@ -268,7 +223,7 @@ public class ZegoCallKit {
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent intent = new Intent();
         try {
-            intent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.LoginActivity"));
+            intent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.GoogleLoginActivity"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

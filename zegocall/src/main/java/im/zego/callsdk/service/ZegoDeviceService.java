@@ -84,9 +84,9 @@ public abstract class ZegoDeviceService {
      * <p>
      * Call this method at: After joining a room
      *
-     * @param mute determines whether to mute or unmute the microphone. true: Mute false: Unmute
+     * @param enable determines whether to mute or unmute the microphone. true: UnMute false: Mute
      */
-    public abstract void muteMic(boolean mute);
+    public abstract void enableMic(boolean enable);
 
     /**
      * Use front-facing and rear camera

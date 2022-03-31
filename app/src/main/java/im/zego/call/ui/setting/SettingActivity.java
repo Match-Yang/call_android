@@ -8,7 +8,7 @@ import com.blankj.utilcode.util.ActivityUtils;
 import com.tencent.mmkv.MMKV;
 
 import im.zego.call.R;
-import im.zego.call.ZegoCallKit;
+import im.zego.call.ZegoCallManager;
 import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.login.GoogleLoginActivity;
@@ -52,7 +52,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         binding.uploadLog.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoCallKit.getInstance().uploadLog(errorCode -> {
+                ZegoCallManager.getInstance().uploadLog(errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         showNormalTips(getString(R.string.toast_upload_log_success));
                     } else {
@@ -65,7 +65,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         binding.logOut.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoCallKit.getInstance().callKitService.logout();
+                ZegoCallManager.getInstance().callKitService.logout();
 
                 MMKV.defaultMMKV().encode("autoLogin", false);
                 ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);

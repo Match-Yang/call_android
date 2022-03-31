@@ -7,7 +7,7 @@ import im.zego.callsdk.service.ZegoServiceManager;
 /**
  * CallKit服务类，可用于用户登录、登出等逻辑调用
  */
-public class ZegoCallKitService {
+public class ZegoCallUIService {
 
     /**
      * 用户登录

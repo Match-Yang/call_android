@@ -62,10 +62,10 @@ public class IncomingCallView extends ConstraintLayout {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.getLocalUserInfo().userID);
+                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        deviceService.muteMic(false);
+                        deviceService.enableMic(true);
                         deviceService.enableCamera(true);
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
                     } else {
@@ -81,10 +81,10 @@ public class IncomingCallView extends ConstraintLayout {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-                String token = AuthInfoManager.getInstance().generateJoinRoomToken(userService.getLocalUserInfo().userID);
+                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
-                        deviceService.muteMic(false);
+                        deviceService.enableMic(true);
                         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
                     } else {
                         ToastUtils.showShort("responseCall " + errorCode);

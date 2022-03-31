@@ -2,6 +2,7 @@ package im.zego.callsdk.service;
 
 import android.text.TextUtils;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +23,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.command.ZegoCommand;
 import im.zego.callsdk.listener.ZegoListenerUpdater;
@@ -32,11 +40,6 @@ import im.zego.callsdk.model.DatabaseUser;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
@@ -73,8 +76,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         } else if (ZegoCommand.Listener_CALL.equals(path)) {
             String callID = (String) parameter.get("callID");
             addCallListener(callID);
-        } else if (ZegoCommand.GET_USER.equals(path)) {
-            getCurrentUser(callback);
         } else if (ZegoCommand.GET_TOKEN.equals(path)) {
             getTokenFromCloudFunction(parameter, callback);
         } else if (ZegoCommand.HEARTBEAT.equals(path)) {

@@ -6,8 +6,12 @@ import im.zego.callsdk.model.ZegoDevicesType;
 import im.zego.callsdk.model.ZegoVideoResolution;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
+import im.zego.zegoexpress.constants.ZegoCapturePipelineScaleMode;
+import im.zego.zegoexpress.constants.ZegoTrafficControlFocusOnMode;
+import im.zego.zegoexpress.constants.ZegoTrafficControlMinVideoBitrateMode;
 import im.zego.zegoexpress.constants.ZegoVideoConfigPreset;
 import im.zego.zegoexpress.entity.ZegoAudioConfig;
+import im.zego.zegoexpress.entity.ZegoEngineConfig;
 import im.zego.zegoexpress.entity.ZegoVideoConfig;
 
 public class ZegoDeviceServiceImpl extends ZegoDeviceService {
@@ -41,10 +45,12 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
 
     public void enableCamera(boolean enable) {
         ZegoExpressEngine.getEngine().enableCamera(enable);
+        ZegoServiceManager.getInstance().userService.localUserInfo.camera = enable;
     }
 
-    public void muteMic(boolean mute) {
-        ZegoExpressEngine.getEngine().muteMicrophone(mute);
+    public void enableMic(boolean enable) {
+        ZegoExpressEngine.getEngine().muteMicrophone(!enable);
+        ZegoServiceManager.getInstance().userService.localUserInfo.mic = enable;
     }
 
     public void useFrontCamera(boolean isFront) {
@@ -58,7 +64,15 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
 
     @Override
     public void setBestConfig() {
-
+        ZegoExpressEngine.getEngine().enableHardwareEncoder(true);
+        ZegoExpressEngine.getEngine().enableHardwareDecoder(true);
+        ZegoExpressEngine.getEngine().setCapturePipelineScaleMode(ZegoCapturePipelineScaleMode.POST);
+        ZegoExpressEngine.getEngine().setMinVideoBitrateForTrafficControl(120, ZegoTrafficControlMinVideoBitrateMode.ULTRA_LOW_FPS);
+        ZegoExpressEngine.getEngine().setTrafficControlFocusOn(ZegoTrafficControlFocusOnMode.ZEGO_TRAFFIC_CONTROL_FOUNS_ON_REMOTE);
+        ZegoExpressEngine.getEngine().enableANS(false);
+        ZegoEngineConfig config = new ZegoEngineConfig();
+        config.advancedConfig.put("room_retry_time", "30");
+        ZegoExpressEngine.setEngineConfig(config);
     }
 
     @Override

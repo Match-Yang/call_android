@@ -1,7 +1,9 @@
 package im.zego.callsdk.service;
 
+import android.util.Log;
 import android.view.TextureView;
 
+import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoOrientation;
@@ -27,6 +29,7 @@ public class ZegoStreamServiceImpl extends ZegoStreamService{
             ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
         } else {
             String streamID = ZegoCallHelper.getStreamID(userID);
+            Log.d(CoreTest.TAG, "startPlayingStream() called with: streamID = [" + streamID + "]");
             ZegoExpressEngine.getEngine().startPlayingStream(streamID, zegoCanvas);
         }
     }

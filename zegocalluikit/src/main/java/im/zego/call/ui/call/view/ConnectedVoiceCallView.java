@@ -78,7 +78,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callVoiceMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);
-            deviceService.muteMic(!selected);
+            deviceService.enableMic(!selected);
         });
         binding.callVoiceSpeaker.setOnClickListener(v -> {
             boolean selected = v.isSelected();

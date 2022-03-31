@@ -19,6 +19,8 @@ import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutMinimalViewBinding;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
+import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.service.ZegoServiceManager;
 
 public class MinimalView extends ConstraintLayout {
 
@@ -28,6 +30,7 @@ public class MinimalView extends ConstraintLayout {
 
     private MinimalStatus currentStatus;
     private boolean canShowMinimal;
+    private boolean isShowVideo;
 
     public MinimalView(@NonNull Context context) {
         super(context);
@@ -79,7 +82,6 @@ public class MinimalView extends ConstraintLayout {
         }
 
         toggleVoice(true);
-        toggleVideo(isVideoCall());
 
         switch (next) {
             case Calling:
@@ -113,6 +115,9 @@ public class MinimalView extends ConstraintLayout {
                 toggleVideo(false);
                 break;
         }
+
+        binding.videoTouchView.setVisibility(isShowVideo ? VISIBLE : GONE);
+        binding.videoTextureView.setVisibility(isShowVideo ? VISIBLE : GONE);
     }
 
     private void delayDismiss() {
@@ -132,6 +137,7 @@ public class MinimalView extends ConstraintLayout {
     }
 
     private void toggleVideo(boolean show) {
+        isShowVideo = show;
         binding.videoTouchView.setVisibility(show ? VISIBLE : GONE);
         binding.videoTextureView.setVisibility(show ? VISIBLE : GONE);
     }
@@ -140,5 +146,18 @@ public class MinimalView extends ConstraintLayout {
         int callState = CallStateManager.getInstance().getCallState();
         return callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO
                 || callState == CallStateManager.TYPE_CONNECTED_VIDEO;
+    }
+
+    public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
+        if (isVideoCall()) {
+            if (userInfo.camera || localUserInfo.camera) {
+                String userID = userInfo.camera ? userInfo.userID : localUserInfo.userID;
+                ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
+                toggleVideo(true);
+            } else {
+                toggleVideo(false);
+            }
+        }
     }
 }

@@ -14,9 +14,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import im.zego.call.R;
-import im.zego.call.ZegoCallKit;
+import im.zego.call.ZegoCallManager;
 import im.zego.call.databinding.ActivityGoogleLoginBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.entry.EntryActivity;
@@ -56,15 +58,17 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             }
             PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
                 if (isAllGranted) {
-                    ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-                    ZegoUserInfo currentUser = userService.getLocalUserInfo();
-                    if (currentUser == null) {
-                        signIn();
-                    } else {
+                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    if (currentUser != null) {
                         ActivityUtils.startActivity(EntryActivity.class);
+                        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                        userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
+
+                        userService.getOnlineUserList(null);
+                    } else {
+                        signIn();
                     }
                 }
-
             });
         });
         binding.termsServiceTv.setOnClickListener(v -> {
@@ -81,10 +85,13 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     private void systemPermissionCheck() {
         PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
             if (isAllGranted) {
-                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-                ZegoUserInfo currentUser = userService.getLocalUserInfo();
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (currentUser != null) {
                     ActivityUtils.startActivity(EntryActivity.class);
+                    ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                    userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
+
+                    userService.getOnlineUserList(null);
                 }
             }
         });
@@ -118,7 +125,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 showLoading();
-                ZegoCallKit.getInstance().callKitService.login(account.getIdToken(), errorCode -> {
+                ZegoCallManager.getInstance().callKitService.login(account.getIdToken(), errorCode -> {
                     dismissLoading();
                     if (errorCode == 0) {
                         ActivityUtils.startActivity(EntryActivity.class);
@@ -141,6 +148,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
 
         // some brands kill process will not really kill process,
         // which cause login twice
-//        ZegoCallKit.getInstance().uiKitService.logout();
+        ZegoCallManager.getInstance().callKitService.logout();
     }
 }

@@ -1,9 +1,10 @@
 package im.zego.callsdk.command;
 
-import im.zego.callsdk.callback.ZegoRequestCallback;
-import im.zego.callsdk.service.ZegoCommandManager;
 import java.util.HashMap;
 import java.util.Map;
+
+import im.zego.callsdk.callback.ZegoRequestCallback;
+import im.zego.callsdk.service.ZegoCommandManager;
 
 public class ZegoCommand {
 
@@ -11,7 +12,6 @@ public class ZegoCommand {
     protected Map<String, Object> parameter;
 
     public static final String GET_TOKEN = "/user/get_token";
-    public static final String GET_USER = "/user/get";
     public static final String LOGIN = "/user/login";
     public static final String LOGOUT = "/user/logout";
     public static final String GET_USER_LIST = " /user/get_users";
