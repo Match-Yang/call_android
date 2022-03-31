@@ -1,5 +1,7 @@
 package im.zego.callsdk.service;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoNotifyListener;
@@ -9,21 +11,43 @@ import im.zego.callsdk.command.ZegoCallCommand;
 import im.zego.callsdk.command.ZegoCancelCallCommand;
 import im.zego.callsdk.command.ZegoDeclineCallCommand;
 import im.zego.callsdk.command.ZegoEndCallCommand;
+import im.zego.callsdk.command.ZegoHeartBeatCommand;
 import im.zego.callsdk.command.ZegoListenCallCommand;
 import im.zego.callsdk.model.ZegoCallInfo;
+import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
+import im.zego.callsdk.model.ZegoLocalUserStatus;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ZegoCallServiceImpl extends ZegoCallService {
 
     private static final String TAG = "CallServiceImpl";
+    private Timer heartTimer = new Timer();
+    private static final int CALL_TIMEOUT = 60 * 1000;
+    private Runnable callTimeoutRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            handler.removeCallbacks(callTimeoutRunnable);
+            if (listener != null) {
+                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                if (userService.localUserInfo != null) {
+                    listener.onReceiveCallTimeout(userService.localUserInfo, ZegoCallTimeoutType.Calling);
+                }
+                setCallInfo(null);
+            }
+        }
+    };
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     public void callUser(String userID, ZegoCallType callType, String createRoomToken, ZegoCallback callback) {
@@ -32,6 +56,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 + createRoomToken + "], callback = [" + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
+            handler.postDelayed(callTimeoutRunnable, CALL_TIMEOUT);
             String selfUserID = userService.localUserInfo.userID;
             String callID = selfUserID + System.currentTimeMillis();
             List<String> target = Collections.singletonList(userID);
@@ -44,6 +69,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 @Override
                 public void onResult(int errorCode, Object obj) {
                     Log.d(TAG, "callUser onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
+                    handler.removeCallbacks(callTimeoutRunnable);
                     if (errorCode == 0) {
                         ZegoCallInfo callInfo = new ZegoCallInfo();
                         callInfo.callID = callID;
@@ -67,6 +93,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         Log.d(TAG, "cancelCall() called with: userID = [" + userID + "], callback = [" + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null && getCallInfo().callID != null) {
+            handler.removeCallbacks(callTimeoutRunnable);
             ZegoCancelCallCommand command = new ZegoCancelCallCommand();
             command.putParameter("selfUserID", userService.localUserInfo.userID);
             command.putParameter("userID", userID);
@@ -103,8 +130,10 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         Log.d(TAG, "acceptCall() called with: joinToken = [" + joinToken + "], callback = [" + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null && getCallInfo().callID != null) {
+            handler.removeCallbacks(callTimeoutRunnable);
             ZegoAcceptCallCommand command = new ZegoAcceptCallCommand();
-            command.putParameter("selfUserID", userService.localUserInfo.userID);
+            String selfUserID = userService.localUserInfo.userID;
+            command.putParameter("selfUserID", selfUserID);
             command.putParameter("userID", getCallInfo().caller.userID);
             command.putParameter("callID", getCallInfo().callID);
             command.execute(new ZegoRequestCallback() {
@@ -112,6 +141,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 public void onResult(int errorCode, Object obj) {
                     Log.d(TAG,
                         "acceptCall onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
+                    if (errorCode == 0) {
+                        startHeartBeatTimer(getCallInfo().callID, selfUserID);
+                    }
                     if (callback != null) {
                         callback.onResult(errorCode);
                     }
@@ -131,6 +163,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null && getCallInfo().callID != null) {
+            handler.removeCallbacks(callTimeoutRunnable);
             ZegoDeclineCallCommand command = new ZegoDeclineCallCommand();
             command.putParameter("userID", userID);
             command.putParameter("selfUserID", userService.localUserInfo.userID);
@@ -161,6 +194,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         Log.d(TAG, "endCall() called with: callback = [" + callback + "]");
         if (userService.localUserInfo != null && getCallInfo().callID != null) {
+            handler.removeCallbacks(callTimeoutRunnable);
             ZegoEndCallCommand command = new ZegoEndCallCommand();
             command.putParameter("selfUserID", userService.localUserInfo.userID);
             command.putParameter("callID", getCallInfo().callID);
@@ -168,6 +202,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 @Override
                 public void onResult(int errorCode, Object obj) {
                     Log.d(TAG, "endCall onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
+                    stopHeartBeatTimer();
                     if (errorCode == 0) {
                         setCallInfo(null);
                     }
@@ -185,14 +220,35 @@ public class ZegoCallServiceImpl extends ZegoCallService {
 
     @Override
     public void setCallInfo(ZegoCallInfo callInfo) {
-        super.setCallInfo(callInfo);
-        // listen for cancel action when receive call
-        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.localUserInfo != null && callInfo != null) {
-            ZegoListenCallCommand command = new ZegoListenCallCommand();
-            command.putParameter("callID", callInfo.callID);
-            command.execute(null);
+        Log.d(TAG, "setCallInfo() called with: callInfo = [" + callInfo + "]");
+        if (callInfo == null) {
+            this.callInfo = new ZegoCallInfo();
+            status = ZegoLocalUserStatus.Free;
+        } else {
+            this.callInfo = callInfo;
+            handler.removeCallbacks(callTimeoutRunnable);
+            handler.postDelayed(callTimeoutRunnable, CALL_TIMEOUT);
+            // listen for cancel action when receive call
+            ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+            if (userService.localUserInfo != null) {
+                ZegoListenCallCommand command = new ZegoListenCallCommand();
+                command.putParameter("callID", callInfo.callID);
+                command.execute(null);
+            }
         }
+    }
+
+    private void startHeartBeat(String callID, String userID) {
+        Log.d(TAG, "startHeartBeat() called");
+        ZegoHeartBeatCommand command = new ZegoHeartBeatCommand();
+        command.putParameter("callID", callID);
+        command.putParameter("userID", userID);
+        command.execute(new ZegoRequestCallback() {
+            @Override
+            public void onResult(int errorCode, Object obj) {
+
+            }
+        });
     }
 
     public ZegoCallServiceImpl() {
@@ -201,7 +257,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             public void onNotifyInvoked(Object obj) {
                 Map<String, String> parameter = (Map<String, String>) obj;
                 String call_id = parameter.get("call_id");
-                if (Objects.equals(getCallInfo().callID,call_id)) {
+                if (Objects.equals(getCallInfo().callID, call_id)) {
+                    handler.removeCallbacks(callTimeoutRunnable);
                     if (listener != null) {
                         listener.onReceiveCallCanceled(getCallInfo().caller, ZegoCancelType.INTENT);
                         setCallInfo(null);
@@ -215,7 +272,15 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 Map<String, String> parameter = (Map<String, String>) obj;
                 String call_id = parameter.get("call_id");
                 String targetUserID = parameter.get("callee_id");
-                if (Objects.equals(getCallInfo().callID,call_id)) {
+                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                String selfUserID = userService.getLocalUserInfo().userID;
+                if (Objects.equals(getCallInfo().callID, call_id)) {
+                    handler.removeCallbacks(callTimeoutRunnable);
+                    if (Objects.equals(targetUserID, selfUserID)) {
+                        // if is self accept,no need to notify again
+                        return;
+                    }
+                    startHeartBeatTimer(call_id, selfUserID);
                     if (listener != null) {
                         ZegoUserInfo userInfo = new ZegoUserInfo();
                         userInfo.userID = targetUserID;
@@ -230,7 +295,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 Map<String, String> parameter = (Map<String, String>) obj;
                 String call_id = parameter.get("call_id");
                 String targetUserID = parameter.get("callee_id");
-                if (Objects.equals(getCallInfo().callID,call_id)) {
+                if (Objects.equals(getCallInfo().callID, call_id)) {
+                    handler.removeCallbacks(callTimeoutRunnable);
                     if (listener != null) {
                         ZegoUserInfo userInfo = new ZegoUserInfo();
                         userInfo.userID = targetUserID;
@@ -245,7 +311,10 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             public void onNotifyInvoked(Object obj) {
                 Map<String, String> parameter = (Map<String, String>) obj;
                 String call_id = parameter.get("call_id");
-                if (Objects.equals(getCallInfo().callID,call_id)) {
+                String userID = parameter.get("id");
+                if (Objects.equals(getCallInfo().callID, call_id)) {
+                    handler.removeCallbacks(callTimeoutRunnable);
+                    stopHeartBeatTimer();
                     if (listener != null) {
                         listener.onReceiveCallEnded();
                         setCallInfo(null);
@@ -253,5 +322,45 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 }
             }
         });
+        ZegoListenerManager.getInstance().addListener(ZegoListenerManager.TIMEOUT_CALL, new ZegoNotifyListener() {
+            @Override
+            public void onNotifyInvoked(Object obj) {
+                Map<String, String> parameter = (Map<String, String>) obj;
+                String call_id = parameter.get("call_id");
+                String userID = parameter.get("user_id");
+                if (Objects.equals(getCallInfo().callID, call_id)) {
+                    handler.removeCallbacks(callTimeoutRunnable);
+                    stopHeartBeatTimer();
+                    if (listener != null) {
+                        ZegoUserInfo userInfo = new ZegoUserInfo();
+                        userInfo.userID = userID;
+                        listener.onReceiveCallTimeout(userInfo, ZegoCallTimeoutType.Connecting);
+                        setCallInfo(null);
+                    }
+                }
+            }
+        });
     }
+
+    private void startHeartBeatTimer(String callID, String userID) {
+        Log.d(TAG, "startHeartBeatTimer() called with: callID = [" + callID + "], userID = [" + userID + "]");
+        if (heartTimer != null) {
+            heartTimer.cancel();
+        }
+        heartTimer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                startHeartBeat(callID, userID);
+            }
+        };
+        heartTimer.schedule(task, 0, 12000);
+    }
+
+    private void stopHeartBeatTimer() {
+        if (heartTimer != null) {
+            heartTimer.cancel();
+        }
+    }
+
 }

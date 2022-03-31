@@ -11,7 +11,7 @@ public class ZegoCommand {
     protected Map<String, Object> parameter;
 
     public static final String GET_TOKEN = "/user/get_token";
-    public static final String GET_USER = "/user/get_user";
+    public static final String GET_USER = "/user/get";
     public static final String LOGIN = "/user/login";
     public static final String LOGOUT = "/user/logout";
     public static final String GET_USER_LIST = " /user/get_users";

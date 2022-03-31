@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
+import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -147,6 +148,7 @@ public class ZegoCallKit {
         callService.setListener(new ZegoCallServiceListener() {
             @Override
             public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
+                Log.d(TAG, "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 int state;
                 if (type == ZegoCallType.Voice) {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
@@ -187,6 +189,7 @@ public class ZegoCallKit {
 
             @Override
             public void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type) {
+                Log.d(TAG, "onReceiveCallTimeout() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
             }
