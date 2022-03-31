@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.blankj.utilcode.util.ToastUtils;
 
-import im.zego.callsdk.auth.ZegoRTCServerAssistant;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,29 +78,6 @@ public class AuthInfoManager {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public String generateCreateRoomToken(String roomID, String userID) {
-        ZegoRTCServerAssistant.Privileges privileges = new ZegoRTCServerAssistant.Privileges();
-        privileges.canLoginRoom = true;
-        privileges.canPublishStream = true;
-        long appID = AuthInfoManager.getInstance().getAppID();
-        String appSign = AuthInfoManager.getInstance().appSign;
-        try {
-            return ZegoRTCServerAssistant.generateToken(appID, roomID, userID, privileges, appSign, 660).data;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public String generateJoinRoomToken(String userID) {
-        try {
-            return TokenServerAssistant.generateToken(appID, userID, serverSecret, 60 * 60 * 24).data;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return "";
         }
     }
 

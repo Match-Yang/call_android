@@ -87,7 +87,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoMic.setOnClickListener(v -> {
             boolean selected = v.isSelected();
             v.setSelected(!selected);
-            deviceService.muteMic(!selected);
+            deviceService.enableMic(!selected);
         });
         binding.callVideoCameraSwitch.setSelected(true);
         binding.callVideoCameraSwitch.setOnClickListener(v -> {

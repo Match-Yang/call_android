@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import im.zego.call.R;
-import im.zego.call.ZegoCallKit;
+import im.zego.call.ZegoCallManager;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.constant.Constants;
 import im.zego.call.databinding.ActivityCallBinding;
@@ -213,11 +213,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         deviceService.useFrontCamera(true);
 
         String userID = userService.getLocalUserInfo().userID;
-        String token = AuthInfoManager.getInstance().generateCreateRoomToken(userID, userID);
+        String token = AuthInfoManager.getInstance().generateToken(userID);
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             callService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {
-                    deviceService.muteMic(false);
+                    deviceService.enableMic(true);
                     handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_page_call_fail, errorCode));
@@ -228,7 +228,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             callService.callUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
                 if (errorCode == 0) {
                     TextureView textureView = binding.layoutOutgoingCall.getTextureView();
-                    deviceService.muteMic(false);
+                    deviceService.enableMic(true);
                     deviceService.enableCamera(true);
                     streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);
                     handler.postDelayed(missCallRunnable, 60 * 1000);
@@ -243,13 +243,13 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             handler.postDelayed(finishRunnable, 62 * 1000);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
             handler.post(timeCountRunnable);
-            deviceService.muteMic(false);
+            deviceService.enableMic(true);
             deviceService.enableSpeaker(false);
             handler.removeCallbacks(missCallRunnable);
             handler.removeCallbacks(finishRunnable);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
             handler.post(timeCountRunnable);
-            deviceService.muteMic(false);
+            deviceService.enableMic(true);
             deviceService.enableSpeaker(false);
             deviceService.enableCamera(true);
             handler.removeCallbacks(missCallRunnable);
@@ -331,7 +331,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
         if (quality == ZegoNetWorkQuality.Bad) {
-            if (userID.equals(ZegoCallKit.getInstance().getLocalUserInfo().userID)) {
+            if (userID.equals(ZegoCallManager.getInstance().getLocalUserInfo().userID)) {
                 showLoading(getString(R.string.network_connnect_me_unstable), false);
             } else {
                 showLoading(getString(R.string.network_connnect_other_unstable), false);

@@ -1,6 +1,5 @@
 package im.zego.callsdk.service;
 
-import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.model.ZegoRoomInfo;
 
 /**
@@ -16,7 +15,7 @@ public abstract class ZegoRoomService {
     public static final String KEY_ROOM_INFO = "room_info";
     private static final String TAG = "RoomService";
 
-    public abstract void joinRoom(String roomID, String token, ZegoCallback callback);
+    public abstract void joinRoom(String roomID, String token);
 
-    public abstract void leaveRoom(ZegoCallback callback);
+    public abstract void leaveRoom();
 }

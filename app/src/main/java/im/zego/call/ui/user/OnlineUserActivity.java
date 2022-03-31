@@ -13,7 +13,7 @@ import com.scwang.smart.refresh.header.MaterialHeader;
 import java.util.List;
 
 import im.zego.call.R;
-import im.zego.call.ZegoCallKit;
+import im.zego.call.ZegoCallManager;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
@@ -69,10 +69,10 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    ZegoCallKit.getInstance()
+                    ZegoCallManager.getInstance()
                         .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
                 } else if (itemChild.getId() == R.id.item_online_user_video) {
-                    ZegoCallKit.getInstance()
+                    ZegoCallManager.getInstance()
                         .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
                 }
             }

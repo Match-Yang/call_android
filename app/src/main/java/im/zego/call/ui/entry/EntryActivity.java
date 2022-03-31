@@ -12,7 +12,7 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import com.tencent.mmkv.MMKV;
 
-import im.zego.call.ZegoCallKit;
+import im.zego.call.ZegoCallManager;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
@@ -32,7 +32,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ZegoCallKit.getInstance().startListen(this);
+        ZegoCallManager.getInstance().startListen(this);
 
         binding.entrySetting.setOnClickListener(new OnClickListener() {
             @Override
@@ -59,7 +59,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
             }
         });
 
-        ZegoUserInfo localUserInfo = ZegoCallKit.getInstance().getLocalUserInfo();
+        ZegoUserInfo localUserInfo = ZegoCallManager.getInstance().getLocalUserInfo();
         binding.entryUserId.setText("ID:" + localUserInfo.userID);
         binding.entryUserName.setText(localUserInfo.userName);
         Drawable userIcon = AvatarHelper.getAvatarByUserName(localUserInfo.userName);
@@ -68,7 +68,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
         AppUtils.registerAppStatusChangedListener(new OnAppStatusChangedListener() {
             @Override
             public void onForeground(Activity activity) {
-                ZegoCallKit.getInstance().dismissNotification(activity);
+                ZegoCallManager.getInstance().dismissNotification(activity);
                 // some phone will freeze app when phone is desktop,even if we start foreground service,
                 // such as vivo.
                 // so when app back to foreground, if heartbeat failed,relogin.
@@ -84,7 +84,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                 boolean needNotification = CallStateManager.getInstance().isInACallStream();
                 ZegoUserInfo userInfo = CallStateManager.getInstance().getUserInfo();
                 if (needNotification && userInfo != null) {
-                    ZegoCallKit.getInstance().showNotification(userInfo);
+                    ZegoCallManager.getInstance().showNotification(userInfo);
                 }
             }
         });
@@ -94,7 +94,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy() called");
-        ZegoCallKit.getInstance().stopListen(this);
+        ZegoCallManager.getInstance().stopListen(this);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     }
 
     private void logout() {
-        ZegoCallKit.getInstance().callKitService.logout();
+        ZegoCallManager.getInstance().callKitService.logout();
 
         MMKV.defaultMMKV().encode("autoLogin", false);
         ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);

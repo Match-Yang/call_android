@@ -9,12 +9,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
@@ -130,44 +127,17 @@ public class ZegoServiceManager {
             @Override
             public void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state) {
                 super.onRemoteMicStateUpdate(streamID, state);
-                ZegoUserInfo userInfo = updateUserInfo(streamID, state, MIC);
-                if (userInfo != null && userService.listener != null) {
-                    userService.listener.onUserInfoUpdated(userInfo);
-                }
+                userService.onRemoteMicStateUpdate(streamID, state);
             }
 
             @Override
             public void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state) {
                 super.onRemoteCameraStateUpdate(streamID, state);
-                ZegoUserInfo userInfo = updateUserInfo(streamID, state, CAMERA);
-                if (userInfo != null && userService.listener != null) {
-                    userService.listener.onUserInfoUpdated(userInfo);
-                }
+                userService.onRemoteCameraStateUpdate(streamID, state);
             }
         });
 
         deviceService.setBestConfig();
-    }
-
-    private ZegoUserInfo updateUserInfo(String streamID, ZegoRemoteDeviceState state, int type) {
-        String userID = ZegoCallHelper.getUserID(streamID);
-        ZegoUserInfo userInfo = null;
-        for (ZegoUserInfo zegoUserInfo : userService.userInfoList) {
-            if (Objects.equals(zegoUserInfo.userID, userID)) {
-                userInfo = zegoUserInfo;
-                break;
-            }
-        }
-
-        if (userInfo != null) {
-            boolean enable = state == ZegoRemoteDeviceState.OPEN;
-            if (type == MIC) {
-                userInfo.mic = enable;
-            } else {
-                userInfo.camera = enable;
-            }
-        }
-        return userInfo;
     }
 
     /**

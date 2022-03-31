@@ -35,4 +35,8 @@ public class ZegoCallKitView {
         receiveCallDialog.setListener(listener);
 
     }
+
+    public void onUserInfoUpdated(ZegoUserInfo userInfo) {
+        minimalDialog.onUserInfoUpdated(userInfo);
+    }
 }

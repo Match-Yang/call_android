@@ -31,6 +31,11 @@ public class ZegoCallHelper {
     }
 
     @NonNull
+    public static String getStreamID(String userID, String roomID) {
+        return String.format("%s_%s_%s", roomID, userID, "main");
+    }
+
+    @NonNull
     public static String getUserID(String streamID) {
         return streamID.split("_")[1];
     }

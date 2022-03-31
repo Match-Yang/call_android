@@ -13,6 +13,6 @@ public class App extends Application {
         Utils.init(this);
         MMKV.initialize(this);
 
-        ZegoCallKit.getInstance().init(this);
+        ZegoCallManager.getInstance().init(this);
     }
 }
