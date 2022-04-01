@@ -10,8 +10,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-
 import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -26,6 +26,7 @@ import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.ReceiveCallView;
 import im.zego.call.view.ZegoCallKitView;
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
@@ -291,5 +292,9 @@ public class ZegoCallManagerImpl {
             callView.updateData(userInfo, type);
             callView.showReceiveCallWindow();
         });
+    }
+
+    public void getToken(String userID, ZegoRequestCallback callback) {
+        ZegoServiceManager.getInstance().userService.getToken(userID, callback);
     }
 }

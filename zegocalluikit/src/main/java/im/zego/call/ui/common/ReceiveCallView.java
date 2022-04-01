@@ -6,9 +6,12 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.blankj.utilcode.util.ToastUtils;
+
 import im.zego.call.R;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.LayoutReceiveCallBinding;
@@ -76,6 +79,7 @@ public class ReceiveCallView extends FrameLayout {
             ZegoUserService userService = ZegoServiceManager.getInstance().userService;
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
             String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
+//            String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
@@ -92,6 +96,7 @@ public class ReceiveCallView extends FrameLayout {
             ZegoUserService userService = ZegoServiceManager.getInstance().userService;
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
             String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
+//            String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
@@ -105,7 +110,6 @@ public class ReceiveCallView extends FrameLayout {
             });
         });
         binding.dialogCallDecline.setOnClickListener(v -> {
-            ZegoUserService userService = ZegoServiceManager.getInstance().userService;
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
             callService.declineCall(userInfo.userID, ZegoDeclineType.Decline, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {

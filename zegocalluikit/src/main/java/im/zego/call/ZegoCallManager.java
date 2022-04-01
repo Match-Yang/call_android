@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
 
@@ -89,6 +90,10 @@ public class ZegoCallManager {
      */
     public ZegoUserInfo getLocalUserInfo() {
         return impl.getLocalUserInfo();
+    }
+
+    public void getToken(String userID, ZegoRequestCallback callback) {
+        impl.getToken(userID, callback);
     }
 
     /**

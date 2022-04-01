@@ -79,9 +79,13 @@ public class ZegoUserServiceImpl extends ZegoUserService {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             ZegoGetTokenCommand command = new ZegoGetTokenCommand();
+            command.putParameter("userID", userID);
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
+                    if (callback != null) {
+                        callback.onResult(errorCode, obj);
+                    }
                 }
             });
         } else {
