@@ -13,6 +13,7 @@ public class DatabaseCall {
 
         public String caller_id;
         public String user_id;
+        public String user_name;
         public long start_time;
         public long finish_time;
         public long heartbeat_time;

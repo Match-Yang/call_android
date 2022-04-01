@@ -24,8 +24,6 @@ import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.call.utils.PermissionHelper;
-import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoListenerManager;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
 
@@ -79,7 +77,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
         });
 
         systemPermissionCheck();
-        ZegoListenerManager.getInstance();
     }
 
     private void systemPermissionCheck() {
@@ -87,9 +84,9 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             if (isAllGranted) {
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (currentUser != null) {
-                    ActivityUtils.startActivity(EntryActivity.class);
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
+                    ActivityUtils.startActivity(EntryActivity.class);
 
                     userService.getOnlineUserList(null);
                 }
@@ -100,8 +97,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     @Override
     protected void onStart() {
         super.onStart();
-        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        ZegoUserInfo currentUser = userService.getLocalUserInfo();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
             });

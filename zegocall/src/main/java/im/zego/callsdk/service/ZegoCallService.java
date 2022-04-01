@@ -8,6 +8,7 @@ import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
+import im.zego.callsdk.model.ZegoUserInfo;
 
 public abstract class ZegoCallService {
     private static final String TAG = "ZegoCallService";
@@ -34,7 +35,7 @@ public abstract class ZegoCallService {
      *                         https://docs.zegocloud.com/article/11648
      * @param callback         refers to the callback for make a outbound call.
      */
-    public abstract void callUser(String userID, ZegoCallType callType, String createRoomToken,
+    public abstract void callUser(ZegoUserInfo userInfo, ZegoCallType callType, String createRoomToken,
         ZegoCallback callback);
 
     /**
