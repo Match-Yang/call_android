@@ -3,12 +3,6 @@ package im.zego.callsdk.service;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoNotifyListener;
 import im.zego.callsdk.callback.ZegoRequestCallback;
@@ -27,7 +21,8 @@ import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -67,12 +62,18 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             String userName = userService.localUserInfo.userName;
             String callID = selfUserID + System.currentTimeMillis();
             ZegoCallCommand callCommand = new ZegoCallCommand();
-            callCommand.putParameter("selfUserID", selfUserID);
-            callCommand.putParameter("selfUserName", userName);
             callCommand.putParameter("callID", callID);
-            callCommand.putParameter("targetUserID", userInfo.userID);
-            callCommand.putParameter("targetUserName", userInfo.userName);
             callCommand.putParameter("callType", callType);
+            HashMap<String, String> self = new HashMap<>();
+            self.put("id", selfUserID);
+            self.put("name", userName);
+            callCommand.putParameter("caller", self);
+            List<HashMap<String, String>> callee = new ArrayList<>();
+            HashMap<String, String> user = new HashMap<>();
+            user.put("id", userInfo.userID);
+            user.put("name", userInfo.userName);
+            callee.add(user);
+            callCommand.putParameter("callees", callee);
             callCommand.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
