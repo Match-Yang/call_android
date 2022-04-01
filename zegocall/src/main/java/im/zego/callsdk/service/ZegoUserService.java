@@ -51,7 +51,7 @@ public abstract class ZegoUserService {
      */
     public abstract void getOnlineUserList(ZegoUserListCallback callback);
 
-    public abstract void getToken(String userID, ZegoRequestCallback callback);
+    public abstract void getToken(String userID,long effectiveTime,ZegoRequestCallback callback);
 
     public abstract ZegoUserInfo getLocalUserInfo();
 

@@ -20,6 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import im.zego.callsdk.callback.ZegoRequestCallback;
@@ -87,22 +88,38 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         Log.d(TAG,
             "getTokenFromCloudFunction() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
         String userID = (String) parameter.get("userID");
+        Long time = (Long) parameter.get("effectiveTime");
         Map<String, Object> data = new HashMap<>();
         data.put("id", userID);
+        data.put("effective_time", time);
 
         FirebaseFunctions.getInstance().getHttpsCallable("getToken")
             .call(data)
             .continueWith(new Continuation<HttpsCallableResult, Object>() {
                 @Override
                 public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                    if (task.isSuccessful()) {
-                        Object result = task.getResult().getData();
-                        Log.d(TAG, "then() called with: result = [" + result + "],type:" + result.getClass());
-                        if (callback != null) {
-                            callback.onResult(0, result);
+                    return task.getResult().getData();
+                }
+            })
+            .addOnCompleteListener(new OnCompleteListener<Object>() {
+                @Override
+                public void onComplete(@NonNull Task<Object> task) {
+                    if (!task.isSuccessful()) {
+                        Exception e = task.getException();
+                        if (e instanceof FirebaseFunctionsException) {
+                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+                            FirebaseFunctionsException.Code code = ffe.getCode();
+                            Object details = ffe.getDetails();
                         }
+                        if (callback != null) {
+                            callback.onResult(-1000, e);
+                        }
+                        return;
                     }
-                    return null;
+                    HashMap<String, String> result = (HashMap<String, String>) task.getResult();
+                    if (callback != null) {
+                        callback.onResult(0, result.get("token"));
+                    }
                 }
             });
     }

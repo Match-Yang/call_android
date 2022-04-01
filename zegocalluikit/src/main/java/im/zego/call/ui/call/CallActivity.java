@@ -55,12 +55,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private ZegoUserInfo userInfo;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable missCallRunnable = () -> {
-        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-        callService.cancelCall(userInfo.userID, errorCode -> {
-            CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
-        });
-    };
+
     private Runnable finishRunnable = () -> {
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
     };
@@ -176,7 +171,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 if ((beforeIsOutgoing || beforeIsInComing) && afterIsAccept) {
                     time = 0;
                     handler.post(timeCountRunnable);
-                    handler.removeCallbacks(missCallRunnable);
                     handler.removeCallbacks(finishRunnable);
                     ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
                     deviceService.enableSpeaker(false);
@@ -219,7 +213,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {
                     deviceService.enableMic(true);
-                    handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
@@ -232,7 +225,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     deviceService.enableMic(true);
                     deviceService.enableCamera(true);
                     streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);
-                    handler.postDelayed(missCallRunnable, 60 * 1000);
                 } else {
                     showWarnTips(getString(R.string.call_page_call_fail, errorCode));
                     finishActivityDelayed();
@@ -246,14 +238,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             handler.post(timeCountRunnable);
             deviceService.enableMic(true);
             deviceService.enableSpeaker(false);
-            handler.removeCallbacks(missCallRunnable);
             handler.removeCallbacks(finishRunnable);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
             handler.post(timeCountRunnable);
             deviceService.enableMic(true);
             deviceService.enableSpeaker(false);
             deviceService.enableCamera(true);
-            handler.removeCallbacks(missCallRunnable);
             handler.removeCallbacks(finishRunnable);
         }
     }

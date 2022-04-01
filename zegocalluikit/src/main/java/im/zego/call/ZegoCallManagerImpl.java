@@ -72,8 +72,7 @@ public class ZegoCallManagerImpl {
     }
 
     /**
-     * 启动监听呼叫响应
-     * 调用时机：成功登录之后
+     * 启动监听呼叫响应 调用时机：成功登录之后
      */
     public void startListen(Activity activity) {
         callView.init(activity);
@@ -149,6 +148,7 @@ public class ZegoCallManagerImpl {
             @Override
             public void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type) {
                 Log.d(TAG, "onReceiveCallTimeout() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+                CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
             }
@@ -182,8 +182,7 @@ public class ZegoCallManagerImpl {
     }
 
     /**
-     * 停止监听呼叫响应
-     * 调用时机：退出登录之后
+     * 停止监听呼叫响应 调用时机：退出登录之后
      */
     public void stopListen(Activity activity) {
         ZegoServiceManager.getInstance().callService.setListener(null);
@@ -193,6 +192,7 @@ public class ZegoCallManagerImpl {
 
     /**
      * 上传日志
+     *
      * @param callback
      */
     public void uploadLog(final ZegoCallback callback) {
@@ -201,7 +201,8 @@ public class ZegoCallManagerImpl {
 
     /**
      * 主动呼叫用户
-     * @param userInfo 用户信息
+     *
+     * @param userInfo  用户信息
      * @param callState 呼叫类型，语音/视频
      */
     public void callUser(ZegoUserInfo userInfo, int callState) {
@@ -217,8 +218,7 @@ public class ZegoCallManagerImpl {
     }
 
     /**
-     * 展示前台服务通知
-     * 调用时机：应用切换到后台后
+     * 展示前台服务通知 调用时机：应用切换到后台后
      */
     public void showNotification(ZegoUserInfo userInfo) {
         Activity topActivity = ActivityUtils.getTopActivity();
@@ -235,24 +235,24 @@ public class ZegoCallManagerImpl {
         String notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         int callState = CallStateManager.getInstance().getCallState();
         if (callState == CallStateManager.TYPE_INCOMING_CALLING_VIDEO ||
-                callState == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
+            callState == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
             notificationText = StringUtils.getString(R.string.receive_call_notification, userInfo.userName);
         } else if (callState == CallStateManager.TYPE_CONNECTED_VIDEO ||
-                callState == CallStateManager.TYPE_CONNECTED_VOICE) {
+            callState == CallStateManager.TYPE_CONNECTED_VOICE) {
             notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO ||
-                callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+            callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             notificationText = StringUtils.getString(R.string.request_call_notification, userInfo.userName);
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(topActivity, CHANNEL_ID)
-                .setSmallIcon(R.drawable.icon_dialog_voice_accept)
-                .setContentTitle(StringUtils.getString(R.string.app_name))
-                .setContentText(notificationText)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setAutoCancel(true);
+            .setSmallIcon(R.drawable.icon_dialog_voice_accept)
+            .setContentTitle(StringUtils.getString(R.string.app_name))
+            .setContentText(notificationText)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(topActivity);
         Notification build = builder.build();
@@ -262,8 +262,7 @@ public class ZegoCallManagerImpl {
     }
 
     /**
-     * 隐藏前台服务通知
-     * 调用时机：应用切换到前台后
+     * 隐藏前台服务通知 调用时机：应用切换到前台后
      */
     public void dismissNotification(Activity activity) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(activity);
@@ -294,7 +293,7 @@ public class ZegoCallManagerImpl {
         });
     }
 
-    public void getToken(String userID, ZegoRequestCallback callback) {
-        ZegoServiceManager.getInstance().userService.getToken(userID, callback);
+    public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
+        ZegoServiceManager.getInstance().userService.getToken(userID, effectiveTime, callback);
     }
 }

@@ -39,6 +39,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         @Override
         public void run() {
             handler.removeCallbacks(callTimeoutRunnable);
+
             if (listener != null) {
                 ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 if (userService.localUserInfo != null) {
@@ -125,16 +126,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 }
             });
         } else {
-            if (getCallInfo().callID == null) {
-                if (callback != null) {
-                    callback.onResult(0);
-                }
-            } else {
-                if (callback != null) {
-                    callback.onResult(-1000);
-                }
+            if (callback != null) {
+                callback.onResult(-1000);
             }
-
         }
     }
 

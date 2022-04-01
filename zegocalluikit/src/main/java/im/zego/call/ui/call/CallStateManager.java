@@ -82,7 +82,6 @@ public class CallStateManager {
         }
         if (beforeState != callState && listeners.size() > 0) {
             for (CallStateChangedListener listener : listeners) {
-                Log.d("TAG", "setCallState: " + listener);
                 listener.onCallStateChanged(beforeState, callState);
             }
         }

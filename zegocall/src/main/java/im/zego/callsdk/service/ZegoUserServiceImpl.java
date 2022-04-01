@@ -75,11 +75,12 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     }
 
     @Override
-    public void getToken(String userID, ZegoRequestCallback callback) {
+    public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             ZegoGetTokenCommand command = new ZegoGetTokenCommand();
             command.putParameter("userID", userID);
+            command.putParameter("effectiveTime", effectiveTime);
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
@@ -90,6 +91,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
             });
         } else {
             if (callback != null) {
+                callback.onResult(-1000, null);
             }
         }
     }
@@ -139,7 +141,8 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     @Override
     void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state) {
         String userID = ZegoCallHelper.getUserID(streamID);
-        Log.d(CoreTest.TAG, "onRemoteCameraStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
+        Log.d(CoreTest.TAG,
+            "onRemoteCameraStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
         if (state != ZegoRemoteDeviceState.OPEN && state != ZegoRemoteDeviceState.DISABLE) {
             return;
         }
