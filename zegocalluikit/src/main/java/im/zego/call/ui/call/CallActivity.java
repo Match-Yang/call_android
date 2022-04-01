@@ -215,7 +215,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         String userID = userService.getLocalUserInfo().userID;
         String token = AuthInfoManager.getInstance().generateToken(userID);
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
-            callService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
+            callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {
                     deviceService.enableMic(true);
                     handler.postDelayed(missCallRunnable, 60 * 1000);
@@ -225,7 +225,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
-            callService.callUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
+            callService.callUser(userInfo, ZegoCallType.Video, token, errorCode -> {
                 if (errorCode == 0) {
                     TextureView textureView = binding.layoutOutgoingCall.getTextureView();
                     deviceService.enableMic(true);

@@ -2,9 +2,7 @@ package im.zego.callsdk.service;
 
 import android.text.TextUtils;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,23 +17,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
 import com.google.firebase.database.ServerValue;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.Transaction.Handler;
-import com.google.firebase.database.Transaction.Result;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.command.ZegoCommand;
 import im.zego.callsdk.listener.ZegoListenerUpdater;
@@ -47,6 +33,7 @@ import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,47 +126,33 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         });
     }
 
-
-    private void getCurrentUser(ZegoRequestCallback callback) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            ZegoUserInfo userInfo = new ZegoUserInfo();
-            userInfo.userID = currentUser.getUid();
-            userInfo.userName = currentUser.getDisplayName();
-            if (callback != null) {
-                callback.onResult(0, userInfo);
-            }
-        } else {
-            if (callback != null) {
-                callback.onResult(0, null);
-            }
-        }
-
-    }
-
     private void startCallUser(Map<String, Object> parameter, ZegoRequestCallback callback) {
         Log.d(TAG, "startCallUser() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
         ZegoCallType callType = (ZegoCallType) parameter.get("callType");
         String selfUserID = (String) parameter.get("selfUserID");
+        String selfUserName = (String) parameter.get("selfUserName");
         String callID = (String) parameter.get("callID");
-        List<String> target = (List<String>) parameter.get("callees");
+        String targetUserID = (String) parameter.get("targetUserID");
+        String targetUserName = (String) parameter.get("targetUserName");
 
-        DatabaseCallUser databaseCallUser = new DatabaseCallUser();
-        databaseCallUser.user_id = selfUserID;
-        databaseCallUser.caller_id = selfUserID;
-        long currentTimeMillis = System.currentTimeMillis();
-        databaseCallUser.start_time = currentTimeMillis;
-        databaseCallUser.status = Status.WAIT.getValue();
         Map<String, DatabaseCallUser> users = new HashMap<>();
-        users.put(databaseCallUser.user_id, databaseCallUser);
-        for (String userID : target) {
-            DatabaseCallUser user = new DatabaseCallUser();
-            user.user_id = userID;
-            user.caller_id = selfUserID;
-            user.start_time = currentTimeMillis;
-            user.status = Status.WAIT.getValue();
-            users.put(user.user_id, user);
-        }
+        DatabaseCallUser callUser = new DatabaseCallUser();
+        callUser.user_id = selfUserID;
+        callUser.user_name = selfUserName;
+        callUser.caller_id = selfUserID;
+        long currentTimeMillis = System.currentTimeMillis();
+        callUser.start_time = currentTimeMillis;
+        callUser.status = Status.WAIT.getValue();
+        users.put(callUser.user_id, callUser);
+
+        DatabaseCallUser targetUser = new DatabaseCallUser();
+        targetUser.user_id = targetUserID;
+        targetUser.user_name = targetUserName;
+        targetUser.caller_id = selfUserID;
+        targetUser.start_time = currentTimeMillis;
+        targetUser.status = Status.WAIT.getValue();
+        users.put(targetUser.user_id, targetUser);
+
         DatabaseCall call = new DatabaseCall();
         call.call_id = callID;
         call.call_type = callType.getValue();

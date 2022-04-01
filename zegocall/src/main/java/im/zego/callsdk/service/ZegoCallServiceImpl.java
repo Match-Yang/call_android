@@ -56,20 +56,22 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
-    public void callUser(String userID, ZegoCallType callType, String createRoomToken, ZegoCallback callback) {
+    public void callUser(ZegoUserInfo userInfo, ZegoCallType callType, String createRoomToken, ZegoCallback callback) {
         Log.d(TAG,
-            "callUser() called with: userID = [" + userID + "], callType = [" + callType + "], createRoomToken = ["
+            "callUser() called with: userInfo = [" + userInfo + "], callType = [" + callType + "], createRoomToken = ["
                 + createRoomToken + "], callback = [" + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.localUserInfo != null) {
             handler.postDelayed(callTimeoutRunnable, CALL_TIMEOUT);
             String selfUserID = userService.localUserInfo.userID;
+            String userName = userService.localUserInfo.userName;
             String callID = selfUserID + System.currentTimeMillis();
-            List<String> target = Collections.singletonList(userID);
             ZegoCallCommand callCommand = new ZegoCallCommand();
             callCommand.putParameter("selfUserID", selfUserID);
+            callCommand.putParameter("selfUserName", userName);
             callCommand.putParameter("callID", callID);
-            callCommand.putParameter("callees", target);
+            callCommand.putParameter("targetUserID", userInfo.userID);
+            callCommand.putParameter("targetUserName", userInfo.userName);
             callCommand.putParameter("callType", callType);
             callCommand.execute(new ZegoRequestCallback() {
                 @Override

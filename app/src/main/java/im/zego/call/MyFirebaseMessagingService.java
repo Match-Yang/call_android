@@ -23,6 +23,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
 
+import im.zego.callsdk.model.DatabaseCall;
+import im.zego.callsdk.model.DatabaseCall.DatabaseCallUser;
+import java.util.ArrayList;
 import java.util.Map;
 
 import im.zego.call.ui.login.GoogleLoginActivity;
@@ -146,6 +149,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         caller.userName = data.get("caller_name");
         String callID = data.get("call_id");
         String callType = data.get("call_type");
+        String callData = data.get("call_data");
+        DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson.fromJson(callData,DatabaseCall.class);
 
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         if (!TextUtils.isEmpty(callService.getCallInfo().callID)) {
@@ -167,6 +172,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         ZegoCallInfo callInfo = new ZegoCallInfo();
         callInfo.caller = caller;
         callInfo.callID = callID;
+        callInfo.users = new ArrayList<>();
+        for (DatabaseCallUser databaseCallUser : databaseCall.users.values()) {
+            ZegoUserInfo userInfo = new ZegoUserInfo();
+            userInfo.userID = databaseCallUser.user_id;
+            userInfo.userName = databaseCallUser.user_name;
+            callInfo.users.add(userInfo);
+        }
         callService.setCallInfo(callInfo);
         ZegoCallServiceListener listener = callService.getListener();
         if (listener != null) {
