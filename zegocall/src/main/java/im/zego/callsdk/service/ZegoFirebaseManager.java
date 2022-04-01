@@ -129,29 +129,31 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
     private void startCallUser(Map<String, Object> parameter, ZegoRequestCallback callback) {
         Log.d(TAG, "startCallUser() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
         ZegoCallType callType = (ZegoCallType) parameter.get("callType");
-        String selfUserID = (String) parameter.get("selfUserID");
-        String selfUserName = (String) parameter.get("selfUserName");
+        HashMap<String, String> caller = (HashMap<String, String>) parameter.get("caller");
         String callID = (String) parameter.get("callID");
-        String targetUserID = (String) parameter.get("targetUserID");
-        String targetUserName = (String) parameter.get("targetUserName");
 
         Map<String, DatabaseCallUser> users = new HashMap<>();
         DatabaseCallUser callUser = new DatabaseCallUser();
-        callUser.user_id = selfUserID;
-        callUser.user_name = selfUserName;
-        callUser.caller_id = selfUserID;
+        callUser.user_id = caller.get("id");
+        callUser.user_name = caller.get("name");
+        callUser.caller_id = caller.get("id");
         long currentTimeMillis = System.currentTimeMillis();
         callUser.start_time = currentTimeMillis;
         callUser.status = Status.WAIT.getValue();
         users.put(callUser.user_id, callUser);
 
-        DatabaseCallUser targetUser = new DatabaseCallUser();
-        targetUser.user_id = targetUserID;
-        targetUser.user_name = targetUserName;
-        targetUser.caller_id = selfUserID;
-        targetUser.start_time = currentTimeMillis;
-        targetUser.status = Status.WAIT.getValue();
-        users.put(targetUser.user_id, targetUser);
+        List<HashMap<String, String>> list = (List<HashMap<String, String>>) parameter.get("callees");
+        for (HashMap<String, String> hashMap : list) {
+            String id = hashMap.get("id");
+            String name = hashMap.get("name");
+            DatabaseCallUser targetUser = new DatabaseCallUser();
+            targetUser.user_id = id;
+            targetUser.user_name = name;
+            targetUser.caller_id = caller.get("id");
+            targetUser.start_time = currentTimeMillis;
+            targetUser.status = Status.WAIT.getValue();
+            users.put(targetUser.user_id, targetUser);
+        }
 
         DatabaseCall call = new DatabaseCall();
         call.call_id = callID;
@@ -275,8 +277,17 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         data.put("call_id", callID);
                         updater.receiveUpdate(ZegoListenerManager.ACCEPT_CALL, data);
                     } else if (receiver.status == Status.WAIT.getValue()) {
-                        HashMap<String, String> data = new HashMap<>();
-                        data.put("caller_id", caller.user_id);
+                        HashMap<String, Object> data = new HashMap<>();
+                        HashMap<String, String> callerData = new HashMap<>();
+                        callerData.put("id", caller.user_id);
+                        callerData.put("name", caller.user_name);
+                        data.put("caller", callerData);
+                        List<HashMap<String, String>> calleeData = new ArrayList<>();
+                        HashMap<String, String> callee = new HashMap<>();
+                        callee.put("id", receiver.user_id);
+                        callee.put("name", receiver.user_name);
+                        calleeData.add(callee);
+                        data.put("callees", calleeData);
                         data.put("call_id", callID);
                         updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
                     }
