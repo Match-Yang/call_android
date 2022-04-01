@@ -214,6 +214,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
         String userID = userService.getLocalUserInfo().userID;
         String token = AuthInfoManager.getInstance().generateToken(userID);
+//        String token = TokenManager.getInstance().tokenWrapper.token;
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {

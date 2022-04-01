@@ -24,6 +24,7 @@ import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.call.utils.PermissionHelper;
+import im.zego.call.utils.TokenManager;
 import im.zego.callsdk.service.ZegoServiceManager;
 import im.zego.callsdk.service.ZegoUserService;
 
@@ -58,11 +59,12 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                 if (isAllGranted) {
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (currentUser != null) {
-                        ActivityUtils.startActivity(EntryActivity.class);
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                         userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
 
                         userService.getOnlineUserList(null);
+                        TokenManager.getInstance();
+                        ActivityUtils.startActivity(EntryActivity.class);
                     } else {
                         signIn();
                     }
@@ -89,6 +91,8 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                     ActivityUtils.startActivity(EntryActivity.class);
 
                     userService.getOnlineUserList(null);
+                    TokenManager.getInstance();
+                    ActivityUtils.startActivity(EntryActivity.class);
                 }
             }
         });
