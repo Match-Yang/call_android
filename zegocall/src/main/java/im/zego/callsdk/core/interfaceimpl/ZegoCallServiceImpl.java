@@ -25,6 +25,7 @@ import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.json.JSONObject;
 
 public class ZegoCallServiceImpl extends ZegoCallService {
 
@@ -377,6 +379,18 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     private void stopHeartBeatTimer() {
         if (heartTimer != null) {
             heartTimer.cancel();
+        }
+    }
+
+    public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
+        if (state == ZegoRoomState.DISCONNECTED) {
+            if (listener != null) {
+                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                if (userService.getLocalUserInfo() != null) {
+                    listener.onReceiveCallTimeout(userService.getLocalUserInfo(), ZegoCallTimeoutType.Connecting);
+                }
+                setCallInfo(null);
+            }
         }
     }
 

@@ -18,6 +18,7 @@ import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
 import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 import im.zego.zegoexpress.constants.ZegoScenario;
 import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zegoexpress.constants.ZegoUpdateType;
@@ -139,6 +140,14 @@ public class ZegoServiceManager {
             public void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state) {
                 super.onRemoteCameraStateUpdate(streamID, state);
                 userService.onRemoteCameraStateUpdate(streamID, state);
+            }
+
+            @Override
+            public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
+                super.onRoomStateUpdate(roomID, state, errorCode, extendedData);
+                if (callService instanceof ZegoCallServiceImpl) {
+                    ((ZegoCallServiceImpl) callService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
+                }
             }
         });
 
