@@ -118,13 +118,6 @@ public class ReceiveCallDialog {
                 });
             }
         }
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                CallStateManager.getInstance().setCallState(getUserInfo(), CallStateManager.TYPE_CALL_MISSED);
-                dismissReceiveCallWindow();
-            }
-        }, 62 * 1000);
     }
 
     public void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {

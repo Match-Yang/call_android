@@ -3,26 +3,22 @@ package im.zego.call.ui.user;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-
 import com.scwang.smart.refresh.header.MaterialHeader;
-
-import java.util.List;
-
 import im.zego.call.R;
 import im.zego.call.ZegoCallManager;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
-import im.zego.callsdk.callback.ZegoRoomCallback;
+import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoServiceManager;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import java.util.List;
 
 public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> {
 
@@ -79,14 +75,14 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
         });
     }
 
-    private void getUserList(ZegoRoomCallback callback) {
+    private void getUserList(ZegoCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         userService.getOnlineUserList(new ZegoUserListCallback() {
             @Override
             public void onGetUserList(int errorCode, List<ZegoUserInfo> userInfoList) {
                 userInfoList.remove(userService.getLocalUserInfo());
                 onlineUserAdapter.updateList(userInfoList);
-                callback.onRoomCallback(errorCode);
+                callback.onResult(errorCode);
             }
         });
     }

@@ -4,9 +4,9 @@ import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
-import im.zego.callsdk.service.ZegoCallService;
-import im.zego.callsdk.service.ZegoServiceManager;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 
 
 public class ZegoCallHelper {

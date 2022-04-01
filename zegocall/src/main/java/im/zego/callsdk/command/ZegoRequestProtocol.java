@@ -1,4 +1,4 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.command;
 
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import java.util.Map;

@@ -1,26 +1,32 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.core.manager;
 
 import android.app.Application;
 import android.util.Log;
-
 import com.google.gson.Gson;
-
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.core.interfaceimpl.ZegoCallServiceImpl;
+import im.zego.callsdk.core.interfaceimpl.ZegoDeviceServiceImpl;
+import im.zego.callsdk.core.interfaceimpl.ZegoRoomServiceImpl;
+import im.zego.callsdk.core.interfaceimpl.ZegoStreamServiceImpl;
+import im.zego.callsdk.core.interfaceimpl.ZegoUserServiceImpl;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.interfaces.ZegoRoomService;
+import im.zego.callsdk.core.interfaces.ZegoStreamService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
 import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 import im.zego.zegoexpress.constants.ZegoScenario;
 import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zegoexpress.constants.ZegoUpdateType;
 import im.zego.zegoexpress.entity.ZegoEngineProfile;
 import im.zego.zegoexpress.entity.ZegoStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.json.JSONObject;
 
 /**
  * Class LiveAudioRoom business logic management.
@@ -135,6 +141,14 @@ public class ZegoServiceManager {
                 super.onRemoteCameraStateUpdate(streamID, state);
                 userService.onRemoteCameraStateUpdate(streamID, state);
             }
+
+            @Override
+            public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
+                super.onRoomStateUpdate(roomID, state, errorCode, extendedData);
+                if (callService instanceof ZegoCallServiceImpl) {
+                    ((ZegoCallServiceImpl) callService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
+                }
+            }
         });
 
         deviceService.setBestConfig();
@@ -147,7 +161,6 @@ public class ZegoServiceManager {
      * application exits.</>
      */
     public void unInit() {
-        ZegoZIMManager.getInstance().destroyZIM();
         ZegoExpressEngine.destroyEngine(null);
     }
 
@@ -161,8 +174,6 @@ public class ZegoServiceManager {
      *                 upload logs.
      */
     public void uploadLog(final ZegoCallback callback) {
-        ZegoZIMManager.getInstance().zim
-            .uploadLog(errorInfo -> callback.onResult(errorInfo.code.value()));
         ZegoExpressEngine.getEngine().uploadLog();
     }
 }

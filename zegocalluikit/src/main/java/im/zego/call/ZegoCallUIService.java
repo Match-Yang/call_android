@@ -2,7 +2,7 @@ package im.zego.call;
 
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 
 /**
  * CallKit服务类，可用于用户登录、登出等逻辑调用

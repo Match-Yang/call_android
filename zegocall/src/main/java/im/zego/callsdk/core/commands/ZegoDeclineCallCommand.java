@@ -1,4 +1,4 @@
-package im.zego.callsdk.command;
+package im.zego.callsdk.core.commands;
 
 public class ZegoDeclineCallCommand extends ZegoCommand {
     public ZegoDeclineCallCommand() {

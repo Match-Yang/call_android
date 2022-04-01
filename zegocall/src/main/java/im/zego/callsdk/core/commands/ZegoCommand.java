@@ -1,10 +1,10 @@
-package im.zego.callsdk.command;
+package im.zego.callsdk.core.commands;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import im.zego.callsdk.callback.ZegoRequestCallback;
-import im.zego.callsdk.service.ZegoCommandManager;
+import im.zego.callsdk.command.ZegoCommandManager;
 
 public class ZegoCommand {
 

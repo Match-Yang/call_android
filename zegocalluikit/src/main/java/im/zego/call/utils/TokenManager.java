@@ -1,5 +1,6 @@
 package im.zego.call.utils;
 
+import android.util.Log;
 import com.blankj.utilcode.util.SPStaticUtils;
 
 import java.util.Timer;
@@ -11,6 +12,7 @@ import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 
 public class TokenManager {
+
     private static volatile TokenManager singleton = null;
 
     private TokenManager() {
@@ -21,11 +23,14 @@ public class TokenManager {
                     ZegoUserInfo userInfo = ZegoCallManager.getInstance().getLocalUserInfo();
                     if (userInfo != null) {
                         String userID = userInfo.userID;
-                        ZegoCallManager.getInstance().getToken(userID, new ZegoRequestCallback() {
+                        long effectiveTime = 3600;
+                        ZegoCallManager.getInstance().getToken(userID, effectiveTime, new ZegoRequestCallback() {
                             @Override
                             public void onResult(int errorCode, Object obj) {
+                                Log.d("TAG",
+                                    "getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
                                 if (errorCode == 0) {
-                                    saveToken((String) obj, 24 * 3600 * 1000L);
+                                    saveToken((String) obj, effectiveTime * 1000L);
                                 } else {
                                 }
                             }
@@ -61,7 +66,9 @@ public class TokenManager {
     }
 
     private boolean needUpdateToken() {
-        if (tokenWrapper == null) return true;
+        if (tokenWrapper == null) {
+            return true;
+        }
         return System.currentTimeMillis() + 60 * 60 * 1000L > tokenWrapper.expiryTime;
     }
 
@@ -77,6 +84,7 @@ public class TokenManager {
     }
 
     public static class TokenWrapper {
+
         public String token;
         public long expiryTime;
 

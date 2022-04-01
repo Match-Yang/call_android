@@ -1,6 +1,4 @@
-package im.zego.callsdk.service;
-
-import android.util.Log;
+package im.zego.callsdk.core.interfaces;
 
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
@@ -11,6 +9,7 @@ import im.zego.callsdk.model.ZegoLocalUserStatus;
 import im.zego.callsdk.model.ZegoUserInfo;
 
 public abstract class ZegoCallService {
+
     private static final String TAG = "ZegoCallService";
 
     // callService refers to the listener instance of call service.
@@ -29,7 +28,7 @@ public abstract class ZegoCallService {
      * <p>
      * Call this method at: After the user login
      *
-     * @param userID           refers to the ID of the user you want call.
+     * @param userInfo         refers to the ID of the user you want call.
      * @param callType         refers to the call type.  ZegoCallTypeVoice: Voice call.  ZegoCallTypeVideo: Video call.
      * @param createRoomToken: refers to the authentication token. To get this, see the documentation:
      *                         https://docs.zegocloud.com/article/11648
@@ -54,7 +53,8 @@ public abstract class ZegoCallService {
     /**
      * Accept a call
      * <p>
-     * Description: This method can be used to accept a call. And the caller receives a callback when the call has been accepted by the callee.
+     * Description: This method can be used to accept a call. And the caller receives a callback when the call has been
+     * accepted by the callee.
      * <p>
      * Call this method at: After the user login
      *
@@ -65,7 +65,8 @@ public abstract class ZegoCallService {
     /**
      * Decline a call
      * <p>
-     * Description: This method can be used to decline a call. And the caller receives a callback when the call has been declined by the callee.
+     * Description: This method can be used to decline a call. And the caller receives a callback when the call has been
+     * declined by the callee.
      * <p>
      * Call this method at: after the user login
      *
@@ -87,7 +88,7 @@ public abstract class ZegoCallService {
      */
     public abstract void endCall(ZegoCallback callback);
 
-    public abstract void setCallInfo(ZegoCallInfo callInfo) ;
+    public abstract void setCallInfo(ZegoCallInfo callInfo);
 
     public ZegoCallInfo getCallInfo() {
         return callInfo;

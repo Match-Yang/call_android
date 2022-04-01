@@ -1,7 +1,9 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.core.interfaceimpl;
 
 import android.util.Log;
 
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,10 +11,10 @@ import java.util.Objects;
 
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
-import im.zego.callsdk.command.ZegoGetTokenCommand;
-import im.zego.callsdk.command.ZegoLoginCommand;
-import im.zego.callsdk.command.ZegoLogoutCommand;
-import im.zego.callsdk.command.ZegoUserListCommand;
+import im.zego.callsdk.core.commands.ZegoGetTokenCommand;
+import im.zego.callsdk.core.commands.ZegoLoginCommand;
+import im.zego.callsdk.core.commands.ZegoLogoutCommand;
+import im.zego.callsdk.core.commands.ZegoUserListCommand;
 import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CoreTest;
@@ -44,8 +46,8 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     @Override
     public void logout() {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.localUserInfo != null) {
-            String selfUserID = userService.localUserInfo.userID;
+        if (userService.getLocalUserInfo() != null) {
+            String selfUserID = userService.getLocalUserInfo().userID;
             ZegoLogoutCommand command = new ZegoLogoutCommand();
             command.putParameter("selfUserID", selfUserID);
             command.execute((errorCode, obj) -> {
@@ -75,11 +77,12 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     }
 
     @Override
-    public void getToken(String userID, ZegoRequestCallback callback) {
+    public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.localUserInfo != null) {
+        if (userService.getLocalUserInfo() != null) {
             ZegoGetTokenCommand command = new ZegoGetTokenCommand();
             command.putParameter("userID", userID);
+            command.putParameter("effectiveTime", effectiveTime);
             command.execute(new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
@@ -90,6 +93,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
             });
         } else {
             if (callback != null) {
+                callback.onResult(-1000, null);
             }
         }
     }
@@ -108,7 +112,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     }
 
     @Override
-    void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state) {
+    public void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state) {
         String userID = ZegoCallHelper.getUserID(streamID);
         Log.d(CoreTest.TAG, "onRemoteMicStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
         if (state != ZegoRemoteDeviceState.OPEN && state != ZegoRemoteDeviceState.MUTE) {
@@ -137,9 +141,10 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     }
 
     @Override
-    void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state) {
+    public void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state) {
         String userID = ZegoCallHelper.getUserID(streamID);
-        Log.d(CoreTest.TAG, "onRemoteCameraStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
+        Log.d(CoreTest.TAG,
+            "onRemoteCameraStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
         if (state != ZegoRemoteDeviceState.OPEN && state != ZegoRemoteDeviceState.DISABLE) {
             return;
         }

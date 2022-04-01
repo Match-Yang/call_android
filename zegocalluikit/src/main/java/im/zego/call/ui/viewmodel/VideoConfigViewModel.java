@@ -9,8 +9,8 @@ import im.zego.call.ui.model.VideoSettingConfig;
 import im.zego.callsdk.model.ZegoAudioBitrate;
 import im.zego.callsdk.model.ZegoDevicesType;
 import im.zego.callsdk.model.ZegoVideoResolution;
-import im.zego.callsdk.service.ZegoDeviceService;
-import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.zegoexpress.constants.ZegoVideoConfigPreset;
 
 public class VideoConfigViewModel extends ViewModel {

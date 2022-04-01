@@ -1,9 +1,11 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.core.interfaceimpl;
 
 import android.util.Log;
 
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.core.interfaces.ZegoRoomService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -32,7 +34,7 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
         }
         roomInfo.roomID = roomID;
 
-        ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.localUserInfo;
+        ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
         ZegoUser user = new ZegoUser(localUserInfo.userID, localUserInfo.userName);
 
         ZegoRoomConfig roomConfig = new ZegoRoomConfig();

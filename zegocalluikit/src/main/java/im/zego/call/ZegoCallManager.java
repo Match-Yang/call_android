@@ -9,8 +9,7 @@ import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
 
 /**
- * ZegoCall UIKit管理类
- * Demo层只需调用并关注此类的实现，即可快速实现一套呼叫对讲业务逻辑
+ * ZegoCall UIKit管理类 Demo层只需调用并关注此类的实现，即可快速实现一套呼叫对讲业务逻辑
  */
 public class ZegoCallManager {
 
@@ -39,8 +38,7 @@ public class ZegoCallManager {
     private ZegoCallManagerImpl impl;
 
     /**
-     * 初始化sdk与rtc引擎
-     * 调用时机：应用启动时
+     * 初始化sdk与rtc引擎 调用时机：应用启动时
      */
     public void init(Application application) {
         impl.init(application);
@@ -51,16 +49,14 @@ public class ZegoCallManager {
     }
 
     /**
-     * 启动监听呼叫响应
-     * 调用时机：成功登录之后
+     * 启动监听呼叫响应 调用时机：成功登录之后
      */
     public void startListen(Activity activity) {
         impl.startListen(activity);
     }
 
     /**
-     * 停止监听呼叫响应
-     * 调用时机：退出登录之后
+     * 停止监听呼叫响应 调用时机：退出登录之后
      */
     public void stopListen(Activity activity) {
         impl.stopListen(activity);
@@ -92,21 +88,19 @@ public class ZegoCallManager {
         return impl.getLocalUserInfo();
     }
 
-    public void getToken(String userID, ZegoRequestCallback callback) {
-        impl.getToken(userID, callback);
+    public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
+        impl.getToken(userID, effectiveTime, callback);
     }
 
     /**
-     * 展示前台服务通知
-     * 调用时机：应用切换到后台后
+     * 展示前台服务通知 调用时机：应用切换到后台后
      */
     public void showNotification(ZegoUserInfo userInfo) {
         impl.showNotification(userInfo);
     }
 
     /**
-     * 隐藏前台服务通知
-     * 调用时机：应用切换到前台后
+     * 隐藏前台服务通知 调用时机：应用切换到前台后
      */
     public void dismissNotification(Activity activity) {
         impl.dismissNotification(activity);
