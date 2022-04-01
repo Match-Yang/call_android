@@ -1,7 +1,8 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.command;
 
 import im.zego.callsdk.callback.ZegoRequestCallback;
-import im.zego.callsdk.command.ZegoCommand;
+import im.zego.callsdk.core.commands.ZegoCommand;
+import im.zego.callsdk.request.ZegoFirebaseManager;
 
 public class ZegoCommandManager {
 

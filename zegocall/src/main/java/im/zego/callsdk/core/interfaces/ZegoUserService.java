@@ -1,4 +1,4 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.core.interfaces;
 
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import java.util.List;
@@ -51,13 +51,13 @@ public abstract class ZegoUserService {
      */
     public abstract void getOnlineUserList(ZegoUserListCallback callback);
 
-    public abstract void getToken(String userID,long effectiveTime,ZegoRequestCallback callback);
+    public abstract void getToken(String userID, long effectiveTime, ZegoRequestCallback callback);
 
     public abstract ZegoUserInfo getLocalUserInfo();
 
     public abstract void setLocalUser(String userID, String userName);
 
-    abstract void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state);
+    public abstract void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state);
 
-    abstract void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state);
+    public abstract void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state);
 }

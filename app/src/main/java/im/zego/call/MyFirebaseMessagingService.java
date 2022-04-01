@@ -35,8 +35,8 @@ import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoCallService;
-import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 
 /**
  * NOTE: There can only be one service in each app that receives FCM messages. If multiple are declared in the Manifest

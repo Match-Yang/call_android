@@ -25,8 +25,8 @@ import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.call.utils.PermissionHelper;
 import im.zego.call.utils.TokenManager;
-import im.zego.callsdk.service.ZegoServiceManager;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 
 public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding> {
     private static final String TAG = "GoogleLoginActivity";

@@ -20,7 +20,7 @@ import im.zego.call.databinding.LayoutMinimalViewBinding;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 
 public class MinimalView extends ConstraintLayout {
 

@@ -35,9 +35,9 @@ import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoCallService;
-import im.zego.callsdk.service.ZegoServiceManager;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 
 /**
  * Created by rocket_wang on 2022/3/31.

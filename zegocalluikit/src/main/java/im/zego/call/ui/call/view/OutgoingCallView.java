@@ -23,9 +23,9 @@ import im.zego.call.databinding.LayoutOutgoingCallBinding;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoCallService;
-import im.zego.callsdk.service.ZegoDeviceService;
-import im.zego.callsdk.service.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 
 public class OutgoingCallView extends ConstraintLayout {
 

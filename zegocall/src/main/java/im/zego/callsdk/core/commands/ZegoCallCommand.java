@@ -1,6 +1,4 @@
-package im.zego.callsdk.command;
-
-import im.zego.callsdk.model.ZegoCallType;
+package im.zego.callsdk.core.commands;
 
 public class ZegoCallCommand extends ZegoCommand {
 

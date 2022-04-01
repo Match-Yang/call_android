@@ -39,11 +39,11 @@ import im.zego.call.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.service.ZegoCallService;
-import im.zego.callsdk.service.ZegoDeviceService;
-import im.zego.callsdk.service.ZegoServiceManager;
-import im.zego.callsdk.service.ZegoStreamService;
-import im.zego.callsdk.service.ZegoUserService;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.core.interfaces.ZegoStreamService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 

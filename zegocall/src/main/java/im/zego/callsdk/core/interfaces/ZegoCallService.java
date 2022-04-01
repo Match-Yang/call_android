@@ -1,4 +1,4 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.core.interfaces;
 
 import android.util.Log;
 

@@ -1,4 +1,4 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.core.interfaces;
 
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
 import im.zego.callsdk.model.ZegoAudioBitrate;

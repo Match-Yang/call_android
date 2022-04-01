@@ -1,8 +1,9 @@
-package im.zego.callsdk.service;
+package im.zego.callsdk.core.interfaceimpl;
 
 import android.util.Log;
 import android.view.TextureView;
 
+import im.zego.callsdk.core.interfaces.ZegoStreamService;
 import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -10,7 +11,7 @@ import im.zego.zegoexpress.constants.ZegoOrientation;
 import im.zego.zegoexpress.constants.ZegoViewMode;
 import im.zego.zegoexpress.entity.ZegoCanvas;
 
-public class ZegoStreamServiceImpl extends ZegoStreamService{
+public class ZegoStreamServiceImpl extends ZegoStreamService {
     /**
      * Playback video streams data
      * <p>
