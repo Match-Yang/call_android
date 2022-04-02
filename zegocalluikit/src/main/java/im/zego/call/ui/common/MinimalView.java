@@ -14,6 +14,8 @@ import androidx.lifecycle.Observer;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.constant.Constants;
 import im.zego.call.databinding.LayoutMinimalViewBinding;
@@ -21,6 +23,7 @@ import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.utils.ZegoCallHelper;
 
 public class MinimalView extends ConstraintLayout {
 
@@ -28,6 +31,7 @@ public class MinimalView extends ConstraintLayout {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Observer<String> timerObserver = s -> binding.voiceTv.setText(s);
 
+    private ZegoUserInfo remoteUserInfo;
     private MinimalStatus currentStatus;
     private boolean canShowMinimal;
     private boolean isShowVideo;
@@ -79,6 +83,27 @@ public class MinimalView extends ConstraintLayout {
             toggleVoice(false);
             toggleVideo(false);
             return;
+        }
+
+        if (isVideoCall() && remoteUserInfo != null) {
+            for (ZegoUserInfo zegoUserInfo : ZegoServiceManager.getInstance().userService.userInfoList) {
+                if (Objects.equals(zegoUserInfo, remoteUserInfo)) {
+                    remoteUserInfo = zegoUserInfo;
+                    break;
+                }
+            }
+
+            ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
+
+            if (remoteUserInfo.camera || localUserInfo.camera) {
+                String userID = remoteUserInfo.camera ? remoteUserInfo.userID : localUserInfo.userID;
+                ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
+                toggleVideo(true);
+            } else {
+                toggleVideo(false);
+            }
+        } else {
+            toggleVideo(false);
         }
 
         toggleVoice(true);
@@ -149,15 +174,25 @@ public class MinimalView extends ConstraintLayout {
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-        ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
-        if (isVideoCall()) {
-            if (userInfo.camera || localUserInfo.camera) {
-                String userID = userInfo.camera ? userInfo.userID : localUserInfo.userID;
-                ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
-                toggleVideo(true);
-            } else {
-                toggleVideo(false);
+        updateRemoteUserInfo(userInfo);
+        updateStatus(currentStatus);
+    }
+
+    public void updateRemoteUserInfo(ZegoUserInfo userInfo) {
+        if (userInfo == null || ZegoCallHelper.isUserIDSelf(userInfo.userID)) {
+            return;
+        }
+
+        for (ZegoUserInfo zegoUserInfo : ZegoServiceManager.getInstance().userService.userInfoList) {
+            if (Objects.equals(zegoUserInfo, userInfo)) {
+                userInfo = zegoUserInfo;
+                break;
             }
         }
+        remoteUserInfo = userInfo;
+    }
+
+    public void reset() {
+        remoteUserInfo = null;
     }
 }

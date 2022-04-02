@@ -160,8 +160,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
         callStateChangedListener = new CallStateChangedListener() {
             @Override
-            public void onCallStateChanged(int before, int after) {
-                updateUi(after);
+            public void onCallStateChanged(ZegoUserInfo userInfo, int before, int after) {
                 boolean beforeIsOutgoing = (before == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) ||
                     (before == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
                 boolean beforeIsInComing = (before == CallStateManager.TYPE_INCOMING_CALLING_VOICE) ||
@@ -188,6 +187,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     updateStateText(R.string.call_page_status_declined);
                     finishActivityDelayed();
                 }
+                updateUi(after);
             }
         };
         CallStateManager.getInstance().addListener(callStateChangedListener);
@@ -204,6 +204,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
 
+        deviceService.enableSpeaker(false);
         deviceService.useFrontCamera(true);
 
         String userID = userService.getLocalUserInfo().userID;

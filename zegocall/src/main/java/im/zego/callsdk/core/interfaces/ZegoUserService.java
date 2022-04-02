@@ -1,9 +1,9 @@
 package im.zego.callsdk.core.interfaces;
 
-import im.zego.callsdk.callback.ZegoRequestCallback;
 import java.util.List;
 
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -12,11 +12,11 @@ import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
 public abstract class ZegoUserService {
 
     // The delegate instance of the user service.
-    protected ZegoUserServiceListener listener;
+    public ZegoUserServiceListener listener;
     // The local logged-in user information.
     protected ZegoUserInfo localUserInfo;
     // The online user list.
-    protected List<ZegoUserInfo> userInfoList;
+    public List<ZegoUserInfo> userInfoList;
 
     public void setListener(ZegoUserServiceListener listener) {
         this.listener = listener;

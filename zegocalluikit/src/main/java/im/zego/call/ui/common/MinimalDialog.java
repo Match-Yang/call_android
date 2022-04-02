@@ -30,7 +30,8 @@ public class MinimalDialog {
     private Dialog floatDialog;
     private AlertDialog floatPermissionDialog;
 
-    private CallStateManager.CallStateChangedListener callStateChangedListener = (before, after) -> {
+    private CallStateManager.CallStateChangedListener callStateChangedListener = (callInfo, before, after) -> {
+        minimalView.updateRemoteUserInfo(callInfo);
         switch (after) {
             case CallStateManager.TYPE_OUTGOING_CALLING_VOICE:
             case CallStateManager.TYPE_OUTGOING_CALLING_VIDEO:
@@ -42,15 +43,19 @@ public class MinimalDialog {
                 break;
             case CallStateManager.TYPE_CALL_CANCELED:
                 minimalView.updateStatus(MinimalStatus.Cancel);
+                minimalView.reset();
                 break;
             case CallStateManager.TYPE_CALL_COMPLETED:
                 minimalView.updateStatus(MinimalStatus.Ended);
+                minimalView.reset();
                 break;
             case CallStateManager.TYPE_CALL_MISSED:
                 minimalView.updateStatus(MinimalStatus.Missed);
+                minimalView.reset();
                 break;
             case CallStateManager.TYPE_CALL_DECLINE:
                 minimalView.updateStatus(MinimalStatus.Decline);
+                minimalView.reset();
                 break;
         }
     };

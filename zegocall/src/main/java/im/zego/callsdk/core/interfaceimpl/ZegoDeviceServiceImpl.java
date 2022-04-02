@@ -48,11 +48,17 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
     public void enableCamera(boolean enable) {
         ZegoExpressEngine.getEngine().enableCamera(enable);
         ZegoServiceManager.getInstance().userService.getLocalUserInfo().camera = enable;
+        if (ZegoServiceManager.getInstance().userService.listener != null) {
+            ZegoServiceManager.getInstance().userService.listener.onUserInfoUpdated(ZegoServiceManager.getInstance().userService.getLocalUserInfo());
+        }
     }
 
     public void enableMic(boolean enable) {
         ZegoExpressEngine.getEngine().muteMicrophone(!enable);
         ZegoServiceManager.getInstance().userService.getLocalUserInfo().mic = enable;
+        if (ZegoServiceManager.getInstance().userService.listener != null) {
+            ZegoServiceManager.getInstance().userService.listener.onUserInfoUpdated(ZegoServiceManager.getInstance().userService.getLocalUserInfo());
+        }
     }
 
     public void useFrontCamera(boolean isFront) {

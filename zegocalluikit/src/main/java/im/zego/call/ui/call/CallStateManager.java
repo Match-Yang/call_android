@@ -82,7 +82,8 @@ public class CallStateManager {
         }
         if (beforeState != callState && listeners.size() > 0) {
             for (CallStateChangedListener listener : listeners) {
-                listener.onCallStateChanged(beforeState, callState);
+                Log.d("TAG", "setCallState: " + listener);
+                listener.onCallStateChanged(userInfo, beforeState, callState);
             }
         }
     }
@@ -147,6 +148,6 @@ public class CallStateManager {
 
     public interface CallStateChangedListener {
 
-        void onCallStateChanged(int before, int after);
+        void onCallStateChanged(ZegoUserInfo userInfo, int before, int after);
     }
 }
