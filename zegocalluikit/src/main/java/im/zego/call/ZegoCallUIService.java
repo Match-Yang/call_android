@@ -1,5 +1,8 @@
 package im.zego.call;
 
+import com.jeremyliao.liveeventbus.LiveEventBus;
+
+import im.zego.call.constant.Constants;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
@@ -24,7 +27,13 @@ public class ZegoCallUIService {
      * 调用时机：在登录成功之后
      */
     public void logout() {
+        if (CallStateManager.getInstance().isInCallingStream()) {
+            LiveEventBus.get(Constants.EVENT_CANCEL_CALL).post(null);
+        } else if (CallStateManager.getInstance().isConnected()) {
+            LiveEventBus.get(Constants.EVENT_END_CALL).post(null);
+        } else {
+            CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
+        }
         ZegoServiceManager.getInstance().userService.logout();
-        CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
     }
 }

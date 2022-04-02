@@ -2,7 +2,14 @@ package im.zego.callsdk.core.manager;
 
 import android.app.Application;
 import android.util.Log;
+
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.core.interfaceimpl.ZegoCallServiceImpl;
 import im.zego.callsdk.core.interfaceimpl.ZegoDeviceServiceImpl;
@@ -14,6 +21,8 @@ import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoRoomService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.listener.ZegoDeviceServiceListener;
+import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
@@ -25,9 +34,6 @@ import im.zego.zegoexpress.constants.ZegoUpdateType;
 import im.zego.zegoexpress.entity.ZegoEngineConfig;
 import im.zego.zegoexpress.entity.ZegoEngineProfile;
 import im.zego.zegoexpress.entity.ZegoStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import org.json.JSONObject;
 
 /**
  * Class LiveAudioRoom business logic management.
@@ -101,7 +107,17 @@ public class ZegoServiceManager {
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
                 ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-
+                if (userService.listener != null) {
+                    if (upstreamQuality == ZegoStreamQualityLevel.BAD
+                            || upstreamQuality == ZegoStreamQualityLevel.DIE
+                            || upstreamQuality == ZegoStreamQualityLevel.UNKNOWN) {
+                        userService.listener.onNetworkQuality(userID, ZegoNetWorkQuality.Bad);
+                    } else if (upstreamQuality == ZegoStreamQualityLevel.MEDIUM) {
+                        userService.listener.onNetworkQuality(userID, ZegoNetWorkQuality.Medium);
+                    } else {
+                        userService.listener.onNetworkQuality(userID, ZegoNetWorkQuality.Good);
+                    }
+                }
             }
 
             @Override
@@ -129,8 +145,8 @@ public class ZegoServiceManager {
             @Override
             public void onAudioRouteChange(ZegoAudioRoute audioRoute) {
                 super.onAudioRouteChange(audioRoute);
-                if (deviceService.listener != null) {
-                    deviceService.listener.onAudioRouteChange(audioRoute);
+                for (ZegoDeviceServiceListener listener : deviceService.listeners) {
+                    listener.onAudioRouteChange(audioRoute);
                 }
             }
 

@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.tencent.mmkv.MMKV;
 
 import im.zego.call.R;
 import im.zego.call.ZegoCallManager;
@@ -25,8 +26,8 @@ import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.call.utils.PermissionHelper;
 import im.zego.call.utils.TokenManager;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 
 public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding> {
     private static final String TAG = "GoogleLoginActivity";
@@ -57,6 +58,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             }
             PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
                 if (isAllGranted) {
+                    MMKV.defaultMMKV().encode("autoLogin", true);
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (currentUser != null) {
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
@@ -84,8 +86,9 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     private void systemPermissionCheck() {
         PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
             if (isAllGranted) {
+                boolean autoLogin = MMKV.defaultMMKV().decodeBool("autoLogin", true);
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (currentUser != null) {
+                if (autoLogin && currentUser != null) {
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                     ActivityUtils.startActivity(EntryActivity.class);
