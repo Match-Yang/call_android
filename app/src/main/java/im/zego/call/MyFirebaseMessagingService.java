@@ -61,14 +61,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Map<String, String> data = remoteMessage.getData();
 
-        Log.d(TAG, "onMessageReceived: .isAppForeground():" + AppUtils.isAppForeground());
-        Log.d(TAG, "onMessageReceived: .isAppRunning():" + AppUtils.isAppRunning("im.zego.call"));
-        Log.d(TAG,
-            "onMessageReceived: .getActivityList.isEmpty():" + ActivityUtils.getActivityList().isEmpty());
         boolean isAppNotStart = !AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
         boolean isDeviceRestart = AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
         if (isAppNotStart) {
-            Log.d(TAG, "onMessageReceived() called with: isAppNotStart = [" + isAppNotStart + "]");
             if (data.size() > 0) {
                 AppUtils.relaunchApp();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -76,7 +71,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }, 200);
             }
         } else if (isDeviceRestart) {
-            Log.d(TAG, "onMessageReceived() called with: isDeviceRestart = [" + isDeviceRestart + "]");
             if (data.size() > 0) {
                 AppUtils.relaunchApp();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
