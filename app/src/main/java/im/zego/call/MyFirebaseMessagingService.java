@@ -13,40 +13,25 @@
 
 package im.zego.call;
 
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
-
+import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.DatabaseCall;
 import im.zego.callsdk.model.DatabaseCall.DatabaseCallUser;
-import java.util.ArrayList;
-import java.util.Map;
-
-import im.zego.call.ui.login.GoogleLoginActivity;
-import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
+import java.util.ArrayList;
+import java.util.Map;
 
-/**
- * NOTE: There can only be one service in each app that receives FCM messages. If multiple are declared in the Manifest
- * then the first one will be chosen.
- * <p>
- * In order to make this Java sample functional, you must remove the following from the Kotlin messaging service in the
- * AndroidManifest.xml:
- * <p>
- * <intent-filter> <action android:name="com.google.firebase.MESSAGING_EVENT" /> </intent-filter>
- */
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
@@ -150,7 +135,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String callID = data.get("call_id");
         String callType = data.get("call_type");
         String callData = data.get("call_data");
-        DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson.fromJson(callData,DatabaseCall.class);
+        DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson.fromJson(callData, DatabaseCall.class);
 
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         if (!TextUtils.isEmpty(callService.getCallInfo().callID)) {
@@ -199,41 +184,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
-    }
-
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param messageBody FCM message body received.
-     */
-    private void sendNotification(String messageBody) {
-        Intent intent = new Intent(this, GoogleLoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT);
-
-        //        String channelId = getString(R.string.default_notification_channel_id);
-        //        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        //        NotificationCompat.Builder notificationBuilder =
-        //                new NotificationCompat.Builder(this, channelId)
-        //                        .setSmallIcon(R.drawable.ic_stat_ic_notification)
-        //                        .setContentTitle(getString(R.string.fcm_message))
-        //                        .setContentText(messageBody)
-        //                        .setAutoCancel(true)
-        //                        .setSound(defaultSoundUri)
-        //                        .setContentIntent(pendingIntent);
-        //
-        //        NotificationManager notificationManager =
-        //                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        //
-        //        // Since android Oreo notification channel is needed.
-        //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        //            NotificationChannel channel = new NotificationChannel(channelId,
-        //                    "Channel human readable title",
-        //                    NotificationManager.IMPORTANCE_DEFAULT);
-        //            notificationManager.createNotificationChannel(channel);
-        //        }
-        //
-        //        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
 }
