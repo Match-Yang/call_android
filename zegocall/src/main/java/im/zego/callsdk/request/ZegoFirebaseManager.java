@@ -26,8 +26,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.command.ZegoRequestProtocol;
 import im.zego.callsdk.core.commands.ZegoCommand;
-import im.zego.callsdk.listener.ZegoListenerUpdater;
 import im.zego.callsdk.listener.ZegoListenerManager;
+import im.zego.callsdk.listener.ZegoListenerUpdater;
 import im.zego.callsdk.model.DatabaseCall;
 import im.zego.callsdk.model.DatabaseCall.DatabaseCallUser;
 import im.zego.callsdk.model.DatabaseCall.Status;
@@ -328,6 +328,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
     }
 
     private void acceptUserCall(Map<String, Object> parameter, ZegoRequestCallback callback) {
+        Log.d(TAG, "acceptUserCall() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
         String selfUserID = (String) parameter.get("selfUserID");
         String callerID = (String) parameter.get("userID");
         String callID = (String) parameter.get("callID");
@@ -344,6 +345,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         callRef.updateChildren(callUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                Log.d(TAG, "acceptUserCall onSuccess() called with: unused = [" + unused + "]");
                 if (callback != null) {
                     callback.onResult(0, null);
                 }
@@ -351,6 +353,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "acceptUserCall onFailure() called with: e = [" + e + "]");
                 if (callback != null) {
                     callback.onResult(-1000, null);
                 }
@@ -359,6 +362,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
     }
 
     private void declineUserCall(Map<String, Object> parameter, ZegoRequestCallback callback) {
+        Log.d(TAG, "declineUserCall() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
         String selfUserID = (String) parameter.get("selfUserID");
         String callerID = (String) parameter.get("userID");
         String callID = (String) parameter.get("callID");
@@ -376,26 +380,31 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         callUpdates.put("/users/" + callerID + "/status", value);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference callRef = database.getReference("call").child(callID);
-        callRef.updateChildren(callUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                if (callback != null) {
-                    callback.onResult(0, null);
-                }
+        callRef.updateChildren(callUpdates)
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Log.d(TAG, "declineUserCall onSuccess() called with: unused = [" + unused + "]");
+                    if (callback != null) {
+                        callback.onResult(0, null);
+                    }
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (callback != null) {
-                    callback.onResult(-1000, null);
                 }
-            }
-        });
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.d(TAG, "declineUserCall onFailure() called with: e = [" + e + "]");
+                    if (callback != null) {
+                        callback.onResult(-1000, null);
+                    }
+                }
+            });
         removeCallListener(callID);
     }
 
     private void cancelUserCall(Map<String, Object> parameter, ZegoRequestCallback callback) {
+        Log.d(TAG, "cancelUserCall() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
         String beCanceledUserID = (String) parameter.get("userID");
         String selfUserID = (String) parameter.get("selfUserID");
         String callerID = selfUserID;
@@ -410,6 +419,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         callRef.updateChildren(callUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                Log.d(TAG, "cancelUserCall onSuccess() called with: unused = [" + unused + "]");
                 if (callback != null) {
                     callback.onResult(0, null);
                 }
@@ -417,6 +427,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "cancelUserCall onFailure() called with: e = [" + e + "]");
                 if (callback != null) {
                     callback.onResult(-1000, null);
                 }
@@ -426,6 +437,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
     }
 
     private void endCallUser(Map<String, Object> parameter, ZegoRequestCallback callback) {
+        Log.d(TAG, "endCallUser() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
         String selfUserID = (String) parameter.get("selfUserID");
         String callerID = selfUserID;
         String callID = (String) parameter.get("callID");
@@ -449,6 +461,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         callRef.updateChildren(callUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                Log.d(TAG, "endCallUser onSuccess() called with: unused = [" + unused + "]");
                 if (callback != null) {
                     callback.onResult(0, null);
                 }
@@ -456,6 +469,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "endCallUser onFailure() called with: e = [" + e + "]");
                 if (callback != null) {
                     callback.onResult(-1000, null);
                 }

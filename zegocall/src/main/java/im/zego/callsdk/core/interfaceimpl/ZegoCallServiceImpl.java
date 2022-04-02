@@ -140,8 +140,14 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 }
             });
         } else {
-            if (callback != null) {
-                callback.onResult(-1000);
+            if (getCallInfo().callID == null) {
+                if (callback != null) {
+                    callback.onResult(0);
+                }
+            } else {
+                if (callback != null) {
+                    callback.onResult(-1000);
+                }
             }
         }
     }
@@ -181,9 +187,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
 
     @Override
     public void declineCall(String userID, String callID, ZegoDeclineType type, ZegoCallback callback) {
-        Log.d(TAG,
-            "declineCall() called with: userID = [" + userID + "], type = [" + type + "], callback = [" + callback
-                + "]");
+        Log.d(TAG, "declineCall() called with: userID = [" + userID + "], callID = [" + callID + "], type = [" + type
+            + "], callback = [" + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.getLocalUserInfo() != null && getCallInfo().callID != null) {
             handler.removeCallbacks(callTimeoutRunnable);
@@ -198,8 +203,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                     Log.d(TAG,
                         "declineCall onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
                     if (errorCode == 0) {
-                        //todo 拒绝成功应该判断拒绝的callID，不应该把当前ID直接置空
-                        setCallInfo(null);
+                        if (Objects.equals(callID, getCallInfo().callID)) {
+                            setCallInfo(null);
+                        }
                         if (getCallInfo().callID == null) {
                             status = ZegoLocalUserStatus.Free;
                         }
