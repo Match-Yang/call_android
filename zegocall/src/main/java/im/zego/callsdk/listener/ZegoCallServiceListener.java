@@ -2,6 +2,7 @@ package im.zego.callsdk.listener;
 
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -27,14 +28,10 @@ public interface ZegoCallServiceListener {
      */
     void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType);
 
-    /**
-     * call end because of person decline request
-     *
-     * @param userInfo
-     * @param type
-     */
-    void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type);
 
+    void onReceiveCallAccept(ZegoUserInfo userInfo);
+
+    void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType);
     /**
      * call end because of room destroy,people hangup(leave room),etc.
      * <p>

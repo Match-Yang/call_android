@@ -22,6 +22,7 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.TimeUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
@@ -60,28 +61,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         Map<String, String> data = remoteMessage.getData();
-
         boolean isAppNotStart = !AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
         boolean isDeviceRestart = AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
-        if (isAppNotStart) {
+        if (isAppNotStart || isDeviceRestart) {
             if (data.size() > 0) {
                 AppUtils.relaunchApp();
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    handleNow(data);
-                }, 200);
-            }
-        } else if (isDeviceRestart) {
-            if (data.size() > 0) {
-                AppUtils.relaunchApp();
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    handleNow(data);
-                }, 600);
-            }
-        } else {
-            if (data.size() > 0) {
-                handleNow(data);
             }
         }
+        //        if (isAppNotStart) {
+        //            if (data.size() > 0) {
+        //                AppUtils.relaunchApp();
+        //                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        //                    handleNow(data);
+        //                }, 200);
+        //            }
+        //        } else if (isDeviceRestart) {
+        //            if (data.size() > 0) {
+        //                AppUtils.relaunchApp();
+        //                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+        //                    handleNow(data);
+        //                }, 600);
+        //            }
+        //        } else {
+        //            if (data.size() > 0) {
+        //                handleNow(data);
+        //            }
+        //        }
         //        Notification messageNotification = remoteMessage.getNotification();
         //        if (messageNotification != null) {
         //            Log.d(TAG, "Message Notification Body: " + messageNotification.getBody());
@@ -95,49 +100,53 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void handleNow(Map<String, String> data) {
-        Log.d(TAG, "handleNow() called with: data = [" + data + "]");
+        Log.i(TAG, "handleNow() called with: data = [" + data + "]");
         ZegoUserInfo caller = new ZegoUserInfo();
         caller.userID = data.get("caller_id");
         caller.userName = data.get("caller_name");
         String callID = data.get("call_id");
         String callType = data.get("call_type");
         String callData = data.get("call_data");
-        DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson.fromJson(callData, DatabaseCall.class);
-
-        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-        if (!TextUtils.isEmpty(callService.getCallInfo().callID)) {
-            callService.declineCall(caller.userID, callID, ZegoDeclineType.Busy, new ZegoCallback() {
-                @Override
-                public void onResult(int errorCode) {
-                    Log.d(TAG, "declineCall Busy,called with: errorCode = [" + errorCode + "]");
-                }
-            });
-            return;
-        }
-        ZegoCallType type = ZegoCallType.Voice;
-        for (ZegoCallType zegoCallType : ZegoCallType.values()) {
-            if (zegoCallType.getValue() == Integer.parseInt(callType)) {
-                type = zegoCallType;
-                break;
+        try {
+            DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson.fromJson(callData, DatabaseCall.class);
+            ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+            if (!TextUtils.isEmpty(callService.getCallInfo().callID)) {
+                callService.declineCall(caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
+                    @Override
+                    public void onResult(int errorCode) {
+                        Log.d(TAG, "declineCall Busy,called with: errorCode = [" + errorCode + "]");
+                    }
+                });
+                return;
             }
-        }
-        ZegoCallInfo callInfo = new ZegoCallInfo();
-        callInfo.caller = caller;
-        callInfo.callID = callID;
-        callInfo.users = new ArrayList<>();
-        for (DatabaseCallUser databaseCallUser : databaseCall.users.values()) {
-            ZegoUserInfo userInfo = new ZegoUserInfo();
-            userInfo.userID = databaseCallUser.user_id;
-            userInfo.userName = databaseCallUser.user_name;
-            callInfo.users.add(userInfo);
-        }
-        callService.setCallInfo(callInfo);
-        ZegoCallServiceListener listener = callService.getListener();
-        if (listener != null) {
-            ZegoCallType finalType = type;
-            ThreadUtils.runOnUiThread(() -> {
-                listener.onReceiveCallInvite(caller, callID, finalType);
-            });
+            ZegoCallType type = ZegoCallType.Voice;
+            for (ZegoCallType zegoCallType : ZegoCallType.values()) {
+                if (zegoCallType.getValue() == Integer.parseInt(callType)) {
+                    type = zegoCallType;
+                    break;
+                }
+            }
+            ZegoCallInfo callInfo = new ZegoCallInfo();
+            callInfo.caller = caller;
+            callInfo.callID = callID;
+            callInfo.users = new ArrayList<>();
+            for (DatabaseCallUser databaseCallUser : databaseCall.users.values()) {
+                ZegoUserInfo userInfo = new ZegoUserInfo();
+                userInfo.userID = databaseCallUser.user_id;
+                userInfo.userName = databaseCallUser.user_name;
+                callInfo.users.add(userInfo);
+            }
+            callService.setCallInfo(callInfo);
+            ZegoCallServiceListener listener = callService.getListener();
+            if (listener != null) {
+                ZegoCallType finalType = type;
+                ThreadUtils.runOnUiThread(() -> {
+                    listener.onReceiveCallInvite(caller, callID, finalType);
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastUtils.showLong(callData);
         }
     }
 

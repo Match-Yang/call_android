@@ -32,6 +32,7 @@ import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -126,18 +127,19 @@ public class ZegoCallManagerImpl {
             }
 
             @Override
-            public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
-                if (type == ZegoResponseType.Accept) {
-                    int callState = CallStateManager.getInstance().getCallState();
-                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
-                        callState = CallStateManager.TYPE_CONNECTED_VOICE;
-                    } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
-                        callState = CallStateManager.TYPE_CONNECTED_VIDEO;
-                    }
-                    CallStateManager.getInstance().setCallState(userInfo, callState);
-                } else {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+            public void onReceiveCallAccept(ZegoUserInfo userInfo) {
+                int callState = CallStateManager.getInstance().getCallState();
+                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+                    callState = CallStateManager.TYPE_CONNECTED_VOICE;
+                } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+                    callState = CallStateManager.TYPE_CONNECTED_VIDEO;
                 }
+                CallStateManager.getInstance().setCallState(userInfo, callState);
+            }
+
+            @Override
+            public void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType) {
+                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
             }
 
             @Override

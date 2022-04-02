@@ -3,6 +3,7 @@ package im.zego.callsdk.request;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -13,6 +14,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,6 +56,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         updater = ZegoListenerManager.getInstance();
         initConnectListener();
         listenUserOnline();
+        listenUserCall();
     }
 
     @Override
@@ -205,6 +208,89 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
     private DatabaseCall databaseCall;
 
+    private boolean isCallIDContainsSelf(DataSnapshot snapshot) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
+        boolean result = false;
+        for (DatabaseCallUser value : databaseCall.users.values()) {
+            if (Objects.equals(currentUser.getUid(), value.user_id)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    private void listenUserCall() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        ChildEventListener childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser == null) {
+                    return;
+                }
+                Log.d(TAG, "onChildAdded() called with: snapshot = [" + snapshot + "], previousChildName = ["
+                    + previousChildName + "]");
+                DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
+                if (!isCallIDContainsSelf(snapshot)) {
+                    return;
+                }
+                DatabaseCallUser caller = new DatabaseCallUser();
+                DatabaseCallUser receiver = new DatabaseCallUser();
+                for (DatabaseCallUser user : databaseCall.users.values()) {
+                    if (!TextUtils.isEmpty(user.user_id)) {
+                        if (Objects.equals(user.user_id, user.caller_id)) {
+                            caller = user;
+                        } else {
+                            receiver = user;
+                        }
+                    }
+                }
+                boolean isSelfCaller = Objects.equals(currentUser.getUid(), caller.user_id);
+                if (isSelfCaller) {
+                    return;
+                }
+                HashMap<String, Object> data = new HashMap<>();
+                HashMap<String, String> callerData = new HashMap<>();
+                callerData.put("id", caller.user_id);
+                callerData.put("name", caller.user_name);
+                data.put("caller", callerData);
+                List<HashMap<String, String>> calleeData = new ArrayList<>();
+                HashMap<String, String> callee = new HashMap<>();
+                callee.put("id", receiver.user_id);
+                callee.put("name", receiver.user_name);
+                calleeData.add(callee);
+                data.put("callees", calleeData);
+                data.put("call_id", databaseCall.call_id);
+                data.put("type", databaseCall.call_type);
+                updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Log.d(TAG, "onChildChanged() called with: snapshot = [" + snapshot + "], previousChildName = ["
+                    + previousChildName + "]");
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "onChildRemoved() called with: snapshot = [" + snapshot + "]");
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        database.getReference("/call").addChildEventListener(childEventListener);
+    }
+
     void addCallListener(String callID) {
         String databaseRefPath = "call/" + callID;
         if (callmap.containsKey(databaseRefPath)) {
@@ -215,8 +301,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.d(TAG, "onDataChange() called with: snapshot = [" + snapshot + "]");
                 if (snapshot.getValue() == null) { //  is already deleted
-                    databaseCall = null;
-                    removeCallListener(callID);
+                    processCallIDRemoved(callID);
                     return;
                 }
                 DatabaseCall previousCall = databaseCall;
@@ -224,11 +309,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
                 DatabaseCallUser caller = new DatabaseCallUser();
                 DatabaseCallUser receiver = new DatabaseCallUser();
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                boolean isSelfCaller = Objects.equals(currentUser.getUid(), caller.user_id);
-                DatabaseCallUser self = isSelfCaller ? caller : receiver;
-                DatabaseCallUser other = isSelfCaller ? receiver : caller;
-
                 for (DatabaseCallUser user : databaseCall.users.values()) {
                     if (TextUtils.isEmpty(user.user_id)) {
                         return;
@@ -241,6 +321,11 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         receiver = user;
                     }
                 }
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                boolean isSelfCaller = Objects.equals(currentUser.getUid(), caller.user_id);
+                DatabaseCallUser self = isSelfCaller ? caller : receiver;
+                DatabaseCallUser other = isSelfCaller ? receiver : caller;
+
                 if (previousCall != null) {
                     boolean callStatusChanged = (previousCall.call_status != databaseCall.call_status);
                     boolean callerStatusChanged = (previousCall.users.get(caller.user_id).status
@@ -308,6 +393,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         calleeData.add(callee);
                         data.put("callees", calleeData);
                         data.put("call_id", callID);
+                        data.put("type", databaseCall.call_type);
                         updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
                     }
                 }
@@ -319,6 +405,42 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             }
         };
         addDatabaseListener(databaseRefPath, listener);
+    }
+
+    private void processCallIDRemoved(String callID) {
+        if (databaseCall != null) {
+            DatabaseCallUser caller = new DatabaseCallUser();
+            DatabaseCallUser receiver = new DatabaseCallUser();
+            for (DatabaseCallUser user : databaseCall.users.values()) {
+                if (TextUtils.isEmpty(user.user_id)) {
+                    return;
+                }
+                String targetUserID = user.user_id;
+                String callerUserID = user.caller_id;
+                if (Objects.equals(callerUserID, targetUserID)) {
+                    caller = user;
+                } else {
+                    receiver = user;
+                }
+            }
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            boolean isSelfCaller = Objects.equals(currentUser.getUid(), caller.user_id);
+            DatabaseCallUser self = isSelfCaller ? caller : receiver;
+            DatabaseCallUser other = isSelfCaller ? receiver : caller;
+            HashMap<String, String> data = new HashMap<>();
+            if (databaseCall.call_status == 1) {
+                data.put("callee_id", receiver.user_id);
+                data.put("call_id", callID);
+                data.put("type", "1");
+                updater.receiveUpdate(ZegoListenerManager.DECLINE_CALL, data);
+            } else {
+                data.put("id", other.user_id);
+                data.put("call_id", callID);
+                updater.receiveUpdate(ZegoListenerManager.END_CALL, data);
+            }
+        }
+        databaseCall = null;
+        removeCallListener(callID);
     }
 
 

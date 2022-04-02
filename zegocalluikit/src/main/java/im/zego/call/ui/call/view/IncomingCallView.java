@@ -98,8 +98,7 @@ public class IncomingCallView extends ConstraintLayout {
             @Override
             public void onClick(View v) {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                String callID = callService.getCallInfo().callID;
-                callService.declineCall(userInfo.userID, callID, ZegoDeclineType.Decline,
+                callService.declineCall(userInfo.userID, ZegoDeclineType.Decline,
                     errorCode -> {
                         if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                             CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);

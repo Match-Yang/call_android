@@ -9,4 +9,6 @@ public class ZegoCallInfo {
     public ZegoUserInfo caller;
     // The information of the users.
     public List<ZegoUserInfo> users;
+
+    public ZegoCallType callType;
 }
