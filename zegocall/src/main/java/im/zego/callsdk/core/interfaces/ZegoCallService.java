@@ -74,7 +74,7 @@ public abstract class ZegoCallService {
      * @param type     refers to the response type.
      * @param callback refers to the callback for decline a call.
      */
-    public abstract void declineCall(String userID, ZegoDeclineType type, ZegoCallback callback);
+    public abstract void declineCall(String userID, String callID, ZegoDeclineType type, ZegoCallback callback);
 
     /**
      * End a call

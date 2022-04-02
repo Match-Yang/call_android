@@ -180,7 +180,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     }
 
     @Override
-    public void declineCall(String userID, ZegoDeclineType type, ZegoCallback callback) {
+    public void declineCall(String userID, String callID, ZegoDeclineType type, ZegoCallback callback) {
         Log.d(TAG,
             "declineCall() called with: userID = [" + userID + "], type = [" + type + "], callback = [" + callback
                 + "]");
@@ -190,7 +190,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             ZegoDeclineCallCommand command = new ZegoDeclineCallCommand();
             command.putParameter("userID", userID);
             command.putParameter("selfUserID", userService.getLocalUserInfo().userID);
-            command.putParameter("callID", getCallInfo().callID);
+            command.putParameter("callID", callID);
             command.putParameter("type", type.getValue());
             command.execute(new ZegoRequestCallback() {
                 @Override

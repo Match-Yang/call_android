@@ -16,7 +16,7 @@ public interface ZegoCallServiceListener {
      * @param userInfo refers to the caller information.
      * @param type     indicates the call type.  ZegoCallTypeVoice: Voice call.  ZegoCallTypeVideo: Video call.
      */
-    void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type);
+    void onReceiveCallInvite(ZegoUserInfo userInfo, String callID,ZegoCallType type);
 
     /**
      * Callback for receive a canceled call

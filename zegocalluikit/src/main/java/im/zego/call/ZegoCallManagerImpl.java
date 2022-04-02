@@ -105,7 +105,7 @@ public class ZegoCallManagerImpl {
 
         callService.setListener(new ZegoCallServiceListener() {
             @Override
-            public void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type) {
+            public void onReceiveCallInvite(ZegoUserInfo userInfo, String callID, ZegoCallType type) {
                 Log.d(TAG, "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 int state;
                 if (type == ZegoCallType.Voice) {

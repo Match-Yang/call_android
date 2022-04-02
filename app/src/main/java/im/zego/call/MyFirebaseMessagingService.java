@@ -13,9 +13,15 @@
 
 package im.zego.call;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
+import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.TimeUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
@@ -49,84 +55,51 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "onDestroy() called");
     }
 
-    /**
-     * Called when message is received.
-     *
-     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
-     */
-    // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // [START_EXCLUDE]
-        // There are two types of messages data messages and notification messages. Data messages
-        // are handled
-        // here in onMessageReceived whether the app is in the foreground or background. Data
-        // messages are the type
-        // traditionally used with GCM. Notification messages are only received here in
-        // onMessageReceived when the app
-        // is in the foreground. When the app is in the background an automatically generated
-        // notification is displayed.
-        // When the user taps on the notification they are returned to the app. Messages
-        // containing both notification
-        // and data payloads are treated as notification messages. The Firebase console always
-        // sends notification
-        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-        // [END_EXCLUDE]
-
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
         Map<String, String> data = remoteMessage.getData();
-        if (data.size() > 0) {
-            handleNow(data);
-        }
 
-        // Check if message contains a notification payload.
-        Notification messageNotification = remoteMessage.getNotification();
-        if (messageNotification != null) {
-            Log.d(TAG, "Message Notification Body: " + messageNotification.getBody());
+        Log.d(TAG, "onMessageReceived: .isAppForeground():" + AppUtils.isAppForeground());
+        Log.d(TAG, "onMessageReceived: .isAppRunning():" + AppUtils.isAppRunning("im.zego.call"));
+        Log.d(TAG,
+            "onMessageReceived: .getActivityList.isEmpty():" + ActivityUtils.getActivityList().isEmpty());
+        boolean isAppNotStart = !AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
+        boolean isDeviceRestart = AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
+        if (isAppNotStart) {
+            Log.d(TAG, "onMessageReceived() called with: isAppNotStart = [" + isAppNotStart + "]");
+            if (data.size() > 0) {
+                AppUtils.relaunchApp();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    handleNow(data);
+                }, 200);
+            }
+        } else if (isDeviceRestart) {
+            Log.d(TAG, "onMessageReceived() called with: isDeviceRestart = [" + isDeviceRestart + "]");
+            if (data.size() > 0) {
+                AppUtils.relaunchApp();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    handleNow(data);
+                }, 600);
+            }
+        } else {
+            if (data.size() > 0) {
+                handleNow(data);
+            }
         }
+        //        Notification messageNotification = remoteMessage.getNotification();
+        //        if (messageNotification != null) {
+        //            Log.d(TAG, "Message Notification Body: " + messageNotification.getBody());
+        //        }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
-    // [END receive_message]
 
-    // [START on_new_token]
-
-    /**
-     * There are two scenarios when onNewToken is called: 1) When a new token is generated on initial app startup 2)
-     * Whenever an existing token is changed Under #2, there are three scenarios when the existing token is changed: A)
-     * App is restored to a new device B) User uninstalls/reinstalls the app C) User clears app data
-     */
     @Override
     public void onNewToken(String token) {
-        Log.d(TAG, "Refreshed token: " + token);
-
-        // If you want to send messages to this application instance or
-        // manage this apps subscriptions on the server side, send the
-        // FCM registration token to your app server.
         sendRegistrationToServer(token);
     }
-    // [END on_new_token]
 
-    /**
-     * Schedule async work using WorkManager.
-     */
-    private void scheduleJob() {
-        // [START dispatch_job]
-        //        OneTimeWorkRequest work = new OneTimeWorkRequest.Builder(MyWorker.class)
-        //                .build();
-        //        WorkManager.getInstance(this).beginWith(work).enqueue();
-        // [END dispatch_job]
-    }
-
-    /**
-     * Handle time allotted to BroadcastReceivers.
-     *
-     * @param data
-     */
     private void handleNow(Map<String, String> data) {
         Log.d(TAG, "handleNow() called with: data = [" + data + "]");
         ZegoUserInfo caller = new ZegoUserInfo();
@@ -139,7 +112,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         if (!TextUtils.isEmpty(callService.getCallInfo().callID)) {
-            callService.declineCall(caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
+            callService.declineCall(caller.userID, callID, ZegoDeclineType.Busy, new ZegoCallback() {
                 @Override
                 public void onResult(int errorCode) {
                     Log.d(TAG, "declineCall Busy,called with: errorCode = [" + errorCode + "]");
@@ -169,7 +142,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (listener != null) {
             ZegoCallType finalType = type;
             ThreadUtils.runOnUiThread(() -> {
-                listener.onReceiveCallInvite(caller, finalType);
+                listener.onReceiveCallInvite(caller, callID, finalType);
             });
         }
     }
@@ -183,6 +156,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
     }
 }
