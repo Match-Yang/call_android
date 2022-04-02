@@ -91,8 +91,6 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         binding.callVoiceSettings.setOnClickListener(v -> {
             LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(false);
         });
-        AudioHelper.updateAudioSelect(binding.callVoiceSpeaker,
-            ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
         ZegoServiceManager.getInstance().deviceService.setListener(new ZegoDeviceServiceListener() {
             @Override
             public void onAudioRouteChange(ZegoAudioRoute audioRoute) {
@@ -104,11 +102,11 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (changedView == this) {
-            ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
-            if (visibility == View.VISIBLE) {
-                streamService.startPlaying(userInfo.userID, null);
-            }
+        ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
+        if (visibility == View.VISIBLE) {
+            AudioHelper.updateAudioSelect(binding.callVoiceSpeaker,
+                    ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
+            streamService.startPlaying(userInfo.userID, null);
         }
     }
 

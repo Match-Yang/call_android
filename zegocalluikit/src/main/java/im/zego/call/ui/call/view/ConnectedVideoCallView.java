@@ -120,7 +120,6 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoSettings.setOnClickListener(v -> {
             LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(true);
         });
-        AudioHelper.updateAudioSelect(binding.callVideoSpeaker, ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
         ZegoServiceManager.getInstance().deviceService.setListener(new ZegoDeviceServiceListener() {
             @Override
             public void onAudioRouteChange(ZegoAudioRoute audioRoute) {
@@ -132,17 +131,16 @@ public class ConnectedVideoCallView extends ConstraintLayout {
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (changedView == this) {
-            ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-            ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
-            if (visibility == View.VISIBLE) {
-                if (isSelfCenter) {
-                    streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewCenterTexture);
-                    streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
-                } else {
-                    streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewSmallTexture);
-                    streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
-                }
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
+        if (visibility == View.VISIBLE) {
+            AudioHelper.updateAudioSelect(binding.callVideoSpeaker, ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
+            if (isSelfCenter) {
+                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewCenterTexture);
+                streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
+            } else {
+                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewSmallTexture);
+                streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
             }
         }
     }

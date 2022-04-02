@@ -3,6 +3,17 @@ package im.zego.callsdk.core.interfaceimpl;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoNotifyListener;
 import im.zego.callsdk.callback.ZegoRequestCallback;
@@ -13,6 +24,9 @@ import im.zego.callsdk.core.commands.ZegoDeclineCallCommand;
 import im.zego.callsdk.core.commands.ZegoEndCallCommand;
 import im.zego.callsdk.core.commands.ZegoHeartBeatCommand;
 import im.zego.callsdk.core.commands.ZegoListenCallCommand;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.listener.ZegoListenerManager;
 import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
@@ -22,18 +36,7 @@ import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.zegoexpress.constants.ZegoRoomState;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-import org.json.JSONObject;
 
 public class ZegoCallServiceImpl extends ZegoCallService {
 
@@ -90,6 +93,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                         ZegoCallInfo callInfo = new ZegoCallInfo();
                         callInfo.callID = callID;
                         callInfo.caller = userService.getLocalUserInfo();
+                        callInfo.users = new ArrayList<>();
+                        callInfo.users.add(userInfo);
+                        callInfo.users.add(userService.getLocalUserInfo());
                         setCallInfo(callInfo);
 
                         ZegoServiceManager.getInstance().roomService.joinRoom(callID, createRoomToken);
