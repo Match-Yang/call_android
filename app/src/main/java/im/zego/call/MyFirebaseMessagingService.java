@@ -38,6 +38,7 @@ import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -111,7 +112,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         try {
             DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson.fromJson(callData, DatabaseCall.class);
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            if (!TextUtils.isEmpty(callService.getCallInfo().callID)) {
+            String currentCallID = callService.getCallInfo().callID;
+            if (!TextUtils.isEmpty(currentCallID) && !Objects.equals(callID, currentCallID)) {
                 callService.declineCall(caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
                     @Override
                     public void onResult(int errorCode) {

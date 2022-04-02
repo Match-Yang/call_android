@@ -16,6 +16,7 @@ import im.zego.callsdk.core.commands.ZegoListenCallCommand;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.listener.ZegoListenerManager;
 import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
@@ -23,7 +24,6 @@ import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
-import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.zegoexpress.constants.ZegoRoomState;
 import java.util.ArrayList;
@@ -480,4 +480,11 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         }
     }
 
+    @Override
+    public void setListener(ZegoCallServiceListener listener) {
+        super.setListener(listener);
+        if (callInfo.callID != null) {
+            listener.onReceiveCallInvite(callInfo.caller, callInfo.callID, callInfo.callType);
+        }
+    }
 }
