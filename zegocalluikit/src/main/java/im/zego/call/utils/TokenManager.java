@@ -16,6 +16,7 @@ public class TokenManager {
     private static volatile TokenManager singleton = null;
 
     private TokenManager() {
+        tokenWrapper = getTokenFromDisk();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {

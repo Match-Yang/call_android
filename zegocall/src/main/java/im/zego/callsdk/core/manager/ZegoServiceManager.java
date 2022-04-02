@@ -22,6 +22,7 @@ import im.zego.zegoexpress.constants.ZegoRoomState;
 import im.zego.zegoexpress.constants.ZegoScenario;
 import im.zego.zegoexpress.constants.ZegoStreamQualityLevel;
 import im.zego.zegoexpress.constants.ZegoUpdateType;
+import im.zego.zegoexpress.entity.ZegoEngineConfig;
 import im.zego.zegoexpress.entity.ZegoEngineProfile;
 import im.zego.zegoexpress.entity.ZegoStream;
 import java.util.ArrayList;
@@ -92,6 +93,9 @@ public class ZegoServiceManager {
         profile.appID = appID;
         profile.scenario = ZegoScenario.COMMUNICATION;
         profile.application = application;
+        ZegoEngineConfig config = new ZegoEngineConfig();
+        config.advancedConfig.put("room_retry_time", "30");
+        ZegoExpressEngine.setEngineConfig(config);
         ZegoExpressEngine.createEngine(profile, new IZegoEventHandler() {
             @Override
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
