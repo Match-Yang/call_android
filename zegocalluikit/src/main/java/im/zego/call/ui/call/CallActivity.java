@@ -36,14 +36,14 @@ import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.call.ui.dialog.VideoSettingsDialog;
 import im.zego.call.ui.viewmodel.VideoConfigViewModel;
 import im.zego.call.utils.AvatarHelper;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.interfaces.ZegoStreamService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.interfaces.ZegoDeviceService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.core.interfaces.ZegoStreamService;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 
@@ -150,6 +150,26 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             videoSettingsDialog.setIsVideoCall(isVideoCall);
             videoSettingsDialog.show();
         });
+        LiveEventBus
+                .get(Constants.EVENT_CANCEL_CALL, String.class)
+                .observe(this, s -> {
+                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                    callService.cancelCall(userInfo.userID, errorCode -> {
+                        if (errorCode == 0) {
+                            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+                        }
+                    });
+                });
+        LiveEventBus
+                .get(Constants.EVENT_END_CALL, String.class)
+                .observe(this, s -> {
+                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                    callService.endCall(errorCode -> {
+                        if (errorCode == 0) {
+                            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
+                        }
+                    });
+                });
     }
 
     private void initView() {
@@ -305,6 +325,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         handler.removeCallbacksAndMessages(null);
         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_NO_CALL);
         CallStateManager.getInstance().removeListener(callStateChangedListener);
+        ZegoServiceManager.getInstance().deviceService.listeners.clear();
     }
 
     @Override

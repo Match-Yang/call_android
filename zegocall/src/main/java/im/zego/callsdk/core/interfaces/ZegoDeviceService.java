@@ -1,5 +1,8 @@
 package im.zego.callsdk.core.interfaces;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
 import im.zego.callsdk.model.ZegoAudioBitrate;
 import im.zego.callsdk.model.ZegoDevicesType;
@@ -14,7 +17,7 @@ import im.zego.zegoexpress.constants.ZegoAudioRoute;
 public abstract class ZegoDeviceService {
 
     // The listener instance of the device service.
-    public ZegoDeviceServiceListener listener;
+    public List<ZegoDeviceServiceListener> listeners = new ArrayList<>();
 
     private ZegoVideoResolution videoResolution;
     private ZegoAudioBitrate bitrate;
@@ -22,8 +25,12 @@ public abstract class ZegoDeviceService {
     private boolean echoCancellation;
     private boolean volumeAdjustment;
 
-    public void setListener(ZegoDeviceServiceListener listener) {
-        this.listener = listener;
+    public void addListener(ZegoDeviceServiceListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(ZegoDeviceServiceListener listener) {
+        listeners.remove(listener);
     }
 
     /**

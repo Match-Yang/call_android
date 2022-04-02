@@ -120,7 +120,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         binding.callVideoSettings.setOnClickListener(v -> {
             LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(true);
         });
-        ZegoServiceManager.getInstance().deviceService.setListener(new ZegoDeviceServiceListener() {
+        ZegoServiceManager.getInstance().deviceService.addListener(new ZegoDeviceServiceListener() {
             @Override
             public void onAudioRouteChange(ZegoAudioRoute audioRoute) {
                 AudioHelper.updateAudioSelect(binding.callVideoSpeaker, audioRoute);

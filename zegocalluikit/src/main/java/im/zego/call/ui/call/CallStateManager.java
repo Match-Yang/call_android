@@ -64,6 +64,11 @@ public class CallStateManager {
             callState == TYPE_OUTGOING_CALLING_VIDEO;
     }
 
+    public boolean isInCallingStream() {
+        return callState == TYPE_OUTGOING_CALLING_VOICE ||
+                callState == TYPE_OUTGOING_CALLING_VIDEO;
+    }
+
     public boolean isConnected() {
         return callState == TYPE_CONNECTED_VIDEO ||
             callState == TYPE_CONNECTED_VOICE;
