@@ -120,6 +120,9 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType) {
+                Log.d(TAG,
+                    "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
+                        + "]");
                 CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
@@ -150,7 +153,13 @@ public class ZegoCallManagerImpl {
             @Override
             public void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type) {
                 Log.d(TAG, "onReceiveCallTimeout() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
-                CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
+                int callState;
+                if (type == ZegoCallTimeoutType.Calling) {
+                    callState = CallStateManager.TYPE_CALL_MISSED;
+                } else {
+                    callState = CallStateManager.TYPE_CALL_COMPLETED;
+                }
+                CallStateManager.getInstance().setCallState(null, callState);
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
             }

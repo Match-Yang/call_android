@@ -57,4 +57,14 @@ public class DatabaseCall {
             this.value = value;
         }
     }
+
+    @Override
+    public String toString() {
+        return "DatabaseCall{" +
+            "call_id='" + call_id + '\'' +
+            ", call_type=" + call_type +
+            ", call_status=" + call_status +
+            ", users=" + users +
+            '}';
+    }
 }
