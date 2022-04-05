@@ -12,7 +12,6 @@ import im.zego.callsdk.core.commands.ZegoCancelCallCommand;
 import im.zego.callsdk.core.commands.ZegoDeclineCallCommand;
 import im.zego.callsdk.core.commands.ZegoEndCallCommand;
 import im.zego.callsdk.core.commands.ZegoHeartBeatCommand;
-import im.zego.callsdk.core.commands.ZegoListenCallCommand;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
@@ -259,13 +258,6 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             this.callInfo = callInfo;
             handler.removeCallbacks(callTimeoutRunnable);
             handler.postDelayed(callTimeoutRunnable, CALL_TIMEOUT);
-            // listen for cancel action when receive call
-            ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-            if (userService.getLocalUserInfo() != null) {
-                ZegoListenCallCommand command = new ZegoListenCallCommand();
-                command.putParameter("callID", callInfo.callID);
-                command.execute(null);
-            }
         }
     }
 
@@ -318,16 +310,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                     if (listener != null) {
                         listener.onReceiveCallInvite(callInfo.caller, callInfo.callID, callInfo.callType);
                     }
-                } else if (!Objects.equals(getCallInfo().callID, callInfo.callID)) {
-                    Log.d(TAG, "RECEIVE_CALL,callID not equal,decline: ");
-                    declineCall(caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
-                        @Override
-                        public void onResult(int errorCode) {
-                            Log.d(TAG, "declineCall Busy,called with: errorCode = [" + errorCode + "]");
-                        }
-                    });
                 } else {
-                    Log.d(TAG, "RECEIVE_CALL,equal to current: ");
+                    Log.d(TAG, "RECEIVE_CALL: getCallInfo().callID != null");
                 }
             }
         });
