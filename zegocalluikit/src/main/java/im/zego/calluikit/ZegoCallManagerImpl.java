@@ -19,15 +19,11 @@ import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
 
-import im.zego.calluikit.R;
-import im.zego.calluikit.auth.AuthInfoManager;
-import im.zego.calluikit.service.ForegroundService;
-import im.zego.calluikit.ui.call.CallActivity;
-import im.zego.calluikit.ui.call.CallStateManager;
-import im.zego.calluikit.ui.common.ReceiveCallView;
-import im.zego.calluikit.view.ZegoCallKitView;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
@@ -36,9 +32,12 @@ import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.calluikit.auth.AuthInfoManager;
+import im.zego.calluikit.service.ForegroundService;
+import im.zego.calluikit.ui.call.CallActivity;
+import im.zego.calluikit.ui.call.CallStateManager;
+import im.zego.calluikit.ui.common.ReceiveCallView;
+import im.zego.calluikit.view.ZegoCallKitView;
 
 /**
  * Created by rocket_wang on 2022/3/31.
@@ -306,5 +305,9 @@ public class ZegoCallManagerImpl {
 
     public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
         ZegoServiceManager.getInstance().userService.getToken(userID, effectiveTime, callback);
+    }
+
+    public void unInit() {
+        ZegoServiceManager.getInstance().unInit();
     }
 }

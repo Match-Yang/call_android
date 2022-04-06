@@ -14,17 +14,16 @@ import com.blankj.utilcode.util.ToastUtils;
 
 import java.util.Objects;
 
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
-import im.zego.calluikit.auth.AuthInfoManager;
 import im.zego.calluikit.databinding.LayoutIncomingCallBinding;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.utils.AvatarHelper;
-import im.zego.callsdk.model.ZegoDeclineType;
-import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.interfaces.ZegoDeviceService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.calluikit.utils.TokenManager;
 import im.zego.zim.enums.ZIMErrorCode;
 
 public class IncomingCallView extends ConstraintLayout {
@@ -62,8 +61,8 @@ public class IncomingCallView extends ConstraintLayout {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
-                //                String token = TokenManager.getInstance().tokenWrapper.token;
+//                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
+                String token = TokenManager.getInstance().tokenWrapper.token;
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         deviceService.enableMic(true);
@@ -82,8 +81,8 @@ public class IncomingCallView extends ConstraintLayout {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
-                //                String token = TokenManager.getInstance().tokenWrapper.token;
+//                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
+                String token = TokenManager.getInstance().tokenWrapper.token;
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                         deviceService.enableMic(true);

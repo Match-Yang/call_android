@@ -12,18 +12,17 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.ToastUtils;
 
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
-import im.zego.calluikit.auth.AuthInfoManager;
 import im.zego.calluikit.databinding.LayoutReceiveCallBinding;
 import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.utils.AvatarHelper;
-import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoDeclineType;
-import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.calluikit.utils.TokenManager;
 import im.zego.zim.enums.ZIMErrorCode;
 
 public class ReceiveCallView extends FrameLayout {
@@ -78,8 +77,8 @@ public class ReceiveCallView extends FrameLayout {
         binding.dialogCallAcceptVoice.setOnClickListener(v -> {
             ZegoUserService userService = ZegoServiceManager.getInstance().userService;
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
-            //            String token = TokenManager.getInstance().tokenWrapper.token;
+//            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
+            String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
@@ -95,8 +94,8 @@ public class ReceiveCallView extends FrameLayout {
         binding.dialogCallAcceptVideo.setOnClickListener(v -> {
             ZegoUserService userService = ZegoServiceManager.getInstance().userService;
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
-            //            String token = TokenManager.getInstance().tokenWrapper.token;
+//            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
+            String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
