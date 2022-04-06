@@ -59,7 +59,7 @@ public class OutgoingCallView extends ConstraintLayout {
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
         binding.callingHangUp.setOnClickListener(v -> {
-            callService.cancelCall(userInfo.userID, errorCode -> {
+            callService.cancelCall(errorCode -> {
                 if (errorCode == 0) {
                     binding.callStateText.setText(R.string.call_page_status_canceled);
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);

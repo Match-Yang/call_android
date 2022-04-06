@@ -66,8 +66,6 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
             @Override
             public void onClick(View v) {
                 ZegoCallManager.getInstance().callKitService.logout();
-
-                MMKV.defaultMMKV().encode("autoLogin", false);
                 ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
             }
         });

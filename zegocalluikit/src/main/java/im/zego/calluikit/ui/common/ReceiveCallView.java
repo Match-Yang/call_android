@@ -111,7 +111,7 @@ public class ReceiveCallView extends FrameLayout {
         });
         binding.dialogCallDecline.setOnClickListener(v -> {
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            callService.declineCall(userInfo.userID, ZegoDeclineType.Decline, errorCode -> {
+            callService.declineCall(errorCode -> {
                 if (errorCode == ZIMErrorCode.SUCCESS.value()) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                 } else {

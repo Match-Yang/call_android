@@ -153,7 +153,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 .get(Constants.EVENT_CANCEL_CALL, String.class)
                 .observe(this, s -> {
                     ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                    callService.cancelCall(userInfo.userID, errorCode -> {
+                    callService.cancelCall(errorCode -> {
                         if (errorCode == 0) {
                             CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                         }

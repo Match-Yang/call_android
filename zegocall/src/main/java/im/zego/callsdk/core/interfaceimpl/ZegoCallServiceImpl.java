@@ -90,9 +90,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                         ZegoCallInfo callInfo = new ZegoCallInfo();
                         callInfo.callID = callID;
                         callInfo.caller = userService.getLocalUserInfo();
-                        callInfo.users = new ArrayList<>();
-                        callInfo.users.add(userInfo);
-                        callInfo.users.add(userService.getLocalUserInfo());
+                        callInfo.callees = new ArrayList<>();
+                        callInfo.callees.add(userInfo);
                         setCallInfo(callInfo);
 
                         ZegoServiceManager.getInstance().roomService.joinRoom(callID, createRoomToken);
@@ -114,8 +113,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     }
 
     @Override
-    public void cancelCall(String userID, ZegoCallback callback) {
-        Log.d(TAG, "cancelCall() called with: userID = [" + userID + "], callback = [" + callback + "]");
+    public void cancelCall(ZegoCallback callback) {
+        Log.d(TAG, "cancelCall() called with: callback = [" + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         String callID = getCallInfo().callID;
         if (userService.getLocalUserInfo() != null) {
@@ -123,7 +122,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 handler.removeCallbacks(callTimeoutRunnable);
                 ZegoCancelCallCommand command = new ZegoCancelCallCommand();
                 command.putParameter("selfUserID", userService.getLocalUserInfo().userID);
-                command.putParameter("userID", userID);
+                command.putParameter("userID", getCallInfo().caller.userID);
                 command.putParameter("callID", callID);
                 command.execute(new ZegoRequestCallback() {
                     @Override
@@ -182,19 +181,17 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     }
 
     @Override
-    public void declineCall(String userID, ZegoDeclineType type, ZegoCallback callback) {
-        Log.d(TAG,
-            "declineCall() called with: userID = [" + userID + "], type = [" + type + "], callback = [" + callback
-                + "]");
+    public void declineCall(ZegoCallback callback) {
+        Log.d(TAG, "declineCall() called with: callback = [" + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         final String callID = getCallInfo().callID;
         if (userService.getLocalUserInfo() != null) {
             if (callID != null) {
                 handler.removeCallbacks(callTimeoutRunnable);
                 ZegoDeclineCallCommand command = new ZegoDeclineCallCommand();
-                command.putParameter("userID", userID);
+                command.putParameter("userID", getCallInfo().caller.userID);
                 command.putParameter("selfUserID", userService.getLocalUserInfo().userID);
-                command.putParameter("type", type.getValue());
+                command.putParameter("type", 1);
                 command.putParameter("callID", callID);
                 command.execute(new ZegoRequestCallback() {
                     @Override
@@ -295,7 +292,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                     user.userName = hashMap.get("name");
                     users.add(user);
                 }
-                callInfo.users = users;
+                callInfo.callees = users;
                 ZegoCallType type = ZegoCallType.Voice;
                 for (ZegoCallType zegoCallType : ZegoCallType.values()) {
                     if (zegoCallType.getValue() == ((int) data.get("type"))) {
@@ -305,7 +302,6 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 }
                 callInfo.callType = type;
                 if (getCallInfo().callID == null) {
-                    Log.d(TAG, "RECEIVE_CALL,getCallInfo().callID == null: ");
                     setCallInfo(callInfo);
                     if (listener != null) {
                         listener.onReceiveCallInvite(callInfo.caller, callInfo.callID, callInfo.callType);

@@ -35,6 +35,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
 
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
+    private static final String CLIENT_ID = "637474508182-1hoov11svfvsp7vi0onnh6vmjl0rl4rv.apps.googleusercontent.com";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
 //        ImmersionBar.with(this).reset().init();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken(CLIENT_ID)
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -58,7 +59,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             }
             PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
                 if (isAllGranted) {
-                    MMKV.defaultMMKV().encode("autoLogin", true);
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (currentUser != null) {
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
@@ -86,7 +86,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     private void systemPermissionCheck() {
         PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
             if (isAllGranted) {
-                boolean autoLogin = MMKV.defaultMMKV().decodeBool("autoLogin", true);
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (currentUser != null) {
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;

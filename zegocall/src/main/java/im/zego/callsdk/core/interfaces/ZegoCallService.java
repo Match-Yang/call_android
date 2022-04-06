@@ -4,7 +4,6 @@ import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoCallInfo;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoLocalUserStatus;
 import im.zego.callsdk.model.ZegoUserInfo;
 
@@ -45,10 +44,9 @@ public abstract class ZegoCallService {
      * <p>
      * Call this method at: After the user login
      *
-     * @param userID    refers to the ID of the user you are calling.
      * @param callback: refers to the callback for cancel a call.
      */
-    public abstract void cancelCall(String userID, ZegoCallback callback);
+    public abstract void cancelCall(ZegoCallback callback);
 
     /**
      * Accept a call
@@ -70,11 +68,9 @@ public abstract class ZegoCallService {
      * <p>
      * Call this method at: after the user login
      *
-     * @param userID   the ID of the caller
-     * @param type     refers to the response type.
      * @param callback refers to the callback for decline a call.
      */
-    public abstract void declineCall(String userID, ZegoDeclineType type, ZegoCallback callback);
+    public abstract void declineCall(ZegoCallback callback);
 
     /**
      * End a call

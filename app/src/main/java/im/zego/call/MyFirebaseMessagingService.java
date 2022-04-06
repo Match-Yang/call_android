@@ -13,32 +13,13 @@
 
 package im.zego.call;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
-import com.blankj.utilcode.util.IntentUtils;
-import com.blankj.utilcode.util.ThreadUtils;
-import com.blankj.utilcode.util.TimeUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.google.firebase.messaging.RemoteMessage.Notification;
-import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.listener.ZegoCallServiceListener;
-import im.zego.callsdk.model.DatabaseCall;
-import im.zego.callsdk.model.DatabaseCall.DatabaseCallUser;
-import im.zego.callsdk.model.ZegoCallInfo;
-import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -109,48 +90,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String callID = data.get("call_id");
         String callType = data.get("call_type");
         String callData = data.get("call_data");
-        try {
-            DatabaseCall databaseCall = ZegoServiceManager.getInstance().mGson.fromJson(callData, DatabaseCall.class);
-            ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            String currentCallID = callService.getCallInfo().callID;
-            if (!TextUtils.isEmpty(currentCallID) && !Objects.equals(callID, currentCallID)) {
-                callService.declineCall(caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
-                    @Override
-                    public void onResult(int errorCode) {
-                        Log.d(TAG, "declineCall Busy,called with: errorCode = [" + errorCode + "]");
-                    }
-                });
-                return;
-            }
-            ZegoCallType type = ZegoCallType.Voice;
-            for (ZegoCallType zegoCallType : ZegoCallType.values()) {
-                if (zegoCallType.getValue() == Integer.parseInt(callType)) {
-                    type = zegoCallType;
-                    break;
-                }
-            }
-            ZegoCallInfo callInfo = new ZegoCallInfo();
-            callInfo.caller = caller;
-            callInfo.callID = callID;
-            callInfo.users = new ArrayList<>();
-            for (DatabaseCallUser databaseCallUser : databaseCall.users.values()) {
-                ZegoUserInfo userInfo = new ZegoUserInfo();
-                userInfo.userID = databaseCallUser.user_id;
-                userInfo.userName = databaseCallUser.user_name;
-                callInfo.users.add(userInfo);
-            }
-            callService.setCallInfo(callInfo);
-            ZegoCallServiceListener listener = callService.getListener();
-            if (listener != null) {
-                ZegoCallType finalType = type;
-                ThreadUtils.runOnUiThread(() -> {
-                    listener.onReceiveCallInvite(caller, callID, finalType);
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            ToastUtils.showLong(callData);
-        }
     }
 
     /**
