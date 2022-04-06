@@ -26,15 +26,6 @@ import com.jeremyliao.liveeventbus.LiveEventBus;
 import java.util.Locale;
 import java.util.Objects;
 
-import im.zego.calluikit.R;
-import im.zego.calluikit.ZegoCallManager;
-import im.zego.calluikit.auth.AuthInfoManager;
-import im.zego.calluikit.constant.Constants;
-import im.zego.calluikit.databinding.ActivityCallBinding;
-import im.zego.calluikit.ui.BaseActivity;
-import im.zego.calluikit.ui.dialog.VideoSettingsDialog;
-import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
-import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
@@ -43,6 +34,15 @@ import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.calluikit.R;
+import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.constant.Constants;
+import im.zego.calluikit.databinding.ActivityCallBinding;
+import im.zego.calluikit.ui.BaseActivity;
+import im.zego.calluikit.ui.dialog.VideoSettingsDialog;
+import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
+import im.zego.calluikit.utils.AvatarHelper;
+import im.zego.calluikit.utils.TokenManager;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
 
@@ -227,8 +227,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         deviceService.useFrontCamera(true);
 
         String userID = userService.getLocalUserInfo().userID;
-        String token = AuthInfoManager.getInstance().generateToken(userID);
-//        String token = TokenManager.getInstance().tokenWrapper.token;
+//        String token = AuthInfoManager.getInstance().generateToken(userID);
+        String token = TokenManager.getInstance().tokenWrapper.token;
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {
