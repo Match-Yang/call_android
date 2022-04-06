@@ -5,6 +5,8 @@ import android.app.Application;
 import com.blankj.utilcode.util.Utils;
 import com.tencent.mmkv.MMKV;
 
+import im.zego.calluikit.ZegoCallManager;
+
 public class App extends Application {
 
     @Override

@@ -19,13 +19,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.tencent.mmkv.MMKV;
 
 import im.zego.call.R;
-import im.zego.call.ZegoCallManager;
+import im.zego.calluikit.ZegoCallManager;
 import im.zego.call.databinding.ActivityGoogleLoginBinding;
-import im.zego.call.ui.BaseActivity;
+import im.zego.calluikit.ui.BaseActivity;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
-import im.zego.call.utils.PermissionHelper;
-import im.zego.call.utils.TokenManager;
+import im.zego.calluikit.utils.PermissionHelper;
+import im.zego.calluikit.utils.TokenManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 

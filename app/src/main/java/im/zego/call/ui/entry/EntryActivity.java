@@ -12,15 +12,15 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import com.tencent.mmkv.MMKV;
 
-import im.zego.call.ZegoCallManager;
+import im.zego.calluikit.ZegoCallManager;
 import im.zego.call.databinding.ActivityEntryBinding;
-import im.zego.call.ui.BaseActivity;
-import im.zego.call.ui.call.CallStateManager;
+import im.zego.calluikit.ui.BaseActivity;
+import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.setting.SettingActivity;
 import im.zego.call.ui.user.OnlineUserActivity;
 import im.zego.call.ui.webview.WebViewActivity;
-import im.zego.call.utils.AvatarHelper;
+import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 
 public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
