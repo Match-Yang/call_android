@@ -9,4 +9,16 @@ public class ZegoCallInfo {
     public ZegoUserInfo caller;
     // The information of the users.
     public List<ZegoUserInfo> users;
+
+    public ZegoCallType callType;
+
+    @Override
+    public String toString() {
+        return "ZegoCallInfo{" +
+            "callID='" + callID + '\'' +
+            ", caller=" + caller +
+            ", users=" + users +
+            ", callType=" + callType +
+            '}';
+    }
 }

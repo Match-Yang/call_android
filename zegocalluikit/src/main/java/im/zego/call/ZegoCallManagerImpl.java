@@ -32,6 +32,7 @@ import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
+import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -119,6 +120,9 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType) {
+                Log.d(TAG,
+                    "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
+                        + "]");
                 CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
@@ -126,18 +130,19 @@ public class ZegoCallManagerImpl {
             }
 
             @Override
-            public void onReceiveCallResponse(ZegoUserInfo userInfo, ZegoResponseType type) {
-                if (type == ZegoResponseType.Accept) {
-                    int callState = CallStateManager.getInstance().getCallState();
-                    if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
-                        callState = CallStateManager.TYPE_CONNECTED_VOICE;
-                    } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
-                        callState = CallStateManager.TYPE_CONNECTED_VIDEO;
-                    }
-                    CallStateManager.getInstance().setCallState(userInfo, callState);
-                } else {
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+            public void onReceiveCallAccept(ZegoUserInfo userInfo) {
+                int callState = CallStateManager.getInstance().getCallState();
+                if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
+                    callState = CallStateManager.TYPE_CONNECTED_VOICE;
+                } else if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
+                    callState = CallStateManager.TYPE_CONNECTED_VIDEO;
                 }
+                CallStateManager.getInstance().setCallState(userInfo, callState);
+            }
+
+            @Override
+            public void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType) {
+                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
             }
 
             @Override
@@ -148,7 +153,13 @@ public class ZegoCallManagerImpl {
             @Override
             public void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type) {
                 Log.d(TAG, "onReceiveCallTimeout() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
-                CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
+                int callState;
+                if (type == ZegoCallTimeoutType.Calling) {
+                    callState = CallStateManager.TYPE_CALL_MISSED;
+                } else {
+                    callState = CallStateManager.TYPE_CALL_COMPLETED;
+                }
+                CallStateManager.getInstance().setCallState(null, callState);
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
             }

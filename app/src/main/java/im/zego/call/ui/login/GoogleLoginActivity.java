@@ -88,14 +88,13 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             if (isAllGranted) {
                 boolean autoLogin = MMKV.defaultMMKV().decodeBool("autoLogin", true);
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (autoLogin && currentUser != null) {
+                if (currentUser != null) {
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                     ActivityUtils.startActivity(EntryActivity.class);
 
                     userService.getOnlineUserList(null);
                     TokenManager.getInstance();
-                    ActivityUtils.startActivity(EntryActivity.class);
                 }
             }
         });

@@ -37,6 +37,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate() called with:  = [" + this + "]");
 
         try {
             ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
@@ -65,7 +66,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy() called");
+        Log.d(TAG, this + ",onDestroy() called");
         super.onDestroy();
         tipsHandler.removeCallbacksAndMessages(null);
         if (tipsDialog != null) {
