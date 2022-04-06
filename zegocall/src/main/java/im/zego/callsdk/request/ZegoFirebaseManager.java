@@ -54,6 +54,10 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
     private List<ZegoUserInfo> onlineUserList = new ArrayList();
     private Map<String, ValueEventListener> databaseListenerMap = new HashMap<>();
     private ChildEventListener childEventListener;
+
+    /**
+     * current call relative to self
+     */
     private List<DatabaseCall> selfCalls = new ArrayList<>();
 
     public ZegoFirebaseManager() {

@@ -7,8 +7,8 @@ public class ZegoCallInfo {
     public String callID;
     // The information of the caller.
     public ZegoUserInfo caller;
-    // The information of the users.
-    public List<ZegoUserInfo> users;
+    // The information of the callees.
+    public List<ZegoUserInfo> callees;
 
     public ZegoCallType callType;
 
@@ -17,7 +17,7 @@ public class ZegoCallInfo {
         return "ZegoCallInfo{" +
             "callID='" + callID + '\'' +
             ", caller=" + caller +
-            ", users=" + users +
+            ", users=" + callees +
             ", callType=" + callType +
             '}';
     }
