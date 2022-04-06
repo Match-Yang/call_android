@@ -8,9 +8,9 @@ import com.blankj.utilcode.util.ActivityUtils;
 import com.tencent.mmkv.MMKV;
 
 import im.zego.call.R;
-import im.zego.call.ZegoCallManager;
+import im.zego.calluikit.ZegoCallManager;
 import im.zego.call.databinding.ActivitySettingBinding;
-import im.zego.call.ui.BaseActivity;
+import im.zego.calluikit.ui.BaseActivity;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.zegoexpress.ZegoExpressEngine;

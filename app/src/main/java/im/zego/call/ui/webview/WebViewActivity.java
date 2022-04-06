@@ -12,7 +12,7 @@ import com.blankj.utilcode.util.ActivityUtils;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.WebChromeClient;
 import im.zego.call.databinding.ActivityWebViewBinding;
-import im.zego.call.ui.BaseActivity;
+import im.zego.calluikit.ui.BaseActivity;
 
 public class WebViewActivity extends BaseActivity<ActivityWebViewBinding> {
 

@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import im.zego.call.R;
-import im.zego.call.utils.AvatarHelper;
+import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.List;
