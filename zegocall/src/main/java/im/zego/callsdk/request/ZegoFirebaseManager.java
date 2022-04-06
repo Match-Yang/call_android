@@ -298,6 +298,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     data.put("callees", calleeData);
                     data.put("call_id", databaseCall.call_id);
                     data.put("type", databaseCall.call_type);
+                    addCallListener(databaseCall);
                     updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
                 } else {
                     declineCallInner(currentUser.getUid(), caller.caller_id,

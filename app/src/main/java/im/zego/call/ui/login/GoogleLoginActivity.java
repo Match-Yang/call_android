@@ -58,7 +58,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             }
             PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
                 if (isAllGranted) {
-                    MMKV.defaultMMKV().encode("autoLogin", true);
                     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                     if (currentUser != null) {
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
@@ -86,7 +85,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     private void systemPermissionCheck() {
         PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
             if (isAllGranted) {
-                boolean autoLogin = MMKV.defaultMMKV().decodeBool("autoLogin", true);
                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (currentUser != null) {
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
