@@ -44,6 +44,10 @@ public class ZegoCallManager {
         impl.init(application);
     }
 
+    public void unInit() {
+        impl.unInit();
+    }
+
     public void setListener(ZegoCallServiceListener listener) {
         impl.setListener(listener);
     }
