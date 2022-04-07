@@ -239,12 +239,7 @@ public class ZegoCallManagerImpl {
      */
     public void showNotification(ZegoUserInfo userInfo) {
         Activity topActivity = ActivityUtils.getTopActivity();
-        Intent intent = new Intent();
-        try {
-            intent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.GoogleLoginActivity"));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        Intent intent = new Intent(topActivity, CallActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, 0);

@@ -67,7 +67,6 @@ Directory path:
 
 ```
 .
-├── ZegoZIMManager.java                ------ The ZIM instances for the SDK use.
 ├── callback
 ├── listener
 ├── model

@@ -71,33 +71,6 @@
       android:layout_alignParentStart="true"
       android:layout_centerVertical="true"
       android:layout_marginStart="16dp"
-      android:text="@string/setting_page_zim_sdk_version"
-      android:textColor="#2A2A2A"
-      android:textSize="15sp" />
-
-    <TextView
-      android:id="@+id/zim_sdk_version"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentEnd="true"
-      android:layout_centerInParent="true"
-      android:layout_marginEnd="16dp"
-      android:textColor="#A4A4A4"
-      android:textSize="14sp" />
-  </RelativeLayout>
-
-  <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="54dp"
-    android:layout_marginTop="1dp"
-    android:background="@color/white">
-
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:layout_centerVertical="true"
-      android:layout_marginStart="16dp"
       android:text="@string/setting_page_version"
       android:textColor="#2A2A2A"
       android:textSize="15sp" />

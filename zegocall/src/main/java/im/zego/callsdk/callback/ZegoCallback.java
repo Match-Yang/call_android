@@ -10,7 +10,6 @@ public interface ZegoCallback {
     /**
      * @param errorCode refers to the operation status code.<br> 0: Operation successful. <br> 100xxxx: The Express SDK
      *                  error code. For details, refer to the error code documentation.https://doc-en.zego.im/article/5548 <br> 600xxxx:
-     *                  The ZIM SDK error code. For details, refer to the error code documentation.https://doc-en.zego.im/article/13792
      */
     void onResult(int errorCode);
 }
