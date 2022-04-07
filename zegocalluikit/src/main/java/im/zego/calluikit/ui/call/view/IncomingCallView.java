@@ -16,7 +16,6 @@ import java.util.Objects;
 
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoErrorCode;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -57,11 +56,9 @@ public class IncomingCallView extends ConstraintLayout {
         binding.callAcceptVideo.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-//                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
                 String token = TokenManager.getInstance().tokenWrapper.token;
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZegoErrorCode.SUCCESS) {
@@ -77,11 +74,9 @@ public class IncomingCallView extends ConstraintLayout {
         binding.callAcceptVoice.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-//                String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
                 String token = TokenManager.getInstance().tokenWrapper.token;
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZegoErrorCode.SUCCESS) {

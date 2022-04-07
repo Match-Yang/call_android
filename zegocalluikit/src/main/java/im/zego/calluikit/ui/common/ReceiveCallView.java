@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.ToastUtils;
 
 import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoErrorCode;
@@ -75,9 +74,7 @@ public class ReceiveCallView extends FrameLayout {
         }
 
         binding.dialogCallAcceptVoice.setOnClickListener(v -> {
-            ZegoUserService userService = ZegoServiceManager.getInstance().userService;
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-//            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
             String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZegoErrorCode.SUCCESS) {
@@ -92,9 +89,7 @@ public class ReceiveCallView extends FrameLayout {
             });
         });
         binding.dialogCallAcceptVideo.setOnClickListener(v -> {
-            ZegoUserService userService = ZegoServiceManager.getInstance().userService;
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-//            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
             String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZegoErrorCode.SUCCESS) {

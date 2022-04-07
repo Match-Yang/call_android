@@ -241,8 +241,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         deviceService.enableSpeaker(false);
         deviceService.useFrontCamera(true);
 
-        String userID = userService.getLocalUserInfo().userID;
-//        String token = AuthInfoManager.getInstance().generateToken(userID);
         String token = TokenManager.getInstance().tokenWrapper.token;
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
@@ -369,10 +367,10 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     public void onCallingStateUpdated(ZegoRoomState state) {
-        if (state == ZegoRoomState.CONNECTED) {
-            dismissLoading();
-        } else {
+        if (state == ZegoRoomState.DISCONNECTED) {
             showLoading(getString(R.string.call_page_call_disconnected), true);
+        } else {
+            dismissLoading();
         }
     }
 }
