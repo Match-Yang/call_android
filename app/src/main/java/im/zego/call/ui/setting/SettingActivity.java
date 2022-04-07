@@ -11,11 +11,10 @@ import im.zego.call.R;
 import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
+import im.zego.callsdk.model.ZegoErrorCode;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.ui.BaseActivity;
 import im.zego.zegoexpress.ZegoExpressEngine;
-import im.zego.zim.ZIM;
-import im.zego.zim.enums.ZIMErrorCode;
 
 public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
 
@@ -32,7 +31,6 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
             }
         });
         binding.expressSdkVersion.setText(ZegoExpressEngine.getVersion());
-        binding.zimSdkVersion.setText(ZIM.getVersion());
         binding.appVersion.setText(BuildConfig.VERSION_NAME);
 
         binding.termsService.setOnClickListener(new OnClickListener() {
@@ -53,7 +51,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
             @Override
             public void onClick(View v) {
                 ZegoCallManager.getInstance().uploadLog(errorCode -> {
-                    if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                    if (errorCode == ZegoErrorCode.SUCCESS) {
                         showNormalTips(getString(R.string.toast_upload_log_success));
                     } else {
                         showWarnTips(getString(R.string.toast_upload_log_fail, errorCode));

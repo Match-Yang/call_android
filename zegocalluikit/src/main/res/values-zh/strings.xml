@@ -11,7 +11,6 @@
   <string name="login_page_input_user_name_tip">用户名应该是英文字符或数字</string>
   <string name="setting_page_settings">设置</string>
   <string name="setting_page_sdk_version">Express SDK 版本号</string>
-  <string name="setting_page_zim_sdk_version">ZIM SDK 版本号</string>
   <string name="setting_page_version">App 版本号</string>
   <string name="setting_page_terms_of_service">服务条款</string>
   <string name="setting_page_privacy_policy">隐私政策</string>

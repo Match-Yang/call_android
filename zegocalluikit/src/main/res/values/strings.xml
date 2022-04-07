@@ -11,7 +11,6 @@
   <string name="login_page_input_user_name_tip">Username can only contain letters and numbers.</string>
   <string name="setting_page_settings">Settings</string>
   <string name="setting_page_sdk_version">Express SDK Version</string>
-  <string name="setting_page_zim_sdk_version">ZIM SDK Version</string>
   <string name="setting_page_version">App Version</string>
   <string name="setting_page_terms_of_service">Terms of Use</string>
   <string name="setting_page_privacy_policy">Privacy Policy</string>

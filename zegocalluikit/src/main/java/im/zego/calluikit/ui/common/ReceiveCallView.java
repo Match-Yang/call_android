@@ -16,6 +16,7 @@ import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoErrorCode;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
 import im.zego.calluikit.databinding.LayoutReceiveCallBinding;
@@ -23,7 +24,6 @@ import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.calluikit.utils.TokenManager;
-import im.zego.zim.enums.ZIMErrorCode;
 
 public class ReceiveCallView extends FrameLayout {
 
@@ -80,7 +80,7 @@ public class ReceiveCallView extends FrameLayout {
 //            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
             String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
-                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                if (errorCode == ZegoErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
                     CallActivity.startCallActivity(userInfo);
                 } else {
@@ -97,7 +97,7 @@ public class ReceiveCallView extends FrameLayout {
 //            String token = AuthInfoManager.getInstance().generateToken(userService.getLocalUserInfo().userID);
             String token = TokenManager.getInstance().tokenWrapper.token;
             callService.acceptCall(token, errorCode -> {
-                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                if (errorCode == ZegoErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
                     CallActivity.startCallActivity(userInfo);
                 } else {
@@ -111,7 +111,7 @@ public class ReceiveCallView extends FrameLayout {
         binding.dialogCallDecline.setOnClickListener(v -> {
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
             callService.declineCall(errorCode -> {
-                if (errorCode == ZIMErrorCode.SUCCESS.value()) {
+                if (errorCode == ZegoErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                 } else {
                     ToastUtils.showShort("Decline Call" + errorCode);
