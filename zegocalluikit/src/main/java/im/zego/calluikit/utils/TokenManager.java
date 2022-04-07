@@ -32,7 +32,6 @@ public class TokenManager {
                                     "getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
                                 if (errorCode == 0) {
                                     saveToken((String) obj, effectiveTime * 1000L);
-                                } else {
                                 }
                             }
                         });
@@ -41,7 +40,7 @@ public class TokenManager {
             }
         };
         Timer timer = new Timer();
-        timer.schedule(task, 0, 60 * 1000L);
+        timer.schedule(task, 0, 10 * 1000L);
     }
 
     public static TokenManager getInstance() {
@@ -70,16 +69,12 @@ public class TokenManager {
         if (tokenWrapper == null) {
             return true;
         }
-        return System.currentTimeMillis() + 60 * 60 * 1000L > tokenWrapper.expiryTime;
+        return System.currentTimeMillis() > tokenWrapper.expiryTime;
     }
 
     private TokenWrapper getTokenFromDisk() {
         String token = SPStaticUtils.getString(Constants.ZEGO_TOKEN_KEY);
         long expiryTime = SPStaticUtils.getLong(Constants.ZEGO_TOKEN_EXPIRY_TIME_KEY);
-
-        if (expiryTime < System.currentTimeMillis()) {
-            return null;
-        }
 
         return new TokenWrapper(token, expiryTime);
     }
@@ -95,7 +90,7 @@ public class TokenManager {
         }
 
         boolean isTokenValid() {
-            return expiryTime > System.currentTimeMillis() + 10 * 60 * 1000L;
+            return expiryTime > System.currentTimeMillis();
         }
     }
 }
