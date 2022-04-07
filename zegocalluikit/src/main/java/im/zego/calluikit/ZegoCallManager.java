@@ -40,8 +40,8 @@ public class ZegoCallManager {
     /**
      * 初始化sdk与rtc引擎 调用时机：应用启动时
      */
-    public void init(Application application) {
-        impl.init(application);
+    public void init(long appID, Application application) {
+        impl.init(appID, application);
     }
 
     public void unInit() {

@@ -6,6 +6,7 @@ import com.blankj.utilcode.util.Utils;
 import com.tencent.mmkv.MMKV;
 
 import im.zego.calluikit.ZegoCallManager;
+import im.zego.call.auth.AuthInfoManager;
 
 public class App extends Application {
 
@@ -15,6 +16,8 @@ public class App extends Application {
         Utils.init(this);
         MMKV.initialize(this);
 
-        ZegoCallManager.getInstance().init(this);
+        AuthInfoManager.getInstance().init(this);
+        long appID = AuthInfoManager.getInstance().getAppID();
+        ZegoCallManager.getInstance().init(appID, this);
     }
 }
