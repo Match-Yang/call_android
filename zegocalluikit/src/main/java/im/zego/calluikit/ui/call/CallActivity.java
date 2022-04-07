@@ -1,6 +1,7 @@
 package im.zego.calluikit.ui.call;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
@@ -23,6 +24,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -143,6 +145,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     if (isMinimal) {
                         moveTaskToBack(true);
                     }
+                    setExcludeFromRecents(isMinimal);
                 });
         LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).observe(this, isVideoCall -> {
             videoSettingsDialog.setIsVideoCall(isVideoCall);
@@ -168,6 +171,19 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         }
                     });
                 });
+    }
+
+    private void setExcludeFromRecents(boolean isMinimal) {
+        Log.d(TAG, "setExcludeFromRecents() called with: isMinimal = [" + isMinimal + "]");
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            List<ActivityManager.AppTask> tasks = am.getAppTasks();
+            for (ActivityManager.AppTask task : tasks) {
+                if (getTaskId() == task.getTaskInfo().id) {
+                    task.setExcludeFromRecents(isMinimal);
+                }
+            }
+        }
     }
 
     private void initView() {
