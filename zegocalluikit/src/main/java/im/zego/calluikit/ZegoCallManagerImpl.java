@@ -32,7 +32,6 @@ import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.calluikit.auth.AuthInfoManager;
 import im.zego.calluikit.service.ForegroundService;
 import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
@@ -62,9 +61,7 @@ public class ZegoCallManagerImpl {
     private final String CHANNEL_DESC = "channel desc";
     private final int notificationId = 999;
 
-    public void init(Application application) {
-        AuthInfoManager.getInstance().init(application);
-        long appID = AuthInfoManager.getInstance().getAppID();
+    public void init(long appID, Application application) {
         ZegoServiceManager.getInstance().init(appID, application);
     }
 

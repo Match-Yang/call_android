@@ -1,4 +1,4 @@
-package im.zego.calluikit.auth;
+package im.zego.call.auth;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,8 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-
-import im.zego.callsdk.auth.TokenServerAssistant;
 
 public class AuthInfoManager {
 
@@ -33,7 +31,6 @@ public class AuthInfoManager {
 
     private String serverSecret;
     private long appID;
-    private String appSign;
 
     private static final String TAG = "AuthInfoManager";
 
@@ -78,15 +75,6 @@ public class AuthInfoManager {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    public String generateToken(String userID) {
-        try {
-            return TokenServerAssistant.generateToken(appID, userID, serverSecret, 60 * 60 * 24).data;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return "";
         }
     }
 }
