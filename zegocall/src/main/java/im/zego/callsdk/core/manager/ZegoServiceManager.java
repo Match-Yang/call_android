@@ -198,5 +198,8 @@ public class ZegoServiceManager {
      */
     public void uploadLog(final ZegoCallback callback) {
         ZegoExpressEngine.getEngine().uploadLog();
+        if (callback != null) {
+            callback.onResult(0);
+        }
     }
 }

@@ -317,7 +317,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                Log.d(TAG, "onChildRemoved() called with: snapshot = [" + snapshot + "]");
             }
 
             @Override
