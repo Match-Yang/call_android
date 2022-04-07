@@ -1,6 +1,7 @@
 package im.zego.calluikit.ui.call;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardDismissCallback;
 import android.content.Context;
@@ -23,6 +24,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -43,8 +45,7 @@ import im.zego.calluikit.ui.dialog.VideoSettingsDialog;
 import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.calluikit.utils.TokenManager;
-import im.zego.zim.enums.ZIMConnectionEvent;
-import im.zego.zim.enums.ZIMConnectionState;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
@@ -144,6 +145,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     if (isMinimal) {
                         moveTaskToBack(true);
                     }
+                    setExcludeFromRecents(isMinimal);
                 });
         LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).observe(this, isVideoCall -> {
             videoSettingsDialog.setIsVideoCall(isVideoCall);
@@ -169,6 +171,19 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                         }
                     });
                 });
+    }
+
+    private void setExcludeFromRecents(boolean isMinimal) {
+        Log.d(TAG, "setExcludeFromRecents() called with: isMinimal = [" + isMinimal + "]");
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            List<ActivityManager.AppTask> tasks = am.getAppTasks();
+            for (ActivityManager.AppTask task : tasks) {
+                if (getTaskId() == task.getTaskInfo().id) {
+                    task.setExcludeFromRecents(isMinimal);
+                }
+            }
+        }
     }
 
     private void initView() {
@@ -353,8 +368,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
     }
 
-    public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-        if (state == ZIMConnectionState.CONNECTED) {
+    public void onCallingStateUpdated(ZegoRoomState state) {
+        if (state == ZegoRoomState.CONNECTED) {
             dismissLoading();
         } else {
             showLoading(getString(R.string.call_page_call_disconnected), true);

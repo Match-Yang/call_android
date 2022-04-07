@@ -1,11 +1,11 @@
 package im.zego.callsdk.listener;
 
+import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
-import im.zego.callsdk.model.ZegoResponseType;
-import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 
 public interface ZegoCallServiceListener {
 
@@ -45,4 +45,6 @@ public interface ZegoCallServiceListener {
      * Description: this callback will be triggered when a call didn't get answered for a long time/ the caller or callee timed out during the call.
      */
     void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type);
+
+    void onCallingStateUpdated(ZegoRoomState state);
 }

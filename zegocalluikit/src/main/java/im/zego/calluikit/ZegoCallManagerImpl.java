@@ -38,6 +38,7 @@ import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.ReceiveCallView;
 import im.zego.calluikit.view.ZegoCallKitView;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 
 /**
  * Created by rocket_wang on 2022/3/31.
@@ -161,6 +162,15 @@ public class ZegoCallManagerImpl {
                 CallStateManager.getInstance().setCallState(null, callState);
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
+            }
+
+            @Override
+            public void onCallingStateUpdated(ZegoRoomState state) {
+                Activity topActivity = ActivityUtils.getTopActivity();
+                if (topActivity instanceof CallActivity) {
+                    CallActivity callActivity = (CallActivity) topActivity;
+                    callActivity.onCallingStateUpdated(state);
+                }
             }
         });
 
