@@ -43,8 +43,7 @@ import im.zego.calluikit.ui.dialog.VideoSettingsDialog;
 import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.calluikit.utils.TokenManager;
-import im.zego.zim.enums.ZIMConnectionEvent;
-import im.zego.zim.enums.ZIMConnectionState;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
@@ -353,8 +352,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
     }
 
-    public void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event) {
-        if (state == ZIMConnectionState.CONNECTED) {
+    public void onCallingStateUpdated(ZegoRoomState state) {
+        if (state == ZegoRoomState.CONNECTED) {
             dismissLoading();
         } else {
             showLoading(getString(R.string.call_page_call_disconnected), true);

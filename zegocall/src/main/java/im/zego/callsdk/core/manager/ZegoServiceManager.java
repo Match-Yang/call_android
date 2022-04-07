@@ -168,6 +168,9 @@ public class ZegoServiceManager {
                 if (callService instanceof ZegoCallServiceImpl) {
                     ((ZegoCallServiceImpl) callService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 }
+                if (callService.getListener() != null) {
+                    callService.getListener().onCallingStateUpdated(state);
+                }
             }
         });
 
