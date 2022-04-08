@@ -3,22 +3,27 @@ package im.zego.call.ui.user;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+import com.blankj.utilcode.util.ToastUtils;
 import com.scwang.smart.refresh.header.MaterialHeader;
+
+import java.util.List;
+
 import im.zego.call.R;
-import im.zego.calluikit.ZegoCallManager;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
-import im.zego.calluikit.ui.BaseActivity;
-import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import java.util.List;
+import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.ui.BaseActivity;
+import im.zego.calluikit.ui.call.CallStateManager;
 
 public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> {
 
@@ -62,6 +67,7 @@ public class OnlineUserActivity extends BaseActivity<ActivityOnlineUserBinding> 
                 ZegoUserInfo userInfo = onlineUserAdapter.getUserInfo(adapterPosition);
                 boolean inACallStream = CallStateManager.getInstance().isInACallStream();
                 if (inACallStream) {
+                    ToastUtils.showShort("On the line. Unable to initiate a new call.");
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
