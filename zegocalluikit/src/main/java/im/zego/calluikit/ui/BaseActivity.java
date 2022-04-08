@@ -59,12 +59,6 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     }
 
     @Override
-    public boolean moveTaskToBack(boolean nonRoot) {
-        Log.d(TAG, "moveTaskToBack() called with: nonRoot = [" + nonRoot + "]");
-        return super.moveTaskToBack(nonRoot);
-    }
-
-    @Override
     protected void onDestroy() {
         Log.d(TAG, this + ",onDestroy() called");
         super.onDestroy();
