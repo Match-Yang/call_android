@@ -9,12 +9,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableResult;
-import com.google.firebase.messaging.FirebaseMessaging;
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.command.ZegoRequestProtocol;
 import im.zego.callsdk.core.commands.ZegoCommand;
@@ -34,26 +30,22 @@ import im.zego.callsdk.listener.ZegoListenerUpdater;
 import im.zego.callsdk.model.DatabaseCall;
 import im.zego.callsdk.model.DatabaseCall.DatabaseCallUser;
 import im.zego.callsdk.model.DatabaseCall.Status;
-import im.zego.callsdk.model.DatabaseUser;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
-import im.zego.callsdk.model.ZegoUserInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
     private ZegoListenerUpdater updater;
     private static final String TAG = "ZegoFirebaseManager";
-    private List<ZegoUserInfo> onlineUserList = new ArrayList();
     private Map<String, ValueEventListener> databaseListenerMap = new HashMap<>();
-    private ChildEventListener childEventListener;
+    private ChildEventListener callEventListener;
 
     /**
      * current call relative to self
@@ -68,27 +60,23 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         FirebaseAuth.getInstance().addAuthStateListener(new AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 Log.d(TAG,
-                    "onAuthStateChanged() called with: firebaseAuth = [" + (firebaseAuth.getCurrentUser() != null)
-                        + "]");
-                if (firebaseAuth.getCurrentUser() != null) {
-                    listenerDatabaseConnect();
-                    listenUserOnline();
-                    listenUserCall();
-                } else {
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    if (childEventListener != null) {
-                        database.getReference("/call").removeEventListener(childEventListener);
+                    "onAuthStateChanged() called with: currentUser = [" + currentUser + "]");
+                if (currentUser != null) {
+                    if (callEventListener == null) {
+                        callEventListener = listenUserCall();
                     }
-                    removeDatabaseListener("online_user");
-                    removeDatabaseListener(".info/connected");
+                    Log.d(TAG, "add call listener");
+                    database.getReference("/call").addChildEventListener(callEventListener);
+                } else {
+                    if (callEventListener != null) {
+                        Log.d(TAG, "remove call listener");
+                        database.getReference("/call").removeEventListener(callEventListener);
+                    }
                 }
             }
         });
-    }
-
-    private void unInitOnlineListener() {
-
     }
 
     @Override
@@ -96,14 +84,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         Log.d(TAG,
             "request() called with: path = [" + path + "], parameter = [" + parameter + "], callback = [" + callback
                 + "]");
-        if (ZegoCommand.LOGIN.equals(path)) {
-            String authToken = (String) parameter.get("authToken");
-            firebaseAuthWithGoogle(authToken, callback);
-        } else if (ZegoCommand.LOGOUT.equals(path)) {
-            signOutFirebaseAuth(parameter, callback);
-        } else if (ZegoCommand.GET_USER_LIST.equals(path)) {
-            queryDatabaseForOnlineUser(callback);
-        } else if (ZegoCommand.START_CALL.equals(path)) {
+        if (ZegoCommand.START_CALL.equals(path)) {
             startCallUser(parameter, callback);
         } else if (ZegoCommand.END_CALL.equals(path)) {
             endCallUser(parameter, callback);
@@ -113,9 +94,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             declineUserCall(parameter, callback);
         } else if (ZegoCommand.CANCEL_CALL.equals(path)) {
             cancelUserCall(parameter, callback);
-        } else if (ZegoCommand.Listener_CALL.equals(path)) {
-            //            String callID = (String) parameter.get("callID");
-            //            addCallListener(callID);
         } else if (ZegoCommand.GET_TOKEN.equals(path)) {
             getTokenFromCloudFunction(parameter, callback);
         } else if (ZegoCommand.HEARTBEAT.equals(path)) {
@@ -244,7 +222,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
     }
 
     private boolean isCallIDContainsSelf(DataSnapshot snapshot) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser currentUser = getCurrentUser();
         DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
         boolean result = false;
         if (databaseCall.users != null) {
@@ -258,12 +236,11 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         return result;
     }
 
-    private void listenUserCall() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        childEventListener = new ChildEventListener() {
+    private ChildEventListener listenUserCall() {
+        return new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseUser currentUser = getCurrentUser();
                 if (currentUser == null) {
                     return;
                 }
@@ -329,7 +306,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
             }
         };
-        database.getReference("/call").addChildEventListener(childEventListener);
     }
 
     private void addCallListener(DatabaseCall databaseCall) {
@@ -370,7 +346,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         receiver = user;
                     }
                 }
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                FirebaseUser currentUser = getCurrentUser();
                 boolean isSelfCaller = Objects.equals(currentUser.getUid(), caller.user_id);
                 DatabaseCallUser self = isSelfCaller ? caller : receiver;
                 DatabaseCallUser other = isSelfCaller ? receiver : caller;
@@ -476,7 +452,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     receiver = user;
                 }
             }
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseUser currentUser = getCurrentUser();
             boolean isSelfCaller = Objects.equals(currentUser.getUid(), caller.user_id);
             DatabaseCallUser self = isSelfCaller ? caller : receiver;
             DatabaseCallUser other = isSelfCaller ? receiver : caller;
@@ -501,6 +477,10 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             removeCallData(callID);
         }
         removeCallListener(callID);
+    }
+
+    private FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
     }
 
 
@@ -668,178 +648,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         removeCallListener(callID);
     }
 
-
-    private void queryDatabaseForOnlineUser(ZegoRequestCallback callback) {
-        callback.onResult(0, onlineUserList);
-    }
-
-    private void signOutFirebaseAuth(Map<String, Object> parameter, ZegoRequestCallback callback) {
-        FirebaseAuth.getInstance().signOut();
-        String userID = (String) parameter.get("selfUserID");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference onlineUserRef = database.getReference("online_user").child(userID);
-        onlineUserRef.removeValue();
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "Fetching FCM registration databasePushToken failed",
-                        task.getException());
-                    return;
-                }
-                String pushToken = task.getResult();
-                Log.d(TAG, "removeValue() pushTokenRef with: task = [" + "]");
-                DatabaseReference pushTokenRef = database.getReference("push_token")
-                    .child(userID).child(pushToken);
-                pushTokenRef.removeValue();
-            }
-        });
-        if (callback != null) {
-            callback.onResult(0, null);
-        }
-    }
-
-    private void firebaseAuthWithGoogle(String authToken, ZegoRequestCallback callback) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(authToken, null);
-        FirebaseAuth.getInstance().signInWithCredential(credential)
-            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithCredential:success");
-                        onFirebaseAuthSuccess(callback);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                        if (callback != null) {
-                            callback.onResult(-1000, null);
-                        }
-                    }
-                }
-            });
-    }
-
-    private void onFirebaseAuthSuccess(ZegoRequestCallback callback) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "Fetching FCM registration databasePushToken failed",
-                        task.getException());
-                    FirebaseAuth.getInstance().signOut();
-                    if (callback != null) {
-                        callback.onResult(-1000, null);
-                    }
-                    return;
-                }
-                // Get new FCM registration databasePushToken
-                String pushToken = task.getResult();
-                Log.d(TAG, "onComplete() called with: databasePushToken = [" + pushToken + "]");
-
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference onlineUserRef = database.getReference("online_user")
-                    .child(currentUser.getUid());
-                DatabaseUser databaseUser = new DatabaseUser();
-                databaseUser.display_name = currentUser.getDisplayName();
-                databaseUser.user_id = currentUser.getUid();
-                databaseUser.last_changed = ServerValue.TIMESTAMP;
-                databaseUser.token_id = pushToken;
-                onlineUserRef.setValue(databaseUser);
-
-                DatabaseReference pushTokenRef = database.getReference("push_token")
-                    .child(currentUser.getUid()).child(pushToken);
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("device_type", "android");
-                updates.put("user_id", currentUser.getUid());
-                updates.put("token_id", pushToken);
-                pushTokenRef.setValue(updates);
-
-                Map<String, Object> user = new HashMap<>();
-                user.put("userID", currentUser.getUid());
-                user.put("userName", currentUser.getDisplayName());
-                if (callback != null) {
-                    callback.onResult(0, user);
-                }
-            }
-        });
-
-    }
-
-    private void listenUserOnline() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference onlineUserRef = database.getReference("online_user");
-
-        ValueEventListener onlineListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                onlineUserList.clear();
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    HashMap<String, Object> value = (HashMap<String, Object>) child.getValue();
-                    ZegoUserInfo userInfo = new ZegoUserInfo();
-                    userInfo.userName = (String) value.get("display_name");
-                    userInfo.userID = (String) value.get("user_id");
-                    onlineUserList.add(userInfo);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        onlineUserRef.orderByChild("last_changed").addValueEventListener(onlineListener);
-        databaseListenerMap.put("online_user", onlineListener);
-    }
-
-    private void listenerDatabaseConnect() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        ValueEventListener connectListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                if (connected) {
-                    if (currentUser != null) {
-                        DatabaseReference onlineUserRef = database.getReference("online_user")
-                            .child(currentUser.getUid());
-                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(
-                            new OnCompleteListener<String>() {
-                                @Override
-                                public void onComplete(@NonNull Task<String> task) {
-                                    if (!task.isSuccessful()) {
-                                        return;
-                                    }
-                                    String pushToken = task.getResult();
-                                    DatabaseUser databaseUser = new DatabaseUser();
-                                    databaseUser.display_name = currentUser.getDisplayName();
-                                    databaseUser.user_id = currentUser.getUid();
-                                    databaseUser.last_changed = ServerValue.TIMESTAMP;
-                                    databaseUser.token_id = pushToken;
-                                    onlineUserRef.setValue(databaseUser);
-                                    onlineUserRef.onDisconnect().removeValue();
-                                }
-                            });
-                    }
-                } else {
-                    if (currentUser != null) {
-                        DatabaseReference onlineUserRef = database.getReference("online_user")
-                            .child(currentUser.getUid());
-                        onlineUserRef.removeValue();
-                    }
-                }
-                Log.d(TAG, "info/connected., called with: connected = [" + connected + "]");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        addDatabaseListener(".info/connected", connectListener);
-    }
-
     private void removeDatabaseListener(String path) {
         if (databaseListenerMap.containsKey(path)) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -855,13 +663,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             database.getReference(path).addValueEventListener(listener);
             databaseListenerMap.put(path, listener);
-        }
-    }
-
-    public void unInitListeners() {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        for (Entry<String, ValueEventListener> entry : databaseListenerMap.entrySet()) {
-            database.getReference(entry.getKey()).removeEventListener(entry.getValue());
         }
     }
 

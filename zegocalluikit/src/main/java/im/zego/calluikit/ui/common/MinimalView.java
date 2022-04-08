@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
@@ -86,12 +87,12 @@ public class MinimalView extends ConstraintLayout {
         }
 
         if (isVideoCall() && remoteUserInfo != null) {
-            for (ZegoUserInfo zegoUserInfo : ZegoServiceManager.getInstance().userService.userInfoList) {
-                if (Objects.equals(zegoUserInfo, remoteUserInfo)) {
-                    remoteUserInfo = zegoUserInfo;
-                    break;
-                }
-            }
+//            for (ZegoUserInfo zegoUserInfo : ZegoServiceManager.getInstance().userService.userInfoList) {
+//                if (Objects.equals(zegoUserInfo, remoteUserInfo)) {
+//                    remoteUserInfo = zegoUserInfo;
+//                    break;
+//                }
+//            }
 
             ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
 
@@ -189,15 +190,9 @@ public class MinimalView extends ConstraintLayout {
     }
 
     public void updateRemoteUserInfo(ZegoUserInfo userInfo) {
+        Log.d("TAG", "updateRemoteUserInfo() called with: userInfo = [" + userInfo + "]");
         if (userInfo == null || ZegoCallHelper.isUserIDSelf(userInfo.userID)) {
             return;
-        }
-
-        for (ZegoUserInfo zegoUserInfo : ZegoServiceManager.getInstance().userService.userInfoList) {
-            if (Objects.equals(zegoUserInfo, userInfo)) {
-                userInfo = zegoUserInfo;
-                break;
-            }
         }
         remoteUserInfo = userInfo;
     }

@@ -2,6 +2,7 @@ package im.zego.callsdk.core.interfaceimpl;
 
 import android.util.Log;
 
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.core.interfaces.ZegoRoomService;
@@ -23,9 +24,9 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
      * <p>
      * Call this method at: After user logs in
      *
-     * @param roomID   refers to the ID of the room you want to join, and cannot be null.
-     * @param token    refers to the authentication token. To get this, see the documentation:
-     *                 https://doc-en.zego.im/article/11648
+     * @param roomID refers to the ID of the room you want to join, and cannot be null.
+     * @param token  refers to the authentication token. To get this, see the documentation:
+     *               https://doc-en.zego.im/article/11648
      */
     public void joinRoom(String roomID, String token) {
         Log.d(CoreTest.TAG, "joinRoom() called with: roomID = [" + roomID + "], token = [" + token + "]");
@@ -44,6 +45,10 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
         String streamID = ZegoCallHelper.getStreamID(localUserInfo.userID, roomID);
         Log.d(CoreTest.TAG, "startPublishingStream() called with: streamID = [" + streamID + "]");
         ZegoExpressEngine.getEngine().startPublishingStream(streamID);
+
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        userService.userInfoList.clear();
+        userService.userInfoList.add(localUserInfo);
     }
 
     /**
@@ -56,5 +61,7 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
      */
     public void leaveRoom() {
         ZegoExpressEngine.getEngine().logoutRoom();
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        userService.userInfoList.clear();
     }
 }

@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import im.zego.callsdk.command.ZegoCommandManager;
+import im.zego.zegoexpress.entity.ZegoUser;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -95,6 +97,8 @@ public class ZegoServiceManager {
         deviceService = new ZegoDeviceServiceImpl();
         streamService = new ZegoStreamServiceImpl();
 
+        ZegoCommandManager.getInstance();
+
         ZegoEngineProfile profile = new ZegoEngineProfile();
         profile.appID = appID;
         profile.scenario = ZegoScenario.COMMUNICATION;
@@ -109,8 +113,8 @@ public class ZegoServiceManager {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
                 if (userService.listener != null) {
                     if (upstreamQuality == ZegoStreamQualityLevel.BAD
-                            || upstreamQuality == ZegoStreamQualityLevel.DIE
-                            || upstreamQuality == ZegoStreamQualityLevel.UNKNOWN) {
+                        || upstreamQuality == ZegoStreamQualityLevel.DIE
+                        || upstreamQuality == ZegoStreamQualityLevel.UNKNOWN) {
                         userService.listener.onNetworkQuality(userID, ZegoNetWorkQuality.Bad);
                     } else if (upstreamQuality == ZegoStreamQualityLevel.MEDIUM) {
                         userService.listener.onNetworkQuality(userID, ZegoNetWorkQuality.Medium);
@@ -170,6 +174,14 @@ public class ZegoServiceManager {
                 }
                 if (callService.getListener() != null) {
                     callService.getListener().onCallingStateUpdated(state);
+                }
+            }
+
+            @Override
+            public void onRoomUserUpdate(String roomID, ZegoUpdateType updateType, ArrayList<ZegoUser> userList) {
+                super.onRoomUserUpdate(roomID, updateType, userList);
+                if (userService instanceof ZegoUserServiceImpl) {
+                    ((ZegoUserServiceImpl) userService).onRoomUserUpdate(roomID, updateType, userList);
                 }
             }
         });
