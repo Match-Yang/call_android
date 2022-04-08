@@ -63,7 +63,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 Log.d(TAG,
                     "onAuthStateChanged() called with: currentUser = [" + currentUser + "]");
-                clearCallData();
                 if (currentUser != null) {
                     if (callEventListener == null) {
                         callEventListener = listenUserCall();

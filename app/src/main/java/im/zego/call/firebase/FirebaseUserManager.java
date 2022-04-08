@@ -328,6 +328,8 @@ public class FirebaseUserManager {
                             return;
                         }
                         String pushToken = task.getResult();
+                        Log.d(TAG,
+                            "onDataChange: pushToken: " + pushToken + ",\n currentToken ：" + databaseUser.token_id);
                         if (!Objects.equals(pushToken, databaseUser.token_id)) {
                             String userID = FirebaseAuth.getInstance().getUid();
                             if (userID == null) {
