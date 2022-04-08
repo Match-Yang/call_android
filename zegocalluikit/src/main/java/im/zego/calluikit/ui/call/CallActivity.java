@@ -188,9 +188,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void initView() {
         int typeOfCall = CallStateManager.getInstance().getCallState();
-        updateUi(typeOfCall);
-
         initDeviceState(typeOfCall);
+        updateUi(typeOfCall);
 
         callStateChangedListener = new CallStateManager.CallStateChangedListener() {
             @Override

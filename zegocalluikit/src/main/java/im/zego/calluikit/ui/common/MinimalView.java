@@ -16,14 +16,14 @@ import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import java.util.Objects;
 
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.calluikit.R;
 import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.databinding.LayoutMinimalViewBinding;
 import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
-import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.utils.ZegoCallHelper;
 
 public class MinimalView extends ConstraintLayout {
 
@@ -95,15 +95,20 @@ public class MinimalView extends ConstraintLayout {
 
             ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
 
-            if (remoteUserInfo.camera || localUserInfo.camera) {
-                String userID = remoteUserInfo.camera ? remoteUserInfo.userID : localUserInfo.userID;
-                ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
+            if (CallStateManager.getInstance().isInCallingStream() && localUserInfo.camera) {
+                ZegoServiceManager.getInstance().streamService.startPlaying(localUserInfo.userID, binding.videoTextureView);
                 toggleVideo(true);
+            } else if (CallStateManager.getInstance().isConnected()) {
+                if (remoteUserInfo.camera || localUserInfo.camera) {
+                    String userID = remoteUserInfo.camera ? remoteUserInfo.userID : localUserInfo.userID;
+                    ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
+                    toggleVideo(true);
+                } else {
+                    toggleVideo(false);
+                }
             } else {
                 toggleVideo(false);
             }
-        } else {
-            toggleVideo(false);
         }
 
         toggleVoice(true);
@@ -118,20 +123,20 @@ public class MinimalView extends ConstraintLayout {
                         .observeForever(timerObserver);
                 break;
             case Cancel:
-                binding.voiceTv.setText(R.string.call_page_status_canceled);
                 delayDismiss();
+                binding.voiceTv.setText(R.string.call_page_status_canceled);
                 break;
             case Decline:
-                binding.voiceTv.setText(R.string.call_page_status_declined);
                 delayDismiss();
+                binding.voiceTv.setText(R.string.call_page_status_declined);
                 break;
             case Missed:
-                binding.voiceTv.setText(R.string.call_page_status_missed);
                 delayDismiss();
+                binding.voiceTv.setText(R.string.call_page_status_missed);
                 break;
             case Ended:
-                binding.voiceTv.setText(R.string.call_page_status_completed);
                 delayDismiss();
+                binding.voiceTv.setText(R.string.call_page_status_completed);
                 break;
             case Initialized:
             default:
@@ -148,10 +153,15 @@ public class MinimalView extends ConstraintLayout {
     private void delayDismiss() {
         canShowMinimal = false;
         LiveEventBus.get(Constants.EVENT_TIMER_CHANGE_KEY, String.class).removeObserver(timerObserver);
-        handler.postDelayed(() -> {
+        if (binding.videoTextureView.getVisibility() == VISIBLE) {
             toggleVoice(false);
             toggleVideo(false);
-        }, 1000L);
+        } else {
+            handler.postDelayed(() -> {
+                toggleVoice(false);
+                toggleVideo(false);
+            }, 1000L);
+        }
     }
 
     private void toggleVoice(boolean show) {
