@@ -21,6 +21,12 @@ import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
+
+import im.zego.callsdk.listener.ZegoCallingState;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
@@ -371,8 +377,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
     }
 
-    public void onCallingStateUpdated(ZegoRoomState state) {
-        if (state == ZegoRoomState.DISCONNECTED) {
+    public void onCallingStateUpdated(ZegoCallingState state) {
+        if (state == ZegoCallingState.DISCONNECTED) {
             showLoading(getString(R.string.call_page_call_disconnected), true);
         } else {
             dismissLoading();

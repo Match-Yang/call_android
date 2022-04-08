@@ -25,6 +25,7 @@ import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
+import im.zego.callsdk.listener.ZegoCallingState;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
@@ -162,7 +163,7 @@ public class ZegoCallManagerImpl {
             }
 
             @Override
-            public void onCallingStateUpdated(ZegoRoomState state) {
+            public void onCallingStateUpdated(ZegoCallingState state) {
                 Activity topActivity = ActivityUtils.getTopActivity();
                 if (topActivity instanceof CallActivity) {
                     CallActivity callActivity = (CallActivity) topActivity;
