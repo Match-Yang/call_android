@@ -1,0 +1,4 @@
+<resources>
+  <string name="app_name">ZEGO Call</string>
+  <string name="toast_kickout_error">You have been logged out because this account logged in on another device.</string>
+</resources>

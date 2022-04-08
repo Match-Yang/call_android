@@ -73,8 +73,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             }
             binding.callTime.setText(timeFormat);
             LiveEventBus
-                    .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
-                    .post(timeFormat);
+                .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
+                .post(timeFormat);
             handler.postDelayed(timeCountRunnable, 1000);
         }
     };
@@ -140,37 +140,37 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void startObserve() {
         LiveEventBus
-                .get(Constants.EVENT_MINIMAL, Boolean.class)
-                .observe(this, isMinimal -> {
-                    if (isMinimal) {
-                        moveTaskToBack(true);
-                    }
-                    setExcludeFromRecents(isMinimal);
-                });
+            .get(Constants.EVENT_MINIMAL, Boolean.class)
+            .observe(this, isMinimal -> {
+                if (isMinimal) {
+                    moveTaskToBack(true);
+                }
+                setExcludeFromRecents(isMinimal);
+            });
         LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).observe(this, isVideoCall -> {
             videoSettingsDialog.setIsVideoCall(isVideoCall);
             videoSettingsDialog.show();
         });
         LiveEventBus
-                .get(Constants.EVENT_CANCEL_CALL, String.class)
-                .observe(this, s -> {
-                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                    callService.cancelCall(errorCode -> {
-                        if (errorCode == 0) {
-                            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
-                        }
-                    });
+            .get(Constants.EVENT_CANCEL_CALL, String.class)
+            .observe(this, s -> {
+                ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                callService.cancelCall(errorCode -> {
+                    if (errorCode == 0) {
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+                    }
                 });
+            });
         LiveEventBus
-                .get(Constants.EVENT_END_CALL, String.class)
-                .observe(this, s -> {
-                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                    callService.endCall(errorCode -> {
-                        if (errorCode == 0) {
-                            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
-                        }
-                    });
+            .get(Constants.EVENT_END_CALL, String.class)
+            .observe(this, s -> {
+                ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                callService.endCall(errorCode -> {
+                    if (errorCode == 0) {
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
+                    }
                 });
+            });
     }
 
     private void setExcludeFromRecents(boolean isMinimal) {
@@ -189,6 +189,10 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void initView() {
         int typeOfCall = CallStateManager.getInstance().getCallState();
         updateUi(typeOfCall);
+        if (CallStateManager.TYPE_CALL_COMPLETED == typeOfCall) {
+            finishActivityDelayed();
+            return;
+        }
 
         initDeviceState(typeOfCall);
 
@@ -321,6 +325,10 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 binding.layoutConnectedVideoCall.setVisibility(View.GONE);
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.GONE);
+                break;
+            case CallStateManager.TYPE_CALL_COMPLETED:
+                binding.layoutConnectedVideoCall.setVisibility(View.GONE);
+                binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 break;
         }
     }
