@@ -1,7 +1,7 @@
 package im.zego.callsdk.model;
 
 import com.google.gson.annotations.SerializedName;
-import java.io.Serializable;
+
 import java.util.Objects;
 
 /**
@@ -23,10 +23,10 @@ public class ZegoUserInfo implements java.io.Serializable {
     public String userName;
 
     @SerializedName("mic")
-    public boolean mic;
+    public boolean mic = true;
 
     @SerializedName("camera")
-    public boolean camera;
+    public boolean camera = true;
 
 
     @Override

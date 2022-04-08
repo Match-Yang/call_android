@@ -196,6 +196,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
 
         initDeviceState(typeOfCall);
+        updateUi(typeOfCall);
 
         callStateChangedListener = new CallStateManager.CallStateChangedListener() {
             @Override

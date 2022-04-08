@@ -1,10 +1,19 @@
 package im.zego.call.ui.login;
 
+import static im.zego.call.ui.setting.SettingActivity.PRIVACY_POLICY;
 import static im.zego.call.ui.setting.SettingActivity.TERMS_OF_SERVICE;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -21,13 +30,14 @@ import im.zego.call.R;
 import im.zego.call.UIKitActivity;
 import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.databinding.ActivityGoogleLoginBinding;
-import im.zego.calluikit.ui.BaseActivity;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
-import im.zego.calluikit.utils.PermissionHelper;
-import im.zego.calluikit.utils.TokenManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.ui.BaseActivity;
+import im.zego.calluikit.utils.PermissionHelper;
+import im.zego.calluikit.utils.TokenManager;
 
 public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding> {
 
@@ -71,9 +81,48 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                 }
             });
         });
-        binding.termsServiceTv.setOnClickListener(v -> {
-            WebViewActivity.startWebViewActivity(TERMS_OF_SERVICE);
-        });
+
+        String termsOfUseString = getString(R.string.login_page_terms_of_service);
+        String privacyPolicyString = getString(R.string.login_page_privacy_policy);
+        String content = getString(R.string.login_page_service_privacy);
+        SpannableString spannableString = SpannableString.valueOf(content);
+        int termsOfUseIndex = content.indexOf(termsOfUseString);
+        int privacyPolicyIndex = content.indexOf(privacyPolicyString);
+        int color = Color.parseColor("#0055ff");
+        spannableString.setSpan(
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(@NonNull View widget) {
+                        WebViewActivity.startWebViewActivity(TERMS_OF_SERVICE);
+                    }
+
+                    @Override
+                    public void updateDrawState(@NonNull TextPaint ds) {
+                        super.updateDrawState(ds);
+                        ds.setColor(color);
+                        ds.setUnderlineText(false);
+                    }
+                },
+                termsOfUseIndex, termsOfUseString.length() + termsOfUseIndex, 33
+        );
+        spannableString.setSpan(
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(@NonNull View widget) {
+                        WebViewActivity.startWebViewActivity(PRIVACY_POLICY);
+                    }
+
+                    @Override
+                    public void updateDrawState(@NonNull TextPaint ds) {
+                        super.updateDrawState(ds);
+                        ds.setColor(color);
+                        ds.setUnderlineText(false);
+                    }
+                }, privacyPolicyIndex, privacyPolicyString.length() + privacyPolicyIndex, 33
+        );
+        binding.termsServiceTv.setText(spannableString);
+        binding.termsServiceTv.setMovementMethod(LinkMovementMethod.getInstance());
+
         binding.termsServiceCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             isTermsChecked = isChecked;
         });

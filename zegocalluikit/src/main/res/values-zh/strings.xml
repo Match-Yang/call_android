@@ -2,6 +2,8 @@
   <string name="login_page_google_login">通过 Google 登录 </string>
   <string name="login_page_service_privacy">我已阅读并同意《服务条款》和《隐私政策》</string>
   <string name="toast_login_service_privacy">请阅读并同意《服务条款》和《隐私政策》</string>
+  <string name="login_page_terms_of_service">服务条款</string>
+  <string name="login_page_privacy_policy">隐私政策</string>
   <string name="toast_login_fail_google">登录失败，错误码：%d（Google）</string>
   <string name="login_page_title">Welcome to experience \n ZEGO Call</string>
   <string name="login_page_user_name">请输入你的用户名</string>
