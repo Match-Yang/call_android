@@ -452,6 +452,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
         if (state == ZegoRoomState.DISCONNECTED) {
             if (getCallInfo().callID != null) {
+                handler.removeCallbacks(callTimeoutRunnable);
+                stopHeartBeatTimer();
                 if (listener != null) {
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     if (userService.getLocalUserInfo() != null) {
