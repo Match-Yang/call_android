@@ -6,6 +6,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import im.zego.callsdk.command.ZegoCommandManager;
+import im.zego.callsdk.listener.ZegoCallingState;
 import im.zego.zegoexpress.entity.ZegoUser;
 import org.json.JSONObject;
 
@@ -172,8 +173,9 @@ public class ZegoServiceManager {
                 if (callService instanceof ZegoCallServiceImpl) {
                     ((ZegoCallServiceImpl) callService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 }
+                ZegoCallingState callingState = ZegoCallingState.getCallingState(state.value());
                 if (callService.getListener() != null) {
-                    callService.getListener().onCallingStateUpdated(state);
+                    callService.getListener().onCallingStateUpdated(callingState);
                 }
             }
 
