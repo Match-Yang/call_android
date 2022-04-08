@@ -1,0 +1,4 @@
+<resources>
+  <string name="app_name">ZEGO Call</string>
+  <string name="toast_kickout_error">该帐号已在其他设备登录，你已被下线</string>
+</resources>

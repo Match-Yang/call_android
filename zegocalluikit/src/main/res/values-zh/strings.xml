@@ -1,5 +1,4 @@
 <resources>
-  <string name="app_name">ZEGO Call</string>
   <string name="login_page_google_login">通过 Google 登录 </string>
   <string name="login_page_service_privacy">我已阅读并同意《服务条款》和《隐私政策》</string>
   <string name="toast_login_service_privacy">请阅读并同意《服务条款》和《隐私政策》</string>

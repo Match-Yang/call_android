@@ -63,6 +63,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 Log.d(TAG,
                     "onAuthStateChanged() called with: currentUser = [" + currentUser + "]");
+                clearCallData();
                 if (currentUser != null) {
                     if (callEventListener == null) {
                         callEventListener = listenUserCall();
@@ -267,21 +268,23 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 }
                 if (isCurrentIdle()) {
                     setCurrentCallData(databaseCall);
-                    HashMap<String, Object> data = new HashMap<>();
-                    HashMap<String, String> callerData = new HashMap<>();
-                    callerData.put("id", caller.user_id);
-                    callerData.put("name", caller.user_name);
-                    data.put("caller", callerData);
-                    List<HashMap<String, String>> calleeData = new ArrayList<>();
-                    HashMap<String, String> callee = new HashMap<>();
-                    callee.put("id", receiver.user_id);
-                    callee.put("name", receiver.user_name);
-                    calleeData.add(callee);
-                    data.put("callees", calleeData);
-                    data.put("call_id", databaseCall.call_id);
-                    data.put("type", databaseCall.call_type);
                     addCallListener(databaseCall);
-                    updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
+                    if (databaseCall.call_status == Status.WAIT.getValue()) {
+                        HashMap<String, Object> data = new HashMap<>();
+                        HashMap<String, String> callerData = new HashMap<>();
+                        callerData.put("id", caller.user_id);
+                        callerData.put("name", caller.user_name);
+                        data.put("caller", callerData);
+                        List<HashMap<String, String>> calleeData = new ArrayList<>();
+                        HashMap<String, String> callee = new HashMap<>();
+                        callee.put("id", receiver.user_id);
+                        callee.put("name", receiver.user_name);
+                        calleeData.add(callee);
+                        data.put("callees", calleeData);
+                        data.put("call_id", databaseCall.call_id);
+                        data.put("type", databaseCall.call_type);
+                        updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
+                    }
                 } else {
                     declineCallInner(currentUser.getUid(), caller.caller_id,
                         databaseCall.call_id, databaseCall.call_type, null);
@@ -683,7 +686,10 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 }
             }
         }
+    }
 
+    private void clearCallData() {
+        selfCalls.clear();
     }
 
     private boolean isCurrentIdle() {
