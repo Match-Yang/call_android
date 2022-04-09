@@ -451,14 +451,16 @@ public class ZegoCallServiceImpl extends ZegoCallService {
 
     public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
         if (state == ZegoRoomState.DISCONNECTED) {
-            if (listener != null) {
-                if (getCallInfo().callID != null) {
+            if (getCallInfo().callID != null) {
+                handler.removeCallbacks(callTimeoutRunnable);
+                stopHeartBeatTimer();
+                if (listener != null) {
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     if (userService.getLocalUserInfo() != null) {
                         listener.onReceiveCallTimeout(userService.getLocalUserInfo(), ZegoCallTimeoutType.Connecting);
                     }
-                    setCallInfo(null);
                 }
+                setCallInfo(null);
             }
         }
     }
@@ -466,7 +468,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     @Override
     public void setListener(ZegoCallServiceListener listener) {
         super.setListener(listener);
-        if (callInfo.callID != null) {
+        if (callInfo.callID != null && listener != null) {
             listener.onReceiveCallInvite(callInfo.caller, callInfo.callID, callInfo.callType);
         }
     }

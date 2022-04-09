@@ -11,10 +11,11 @@ import android.widget.FrameLayout;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.WebChromeClient;
+import im.zego.call.UIKitActivity;
 import im.zego.call.databinding.ActivityWebViewBinding;
 import im.zego.calluikit.ui.BaseActivity;
 
-public class WebViewActivity extends BaseActivity<ActivityWebViewBinding> {
+public class WebViewActivity extends UIKitActivity<ActivityWebViewBinding> {
 
     private static final String EXTRA_KEY_URL = "extra_key_url";
     private AgentWeb mAgentWeb;

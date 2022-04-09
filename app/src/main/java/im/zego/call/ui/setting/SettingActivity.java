@@ -3,20 +3,19 @@ package im.zego.call.ui.setting;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import com.blankj.utilcode.util.ActivityUtils;
-
 import im.zego.call.BuildConfig;
 import im.zego.call.R;
+import im.zego.call.UIKitActivity;
 import im.zego.call.databinding.ActivitySettingBinding;
+import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.model.ZegoErrorCode;
 import im.zego.calluikit.ZegoCallManager;
-import im.zego.calluikit.ui.BaseActivity;
 import im.zego.zegoexpress.ZegoExpressEngine;
 
-public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
+public class SettingActivity extends UIKitActivity<ActivitySettingBinding> {
 
     public static final String TERMS_OF_SERVICE = "https://www.zegocloud.com/policy?index=1";
     public static final String PRIVACY_POLICY = "https://www.zegocloud.com/policy?index=0";
@@ -63,6 +62,7 @@ public class SettingActivity extends BaseActivity<ActivitySettingBinding> {
         binding.logOut.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                FirebaseUserManager.getInstance().signOutFirebaseAuth();
                 ZegoCallManager.getInstance().callKitService.logout();
                 ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
             }

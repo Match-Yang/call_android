@@ -14,16 +14,15 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import im.zego.callsdk.listener.ZegoCallingState;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -46,6 +45,9 @@ import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.calluikit.utils.TokenManager;
 import im.zego.zegoexpress.constants.ZegoRoomState;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
@@ -73,8 +75,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             }
             binding.callTime.setText(timeFormat);
             LiveEventBus
-                    .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
-                    .post(timeFormat);
+                .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
+                .post(timeFormat);
             handler.postDelayed(timeCountRunnable, 1000);
         }
     };
@@ -140,37 +142,37 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void startObserve() {
         LiveEventBus
-                .get(Constants.EVENT_MINIMAL, Boolean.class)
-                .observe(this, isMinimal -> {
-                    if (isMinimal) {
-                        moveTaskToBack(true);
-                    }
-                    setExcludeFromRecents(isMinimal);
-                });
+            .get(Constants.EVENT_MINIMAL, Boolean.class)
+            .observe(this, isMinimal -> {
+                if (isMinimal) {
+                    moveTaskToBack(true);
+                }
+                setExcludeFromRecents(isMinimal);
+            });
         LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).observe(this, isVideoCall -> {
             videoSettingsDialog.setIsVideoCall(isVideoCall);
             videoSettingsDialog.show();
         });
         LiveEventBus
-                .get(Constants.EVENT_CANCEL_CALL, String.class)
-                .observe(this, s -> {
-                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                    callService.cancelCall(errorCode -> {
-                        if (errorCode == 0) {
-                            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
-                        }
-                    });
+            .get(Constants.EVENT_CANCEL_CALL, String.class)
+            .observe(this, s -> {
+                ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                callService.cancelCall(errorCode -> {
+                    if (errorCode == 0) {
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
+                    }
                 });
+            });
         LiveEventBus
-                .get(Constants.EVENT_END_CALL, String.class)
-                .observe(this, s -> {
-                    ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                    callService.endCall(errorCode -> {
-                        if (errorCode == 0) {
-                            CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
-                        }
-                    });
+            .get(Constants.EVENT_END_CALL, String.class)
+            .observe(this, s -> {
+                ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+                callService.endCall(errorCode -> {
+                    if (errorCode == 0) {
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
+                    }
                 });
+            });
     }
 
     private void setExcludeFromRecents(boolean isMinimal) {
@@ -188,6 +190,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void initView() {
         int typeOfCall = CallStateManager.getInstance().getCallState();
+        updateUi(typeOfCall);
+        if (CallStateManager.TYPE_CALL_COMPLETED == typeOfCall) {
+            finishActivityDelayed();
+            return;
+        }
+
         initDeviceState(typeOfCall);
         updateUi(typeOfCall);
 
@@ -321,6 +329,10 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
                 binding.callTime.setVisibility(View.GONE);
                 break;
+            case CallStateManager.TYPE_CALL_COMPLETED:
+                binding.layoutConnectedVideoCall.setVisibility(View.GONE);
+                binding.layoutConnectedVoiceCall.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -365,8 +377,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
     }
 
-    public void onCallingStateUpdated(ZegoRoomState state) {
-        if (state == ZegoRoomState.DISCONNECTED) {
+    public void onCallingStateUpdated(ZegoCallingState state) {
+        if (state == ZegoCallingState.DISCONNECTED) {
             showLoading(getString(R.string.call_page_call_disconnected), true);
         } else {
             dismissLoading();

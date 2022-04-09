@@ -4,17 +4,14 @@ import android.util.Log;
 
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
-import java.util.HashMap;
+import im.zego.zegoexpress.constants.ZegoUpdateType;
+import im.zego.zegoexpress.entity.ZegoUser;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.core.commands.ZegoGetTokenCommand;
-import im.zego.callsdk.core.commands.ZegoLoginCommand;
-import im.zego.callsdk.core.commands.ZegoLogoutCommand;
-import im.zego.callsdk.core.commands.ZegoUserListCommand;
 import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CoreTest;
@@ -22,59 +19,6 @@ import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
 
 public class ZegoUserServiceImpl extends ZegoUserService {
-
-    @Override
-    public void login(String authToken, ZegoCallback callback) {
-        ZegoLoginCommand command = new ZegoLoginCommand();
-        command.putParameter("authToken", authToken);
-        command.execute(new ZegoRequestCallback() {
-            @Override
-            public void onResult(int errorCode, Object obj) {
-                if (errorCode == 0) {
-                    Map<String, String> user = (HashMap<String, String>) obj;
-                    localUserInfo = new ZegoUserInfo();
-                    localUserInfo.userID = user.get("userID");
-                    localUserInfo.userName = user.get("userName");
-                }
-                if (callback != null) {
-                    callback.onResult(errorCode);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void logout() {
-        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.getLocalUserInfo() != null) {
-            String selfUserID = userService.getLocalUserInfo().userID;
-            ZegoLogoutCommand command = new ZegoLogoutCommand();
-            command.putParameter("selfUserID", selfUserID);
-            command.execute((errorCode, obj) -> {
-
-            });
-        }
-    }
-
-    @Override
-    public void getOnlineUserList(ZegoUserListCallback callback) {
-        ZegoUserListCommand command = new ZegoUserListCommand();
-        command.execute(new ZegoRequestCallback() {
-            @Override
-            public void onResult(int errorCode, Object obj) {
-                userInfoList = (List<ZegoUserInfo>) obj;
-                for (ZegoUserInfo userInfo : userInfoList) {
-                    if (Objects.equals(userInfo.userID, localUserInfo.userID)) {
-                        localUserInfo = userInfo;
-                        break;
-                    }
-                }
-                if (callback != null) {
-                    callback.onGetUserList(errorCode, userInfoList);
-                }
-            }
-        });
-    }
 
     @Override
     public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
@@ -167,6 +111,24 @@ public class ZegoUserServiceImpl extends ZegoUserService {
 
         if (listener != null) {
             listener.onUserInfoUpdated(userInfo);
+        }
+    }
+
+    public void onRoomUserUpdate(String roomID, ZegoUpdateType updateType, ArrayList<ZegoUser> userList) {
+        if (updateType == ZegoUpdateType.ADD) {
+            for (ZegoUser zegoUser : userList) {
+                ZegoUserInfo userInfo = new ZegoUserInfo();
+                userInfo.userID = zegoUser.userID;
+                userInfo.userName = zegoUser.userName;
+                userInfoList.add(userInfo);
+            }
+        } else {
+            for (ZegoUser zegoUser : userList) {
+                ZegoUserInfo userInfo = new ZegoUserInfo();
+                userInfo.userID = zegoUser.userID;
+                userInfo.userName = zegoUser.userName;
+                userInfoList.remove(userInfo);
+            }
         }
     }
 }

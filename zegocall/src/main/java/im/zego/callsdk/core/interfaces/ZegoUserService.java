@@ -1,5 +1,6 @@
 package im.zego.callsdk.core.interfaces;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import im.zego.callsdk.callback.ZegoCallback;
@@ -16,40 +17,11 @@ public abstract class ZegoUserService {
     // The local logged-in user information.
     protected ZegoUserInfo localUserInfo;
     // The online user list.
-    public List<ZegoUserInfo> userInfoList;
+    public List<ZegoUserInfo> userInfoList = new ArrayList<>();
 
     public void setListener(ZegoUserServiceListener listener) {
         this.listener = listener;
     }
-
-    /**
-     * User to log in
-     * <p>
-     * Description: this method can be used to log in to the Call service.
-     * <p>
-     * android.telecom.Call this method at: after the SDK initialization
-     * <p>
-     * - Parameter callback: refers to the callback for log in.
-     */
-    public abstract void login(String authToken, ZegoCallback callback);
-
-    /**
-     * User to log out
-     * <p>
-     * Description: this method can be used to log out from the current user account.
-     * <p>
-     * Call this method at: after the user login
-     */
-    public abstract void logout();
-
-    /**
-     * Get the online user list
-     * <p>
-     * Description: this method can be used to get the current online user list.
-     * <p>
-     * Call this method at: after the SDK initialization
-     */
-    public abstract void getOnlineUserList(ZegoUserListCallback callback);
 
     public abstract void getToken(String userID, long effectiveTime, ZegoRequestCallback callback);
 

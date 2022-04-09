@@ -17,7 +17,7 @@ public interface ZegoCallServiceListener {
      * @param userInfo refers to the caller information.
      * @param type     indicates the call type.  ZegoCallTypeVoice: Voice call.  ZegoCallTypeVideo: Video call.
      */
-    void onReceiveCallInvite(ZegoUserInfo userInfo, String callID,ZegoCallType type);
+    void onReceiveCallInvite(ZegoUserInfo userInfo, String callID, ZegoCallType type);
 
     /**
      * Callback for receive a canceled call
@@ -32,6 +32,7 @@ public interface ZegoCallServiceListener {
     void onReceiveCallAccept(ZegoUserInfo userInfo);
 
     void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType);
+
     /**
      * call end because of room destroy,people hangup(leave room),etc.
      * <p>
@@ -42,9 +43,10 @@ public interface ZegoCallServiceListener {
     /**
      * Callback for a call timed out
      * <p>
-     * Description: this callback will be triggered when a call didn't get answered for a long time/ the caller or callee timed out during the call.
+     * Description: this callback will be triggered when a call didn't get answered for a long time/ the caller or
+     * callee timed out during the call.
      */
     void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type);
 
-    void onCallingStateUpdated(ZegoRoomState state);
+    void onCallingStateUpdated(ZegoCallingState state);
 }

@@ -12,6 +12,8 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import com.tencent.mmkv.MMKV;
 
+import im.zego.call.UIKitActivity;
+import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.calluikit.ui.BaseActivity;
@@ -23,7 +25,7 @@ import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 
-public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
+public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
 
     public static final String URL_GET_MORE = "https://www.zegocloud.com/";
     public static final String URL_CONTACT_US = "https://www.zegocloud.com/talk";
@@ -103,6 +105,7 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
     }
 
     private void logout() {
+        FirebaseUserManager.getInstance().signOutFirebaseAuth();
         ZegoCallManager.getInstance().callKitService.logout();
         ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
     }

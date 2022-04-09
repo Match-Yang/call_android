@@ -119,8 +119,8 @@ public class MinimalView extends ConstraintLayout {
                 break;
             case Connected:
                 LiveEventBus
-                        .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
-                        .observeForever(timerObserver);
+                    .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
+                    .observeForever(timerObserver);
                 break;
             case Cancel:
                 delayDismiss();
@@ -180,7 +180,7 @@ public class MinimalView extends ConstraintLayout {
     private boolean isVideoCall() {
         int callState = CallStateManager.getInstance().getCallState();
         return callState == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO
-                || callState == CallStateManager.TYPE_CONNECTED_VIDEO;
+            || callState == CallStateManager.TYPE_CONNECTED_VIDEO;
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {

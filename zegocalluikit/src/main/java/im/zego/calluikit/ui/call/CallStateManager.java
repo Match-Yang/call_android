@@ -66,7 +66,7 @@ public class CallStateManager {
 
     public boolean isInCallingStream() {
         return callState == TYPE_OUTGOING_CALLING_VOICE ||
-                callState == TYPE_OUTGOING_CALLING_VIDEO;
+            callState == TYPE_OUTGOING_CALLING_VIDEO;
     }
 
     public boolean isConnected() {
@@ -85,9 +85,11 @@ public class CallStateManager {
         } else {
             stopRingTone();
         }
-        if (beforeState != callState && listeners.size() > 0) {
-            for (CallStateChangedListener listener : listeners) {
-                listener.onCallStateChanged(userInfo, beforeState, callState);
+        if (listeners.size() > 0) {
+            if (beforeState != callState) {
+                for (CallStateChangedListener listener : listeners) {
+                    listener.onCallStateChanged(userInfo, beforeState, callState);
+                }
             }
         }
     }
