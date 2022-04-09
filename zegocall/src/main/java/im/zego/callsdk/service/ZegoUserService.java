@@ -38,6 +38,7 @@ import im.zego.zegoexpress.constants.ZegoViewMode;
 import im.zego.zegoexpress.entity.ZegoCanvas;
 import im.zego.zim.ZIM;
 import im.zego.zim.callback.ZIMLoggedInCallback;
+import im.zego.zim.callback.ZIMTokenRenewedCallback;
 import im.zego.zim.entity.ZIMCustomMessage;
 import im.zego.zim.entity.ZIMError;
 import im.zego.zim.entity.ZIMMessage;
@@ -598,6 +599,25 @@ public class ZegoUserService {
         }
         if (listener != null) {
             listener.onNetworkQuality(userID, quality);
+        }
+    }
+
+    public void renewToken(String token, String roomID) {
+        ZegoZIMManager.getInstance().zim.renewToken(token, new ZIMTokenRenewedCallback() {
+            @Override
+            public void onTokenRenewed(String token, ZIMError errorInfo) {
+
+            }
+        });
+    }
+
+    public ZegoRoomInfo getRoomInfo() {
+        return roomService.roomInfo;
+    }
+
+    public void onRoomTokenWillExpire(int remainTimeInSecond, String roomID) {
+        if (listener != null) {
+            listener.onRoomTokenWillExpire(remainTimeInSecond, roomID);
         }
     }
 }

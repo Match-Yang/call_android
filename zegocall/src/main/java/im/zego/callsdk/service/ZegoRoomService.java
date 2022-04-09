@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.util.HashMap;
+
 import im.zego.callsdk.ZegoZIMManager;
 import im.zego.callsdk.callback.ZegoRoomCallback;
 import im.zego.callsdk.model.ZegoRoomInfo;
@@ -14,8 +16,6 @@ import im.zego.zegoexpress.entity.ZegoUser;
 import im.zego.zim.entity.ZIMRoomAdvancedConfig;
 import im.zego.zim.entity.ZIMRoomInfo;
 import im.zego.zim.enums.ZIMErrorCode;
-
-import java.util.HashMap;
 
 /**
  * Class LiveAudioRoom information management

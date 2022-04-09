@@ -66,4 +66,6 @@ public interface ZegoUserServiceListener {
     void onConnectionStateChanged(ZIMConnectionState state, ZIMConnectionEvent event);
 
     void onNetworkQuality(String userID, ZegoNetWorkQuality quality);
+
+    void onRoomTokenWillExpire(int remainTimeInSecond, String roomID);
 }
