@@ -75,7 +75,7 @@ public class ReceiveCallView extends FrameLayout {
 
         binding.dialogCallAcceptVoice.setOnClickListener(v -> {
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            String token = TokenManager.getInstance().tokenWrapper.token;
+            String token = TokenManager.getInstance().getTokenWrapper().token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZegoErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
@@ -90,7 +90,7 @@ public class ReceiveCallView extends FrameLayout {
         });
         binding.dialogCallAcceptVideo.setOnClickListener(v -> {
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            String token = TokenManager.getInstance().tokenWrapper.token;
+            String token = TokenManager.getInstance().getTokenWrapper().token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZegoErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);

@@ -55,6 +55,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
         }
     };
     private Handler handler = new Handler(Looper.getMainLooper());
+    private HashMap<String, ZegoCallback> callbackHashMap = new HashMap<>();
 
     @Override
     public void callUser(ZegoUserInfo userInfo, ZegoCallType callType, String createRoomToken, ZegoCallback callback) {
@@ -95,13 +96,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                         setCallInfo(callInfo);
 
                         ZegoServiceManager.getInstance().roomService.joinRoom(callID, createRoomToken);
+                        callbackHashMap.clear();
+                        callbackHashMap.put(callID, callback);
                         status = ZegoLocalUserStatus.Outgoing;
-                        //                        } else {
-                        //
-                        //                        }
-                    }
-                    if (callback != null) {
-                        callback.onResult(errorCode);
                     }
                 }
             });
@@ -165,6 +162,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                         if (errorCode == 0) {
                             startHeartBeatTimer(callID, selfUserID);
                             ZegoServiceManager.getInstance().roomService.joinRoom(callID, joinToken);
+                            callbackHashMap.clear();
+                            callbackHashMap.put(callID, callback);
                             status = ZegoLocalUserStatus.Calling;
                         }
                         if (callback != null) {
@@ -440,7 +439,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 startHeartBeat(callID, userID);
             }
         };
-        heartTimer.schedule(task, 0, 12000);
+        heartTimer.schedule(task, 0, 24000);
     }
 
     private void stopHeartBeatTimer() {
@@ -450,10 +449,24 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     }
 
     public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
-        if (state == ZegoRoomState.DISCONNECTED) {
+        Log.d(TAG, "onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state + "], errorCode = ["
+            + errorCode + "], extendedData = [" + extendedData + "]");
+        if (state == ZegoRoomState.CONNECTED) {
+            ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
+            if (zegoCallback != null) {
+                // join room result
+                zegoCallback.onResult(0);
+            }
+        } else if (state == ZegoRoomState.DISCONNECTED) {
+            stopHeartBeatTimer();
+            handler.removeCallbacks(callTimeoutRunnable);
+            ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
+            if (zegoCallback != null) {
+                // join room result
+                zegoCallback.onResult(errorCode);
+                return;
+            }
             if (getCallInfo().callID != null) {
-                handler.removeCallbacks(callTimeoutRunnable);
-                stopHeartBeatTimer();
                 if (listener != null) {
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     if (userService.getLocalUserInfo() != null) {

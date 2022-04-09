@@ -363,7 +363,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     if (!callStatusChanged && !callerStatusChanged && !receiverStatusChanged) {
                         // no status changed , is heartbeat update
                         if (caller.heartbeat_time != 0 && receiver.heartbeat_time != 0) {
-                            if (Math.abs(caller.heartbeat_time - receiver.heartbeat_time) > 30_000) {
+                            if (Math.abs(caller.heartbeat_time - receiver.heartbeat_time) > 60_000) {
                                 HashMap<String, String> data = new HashMap<>();
                                 // i receive,means the other one timeout
                                 data.put("user_id", other.user_id);
