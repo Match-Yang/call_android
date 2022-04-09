@@ -158,17 +158,12 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 public void onResult(int errorCode, Object obj) {
                     Log.d(TAG,
                         "acceptCall onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
-                    if (Objects.equals((String) obj, callID)) {
-                        if (errorCode == 0) {
-                            startHeartBeatTimer(callID, selfUserID);
-                            ZegoServiceManager.getInstance().roomService.joinRoom(callID, joinToken);
-                            callbackHashMap.clear();
-                            callbackHashMap.put(callID, callback);
-                            status = ZegoLocalUserStatus.Calling;
-                        }
-                        if (callback != null) {
-                            callback.onResult(errorCode);
-                        }
+                    if (errorCode == 0) {
+                        startHeartBeatTimer(callID, selfUserID);
+                        ZegoServiceManager.getInstance().roomService.joinRoom(callID, joinToken);
+                        callbackHashMap.clear();
+                        callbackHashMap.put(callID, callback);
+                        status = ZegoLocalUserStatus.Calling;
                     }
                 }
             });

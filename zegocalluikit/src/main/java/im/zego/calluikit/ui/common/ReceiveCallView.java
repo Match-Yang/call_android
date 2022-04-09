@@ -81,6 +81,7 @@ public class ReceiveCallView extends FrameLayout {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
                     CallActivity.startCallActivity(userInfo);
                 } else {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
                     ToastUtils.showShort("responseCall " + errorCode);
                 }
                 if (listener != null) {
@@ -96,6 +97,7 @@ public class ReceiveCallView extends FrameLayout {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
                     CallActivity.startCallActivity(userInfo);
                 } else {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
                     ToastUtils.showShort("responseCall " + errorCode);
                 }
                 if (listener != null) {
