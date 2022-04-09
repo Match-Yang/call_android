@@ -3,30 +3,21 @@ package im.zego.call.ui.user;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-
 import com.blankj.utilcode.util.ToastUtils;
 import com.scwang.smart.refresh.header.MaterialHeader;
-
-import java.util.List;
-
 import im.zego.call.R;
 import im.zego.call.UIKitActivity;
-import im.zego.call.firebase.FirebaseUserManager;
-import im.zego.calluikit.ZegoCallManager;
 import im.zego.call.databinding.ActivityOnlineUserBinding;
+import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;
-import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
+import java.util.List;
 
 public class OnlineUserActivity extends UIKitActivity<ActivityOnlineUserBinding> {
 

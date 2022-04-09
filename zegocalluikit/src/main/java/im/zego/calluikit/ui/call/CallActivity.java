@@ -14,10 +14,8 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -47,6 +45,9 @@ import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.calluikit.utils.TokenManager;
 import im.zego.zegoexpress.constants.ZegoRoomState;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 

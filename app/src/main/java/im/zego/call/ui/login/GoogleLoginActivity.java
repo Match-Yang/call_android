@@ -12,9 +12,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
-
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,16 +23,13 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import im.zego.call.R;
-import im.zego.call.UIKitActivity;
-import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.databinding.ActivityGoogleLoginBinding;
+import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.utils.PermissionHelper;
 import im.zego.calluikit.utils.TokenManager;
