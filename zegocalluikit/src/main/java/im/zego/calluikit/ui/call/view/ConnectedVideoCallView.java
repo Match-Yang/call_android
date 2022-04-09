@@ -20,6 +20,7 @@ import im.zego.calluikit.R;
 import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.databinding.LayoutConnectedVideoCallBinding;
 import im.zego.calluikit.ui.call.CallStateManager;
+import im.zego.calluikit.ui.common.MinimalView;
 import im.zego.calluikit.utils.AudioHelper;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
@@ -133,7 +134,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         super.onVisibilityChanged(changedView, visibility);
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
-        if (visibility == View.VISIBLE) {
+        if (visibility == View.VISIBLE && !MinimalView.isShowMinimal) {
             AudioHelper.updateAudioSelect(binding.callVideoSpeaker, ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
             if (isSelfCenter) {
                 streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewCenterTexture);

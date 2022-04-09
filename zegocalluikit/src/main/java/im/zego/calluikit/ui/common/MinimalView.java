@@ -33,7 +33,7 @@ public class MinimalView extends ConstraintLayout {
 
     private ZegoUserInfo remoteUserInfo;
     private MinimalStatus currentStatus;
-    private boolean canShowMinimal;
+    public static boolean isShowMinimal;
     private boolean isShowVideo;
 
     public MinimalView(@NonNull Context context) {
@@ -70,7 +70,7 @@ public class MinimalView extends ConstraintLayout {
         LiveEventBus
                 .get(Constants.EVENT_MINIMAL, Boolean.class)
                 .observeForever(isMinimal -> {
-                    this.canShowMinimal = isMinimal;
+                    isShowMinimal = isMinimal;
                     updateStatus(currentStatus);
                 });
         updateStatus(MinimalStatus.Initialized);
@@ -79,7 +79,7 @@ public class MinimalView extends ConstraintLayout {
     public void updateStatus(MinimalStatus next) {
         currentStatus = next;
 
-        if (!canShowMinimal) {
+        if (!isShowMinimal) {
             toggleVoice(false);
             toggleVideo(false);
             return;
@@ -140,7 +140,7 @@ public class MinimalView extends ConstraintLayout {
                 break;
             case Initialized:
             default:
-                canShowMinimal = false;
+                isShowMinimal = false;
                 toggleVoice(false);
                 toggleVideo(false);
                 break;
@@ -151,7 +151,7 @@ public class MinimalView extends ConstraintLayout {
     }
 
     private void delayDismiss() {
-        canShowMinimal = false;
+        isShowMinimal = false;
         LiveEventBus.get(Constants.EVENT_TIMER_CHANGE_KEY, String.class).removeObserver(timerObserver);
         if (binding.videoTextureView.getVisibility() == VISIBLE) {
             toggleVoice(false);

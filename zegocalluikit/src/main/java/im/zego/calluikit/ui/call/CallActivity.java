@@ -14,8 +14,10 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
+
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
@@ -336,6 +338,21 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         handler.postDelayed(() -> {
             finish();
         }, 1000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isFinishing()) {
+            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            if (am != null) {
+                List<ActivityManager.AppTask> tasks = am.getAppTasks();
+                for (ActivityManager.AppTask task : tasks) {
+                    task.setExcludeFromRecents(true);
+                    break;
+                }
+            }
+        }
     }
 
     @Override
