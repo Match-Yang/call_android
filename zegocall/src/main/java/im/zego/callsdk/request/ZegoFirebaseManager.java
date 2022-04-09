@@ -297,6 +297,10 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
+                if (databaseCall != null) {
+                    removeCallData(databaseCall.call_id);
+                }
             }
 
             @Override
