@@ -34,6 +34,7 @@ import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.service.ForegroundService;
+import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.ReceiveCallView;
@@ -90,9 +91,8 @@ public class ZegoCallManagerImpl {
             @Override
             public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
                 Activity topActivity = ActivityUtils.getTopActivity();
-                if (topActivity instanceof CallActivity) {
-                    CallActivity callActivity = (CallActivity) topActivity;
-                    callActivity.onNetworkQuality(userID, quality);
+                if (topActivity instanceof BaseActivity) {
+                    ((BaseActivity<?>) topActivity).onNetworkQuality(userID, quality);
                 }
             }
 
@@ -164,9 +164,8 @@ public class ZegoCallManagerImpl {
             @Override
             public void onCallingStateUpdated(ZegoCallingState state) {
                 Activity topActivity = ActivityUtils.getTopActivity();
-                if (topActivity instanceof CallActivity) {
-                    CallActivity callActivity = (CallActivity) topActivity;
-                    callActivity.onCallingStateUpdated(state);
+                if (topActivity instanceof BaseActivity) {
+                    ((BaseActivity<?>) topActivity).onCallingStateUpdated(state);
                 }
             }
         });

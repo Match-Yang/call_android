@@ -21,6 +21,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import im.zego.callsdk.listener.ZegoCallingState;
+import im.zego.callsdk.model.ZegoNetWorkQuality;
+import im.zego.calluikit.R;
+import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.LoadingDialog;
 import im.zego.calluikit.ui.common.TipsDialog;
 import im.zego.calluikit.ui.common.TipsDialog.TipsMessageType;
@@ -129,6 +134,26 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     protected void dismissLoading() {
         if (loadingDialog != null) {
             loadingDialog.dismiss();
+        }
+    }
+
+    public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
+        if (quality == ZegoNetWorkQuality.Bad && CallStateManager.getInstance().isConnected()) {
+            if (userID.equals(ZegoCallManager.getInstance().getLocalUserInfo().userID)) {
+                showLoading(getString(R.string.network_connnect_me_unstable), false);
+            } else {
+                showLoading(getString(R.string.network_connnect_other_unstable), false);
+            }
+        } else {
+            dismissLoading();
+        }
+    }
+
+    public void onCallingStateUpdated(ZegoCallingState state) {
+        if (state == ZegoCallingState.CONNECTING && CallStateManager.getInstance().isInACallStream()) {
+            showLoading(getString(R.string.call_page_call_disconnected), true);
+        } else {
+            dismissLoading();
         }
     }
 }

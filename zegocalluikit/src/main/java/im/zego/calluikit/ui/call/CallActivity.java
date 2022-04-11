@@ -35,10 +35,8 @@ import im.zego.callsdk.core.interfaces.ZegoStreamService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
-import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.databinding.ActivityCallBinding;
 import im.zego.calluikit.ui.BaseActivity;
@@ -347,9 +345,15 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             if (am != null) {
                 List<ActivityManager.AppTask> tasks = am.getAppTasks();
+                int count = 0;
                 for (ActivityManager.AppTask task : tasks) {
-                    task.setExcludeFromRecents(true);
-                    break;
+                    if (count == 0) {
+                        task.setExcludeFromRecents(true);
+                    } else if (count == 1) {
+                        task.moveToFront();
+                        break;
+                    }
+                    count++;
                 }
             }
         }
@@ -376,25 +380,5 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         binding.layoutOutgoingCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVideoCall.onUserInfoUpdated(userInfo);
         binding.layoutConnectedVoiceCall.onUserInfoUpdated(userInfo);
-    }
-
-    public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
-        if (quality == ZegoNetWorkQuality.Bad) {
-            if (userID.equals(ZegoCallManager.getInstance().getLocalUserInfo().userID)) {
-                showLoading(getString(R.string.network_connnect_me_unstable), false);
-            } else {
-                showLoading(getString(R.string.network_connnect_other_unstable), false);
-            }
-        } else {
-            dismissLoading();
-        }
-    }
-
-    public void onCallingStateUpdated(ZegoCallingState state) {
-        if (state == ZegoCallingState.DISCONNECTED) {
-            showLoading(getString(R.string.call_page_call_disconnected), true);
-        } else {
-            dismissLoading();
-        }
     }
 }

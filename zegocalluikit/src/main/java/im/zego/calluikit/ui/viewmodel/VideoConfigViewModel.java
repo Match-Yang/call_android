@@ -30,7 +30,7 @@ public class VideoConfigViewModel extends ViewModel {
         settingConfig.setMicVolumeAutoAdjustment(false);
         settingConfig.setMirroring(false);
         settingConfig.setVideoResolution(videoResolutionStringArray[1]);
-        settingConfig.setAudioBitrate(audioBitrateStringArray[0]);
+        settingConfig.setAudioBitrate(audioBitrateStringArray[1]);
     }
 
     public void updateVideoConfig() {
