@@ -14,19 +14,27 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils.OnAppStatusChangedListener;
 import com.tencent.mmkv.MMKV;
+
+import java.util.Objects;
+
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityEntryBinding;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.service.ForegroundService;
+import im.zego.call.token.ZegoTokenCallback;
+import im.zego.call.token.ZegoTokenManager;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallActivity;
 import im.zego.call.ui.call.CallStateManager;
@@ -46,9 +54,9 @@ import im.zego.callsdk.model.ZegoResponseType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.service.ZegoRoomManager;
 import im.zego.callsdk.service.ZegoUserService;
+import im.zego.zegoexpress.ZegoExpressErrorCode;
 import im.zego.zim.enums.ZIMConnectionEvent;
 import im.zego.zim.enums.ZIMConnectionState;
-import java.util.Objects;
 
 public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
 
@@ -238,6 +246,19 @@ public class EntryActivity extends BaseActivity<ActivityEntryBinding> {
                         callActivity.onNetworkQuality(userID, quality);
                     }
                 }
+            }
+
+            @Override
+            public void onRoomTokenWillExpire(int remainTimeInSecond, String roomID) {
+                ZegoUserInfo selfUser = ZegoRoomManager.getInstance().userService.localUserInfo;
+                ZegoTokenManager.getInstance().getToken(selfUser.userID, true, new ZegoTokenCallback() {
+                    @Override
+                    public void onTokenCallback(int errorCode, @Nullable String token) {
+                        if (errorCode == ZegoExpressErrorCode.CommonSuccess) {
+                            ZegoRoomManager.getInstance().userService.renewToken(token, roomID);
+                        }
+                    }
+                });
             }
         });
 

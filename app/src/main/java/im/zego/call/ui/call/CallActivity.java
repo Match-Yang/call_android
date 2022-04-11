@@ -25,8 +25,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import im.zego.call.R;
-import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityCallBinding;
+import im.zego.call.token.ZegoTokenManager;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager.CallStateChangedListener;
 import im.zego.call.ui.common.LoadingDialog;
@@ -179,42 +179,45 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         userService.useFrontCamera(true);
 
         String userID = userService.localUserInfo.userID;
-        String token = AuthInfoManager.getInstance().generateToken(userID);
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
-            userService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
-                if (errorCode == 0) {
-                    userService.enableMic(true, errorCode1 -> {
-                        if (errorCode1 == 0) {
-                        } else {
-                            ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
-                        }
-                    });
-                    handler.postDelayed(missCallRunnable, 60 * 1000);
-                } else {
-                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
-                    finishActivityDelayed();
-                }
+            ZegoTokenManager.getInstance().getToken(userID, (errorCode2, token) -> {
+                userService.callUser(userInfo.userID, ZegoCallType.Voice, token, errorCode -> {
+                    if (errorCode == 0) {
+                        userService.enableMic(true, errorCode1 -> {
+                            if (errorCode1 == 0) {
+                            } else {
+                                ToastUtils.showShort(getString(R.string.mic_operate_failed, errorCode1));
+                            }
+                        });
+                        handler.postDelayed(missCallRunnable, 60 * 1000);
+                    } else {
+                        showWarnTips(getString(R.string.call_page_call_fail, errorCode));
+                        finishActivityDelayed();
+                    }
+                });
             });
         } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
-            userService.callUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
-                if (errorCode == 0) {
-                    TextureView textureView = binding.layoutOutgoingCall.getTextureView();
-                    userService.enableCamera(true, errorCode1 -> {
-                        if (errorCode1 == 0) {
-                            userService.enableMic(true, errorCode2 -> {
-                                if (errorCode2 == 0) {
-                                }
-                            });
-                        } else {
-                            ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
-                        }
-                        userService.startPlaying(userService.localUserInfo.userID, textureView);
-                    });
-                    handler.postDelayed(missCallRunnable, 60 * 1000);
-                } else {
-                    showWarnTips(getString(R.string.call_page_call_fail, errorCode));
-                    finishActivityDelayed();
-                }
+            ZegoTokenManager.getInstance().getToken(userID, (errorCode3, token) -> {
+                userService.callUser(userInfo.userID, ZegoCallType.Video, token, errorCode -> {
+                    if (errorCode == 0) {
+                        TextureView textureView = binding.layoutOutgoingCall.getTextureView();
+                        userService.enableCamera(true, errorCode1 -> {
+                            if (errorCode1 == 0) {
+                                userService.enableMic(true, errorCode2 -> {
+                                    if (errorCode2 == 0) {
+                                    }
+                                });
+                            } else {
+                                ToastUtils.showShort(getString(R.string.camera_operate_failed, errorCode1));
+                            }
+                            userService.startPlaying(userService.localUserInfo.userID, textureView);
+                        });
+                        handler.postDelayed(missCallRunnable, 60 * 1000);
+                    } else {
+                        showWarnTips(getString(R.string.call_page_call_fail, errorCode));
+                        finishActivityDelayed();
+                    }
+                });
             });
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
             handler.postDelayed(finishRunnable, 62 * 1000);

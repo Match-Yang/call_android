@@ -112,6 +112,14 @@ public class ZegoRoomManager {
                     Log.d(TAG, "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
                 }
             }
+
+            @Override
+            public void onRoomTokenWillExpire(String roomID, int remainTimeInSecond) {
+                super.onRoomTokenWillExpire(roomID, remainTimeInSecond);
+                if (userService != null) {
+                    userService.onRoomTokenWillExpire(remainTimeInSecond, roomID);
+                }
+            }
         });
 
         ZegoZIMManager.getInstance().createZIM(appID, application);
@@ -137,6 +145,9 @@ public class ZegoRoomManager {
             @Override
             public void onTokenWillExpire(ZIM zim, int second) {
                 super.onTokenWillExpire(zim, second);
+                if (userService != null) {
+                    userService.onRoomTokenWillExpire(second, userService.getRoomInfo().roomID);
+                }
             }
 
             @Override

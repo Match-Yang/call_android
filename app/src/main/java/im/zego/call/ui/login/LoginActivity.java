@@ -22,12 +22,12 @@ import com.tencent.mmkv.MMKV;
 import java.util.Random;
 
 import im.zego.call.R;
-import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.databinding.ActivityLoginBinding;
 import im.zego.call.http.CallApi;
 import im.zego.call.http.IAsyncGetCallback;
 import im.zego.call.http.WebClientManager;
 import im.zego.call.http.bean.UserBean;
+import im.zego.call.token.ZegoTokenManager;
 import im.zego.call.ui.BaseActivity;
 import im.zego.call.ui.call.CallStateManager;
 import im.zego.call.ui.common.LoadingDialog;
@@ -189,15 +189,17 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     ZegoUserInfo userInfo = new ZegoUserInfo();
                     userInfo.userName = userName;
                     userInfo.userID = userID;
-                    String token = AuthInfoManager.getInstance().generateToken(userID);
-                    ZegoUserService userService = ZegoRoomManager.getInstance().userService;
-                    userService.login(userInfo, token, code -> {
-                        Log.d(TAG, "login: " + code);
-                        if (code == 0) {
-                            ActivityUtils.startActivity(EntryActivity.class);
-                        } else {
-                            showWarnTips(getString(R.string.toast_login_fail, code));
-                        }
+
+                    ZegoTokenManager.getInstance().getToken(userID, (errorCode3, token) -> {
+                        ZegoUserService userService = ZegoRoomManager.getInstance().userService;
+                        userService.login(userInfo, token, code -> {
+                            Log.d(TAG, "login: " + code);
+                            if (code == 0) {
+                                ActivityUtils.startActivity(EntryActivity.class);
+                            } else {
+                                showWarnTips(getString(R.string.toast_login_fail, code));
+                            }
+                        });
                     });
                 } else {
                     WebClientManager.getInstance().logout(userID, null);
