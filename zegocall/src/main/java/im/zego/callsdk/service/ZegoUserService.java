@@ -602,6 +602,14 @@ public class ZegoUserService {
         }
     }
 
+    /**
+     * Renew token.
+     * <p>
+     * Description: After the developer receives [onRoomTokenWillExpire], they can use this API to update the token to ensure that the subsequent RTC&ZIM functions are normal.
+     *
+     * @param token  The token that needs to be renew.
+     * @param roomID Room ID.
+     */
     public void renewToken(String token, String roomID) {
         ZegoZIMManager.getInstance().zim.renewToken(token, new ZIMTokenRenewedCallback() {
             @Override
