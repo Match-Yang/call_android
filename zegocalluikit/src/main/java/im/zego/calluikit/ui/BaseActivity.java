@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import im.zego.callsdk.listener.ZegoCallingState;
+import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.calluikit.R;
 import im.zego.calluikit.ZegoCallManager;

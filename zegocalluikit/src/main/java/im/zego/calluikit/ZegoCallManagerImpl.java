@@ -1,5 +1,7 @@
 package im.zego.calluikit;
 
+import static im.zego.calluikit.ui.call.CallActivity.USER_INFO;
+
 import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
@@ -140,6 +142,8 @@ public class ZegoCallManagerImpl {
             @Override
             public void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType) {
                 CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+                callView.dismissReceiveCallWindow();
+                dismissNotification(activity);
             }
 
             @Override
@@ -239,9 +243,10 @@ public class ZegoCallManagerImpl {
     public void showNotification(ZegoUserInfo userInfo) {
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent intent = new Intent(topActivity, CallActivity.class);
+        intent.putExtra(USER_INFO, userInfo);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         int callState = CallStateManager.getInstance().getCallState();
@@ -302,6 +307,10 @@ public class ZegoCallManagerImpl {
             callView.updateData(userInfo, type);
             callView.showReceiveCallWindow();
         });
+    }
+
+    public void dismissCallDialog() {
+        handler.post(callView::dismissReceiveCallWindow);
     }
 
     public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {

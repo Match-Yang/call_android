@@ -24,7 +24,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
-import im.zego.callsdk.model.ZegoCallingState;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -37,6 +36,7 @@ import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
+import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.databinding.ActivityCallBinding;
 import im.zego.calluikit.ui.BaseActivity;
@@ -49,7 +49,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private static final String TAG = "CallActivity";
 
-    private static final String USER_INFO = "user_info";
+    public static final String USER_INFO = "user_info";
 
     private ZegoUserInfo userInfo;
     private Handler handler = new Handler(Looper.getMainLooper());
@@ -134,6 +134,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
         initView();
         startObserve();
+
+        ZegoCallManager.getInstance().dismissCallDialog();
     }
 
     private void startObserve() {

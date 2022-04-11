@@ -1,7 +1,7 @@
 <resources>
   <string name="login_page_google_login">Log in with Google</string>
   <string name="login_page_service_privacy">I have read and agreed to ZEGOCLOUD\'s Terms of Service &amp; Privacy Policy.</string>
-  <string name="toast_login_service_privacy">Please tick to agree to "Terms of Service" and "Privacy Policy"</string>
+  <string name="toast_login_service_privacy">Please tick to agree to \"Terms of Service\" and \"Privacy Policy\"</string>
   <string name="login_page_terms_of_service">Terms of Service</string>
   <string name="login_page_privacy_policy">Privacy Policy</string>
   <string name="toast_login_fail_google">Failed to log in. Error code: %d(Google).</string>

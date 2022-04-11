@@ -49,6 +49,8 @@ public class VideoConfigViewModel extends ViewModel {
         int audioBitrate = VideoSettingConfig.calculateAudioBitrate(settingConfig.getAudioBitrate());
         deviceService.setAudioBitrate(ZegoAudioBitrate.getAudioBitrate(audioBitrate));
 
+        deviceService.setVideoMirroring(settingConfig.isMirroring());
+
         deviceService.setDeviceStatus(ZegoDevicesType.NOISE_SUPPRESSION, settingConfig.isBackgroundNoiseReduction());
 
         deviceService.setDeviceStatus(ZegoDevicesType.ECHO_CANCELLATION, settingConfig.isEchoCancellation());

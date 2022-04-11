@@ -109,4 +109,8 @@ public class ZegoCallManager {
     public void dismissNotification(Activity activity) {
         impl.dismissNotification(activity);
     }
+
+    public void dismissCallDialog() {
+        impl.dismissCallDialog();
+    }
 }
