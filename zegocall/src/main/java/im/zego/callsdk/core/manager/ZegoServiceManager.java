@@ -105,13 +105,16 @@ public class ZegoServiceManager {
         profile.scenario = ZegoScenario.COMMUNICATION;
         profile.application = application;
         ZegoEngineConfig config = new ZegoEngineConfig();
-        config.advancedConfig.put("room_retry_time", "30");
+        config.advancedConfig.put("room_retry_time", "60");
         ZegoExpressEngine.setEngineConfig(config);
         ZegoExpressEngine.createEngine(profile, new IZegoEventHandler() {
             @Override
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
                 ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
+                Log.d(TAG,
+                    "onNetworkQuality() called with: userID = [" + userID + "], upstreamQuality = [" + upstreamQuality
+                        + "], downstreamQuality = [" + downstreamQuality + "]");
                 if (userService.listener != null) {
                     if (upstreamQuality == ZegoStreamQualityLevel.BAD
                         || upstreamQuality == ZegoStreamQualityLevel.DIE
@@ -170,6 +173,9 @@ public class ZegoServiceManager {
             @Override
             public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
                 super.onRoomStateUpdate(roomID, state, errorCode, extendedData);
+                Log.d(TAG,
+                    "onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state + "], errorCode = ["
+                        + errorCode + "], extendedData = [" + extendedData + "]");
                 if (callService instanceof ZegoCallServiceImpl) {
                     ((ZegoCallServiceImpl) callService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 }

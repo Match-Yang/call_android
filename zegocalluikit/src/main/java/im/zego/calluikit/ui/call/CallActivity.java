@@ -248,7 +248,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         deviceService.enableSpeaker(false);
         deviceService.useFrontCamera(true);
 
-        String token = TokenManager.getInstance().tokenWrapper.token;
+        String token = TokenManager.getInstance().getTokenWrapper().token;
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
                 if (errorCode == 0) {

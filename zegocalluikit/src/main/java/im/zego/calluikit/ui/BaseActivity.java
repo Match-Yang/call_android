@@ -67,6 +67,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
             tipsDialog.dismiss();
             tipsDialog = null;
         }
+        dismissLoading();
     }
 
     protected void showNormalTips(String message) {

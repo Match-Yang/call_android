@@ -75,12 +75,13 @@ public class ReceiveCallView extends FrameLayout {
 
         binding.dialogCallAcceptVoice.setOnClickListener(v -> {
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            String token = TokenManager.getInstance().tokenWrapper.token;
+            String token = TokenManager.getInstance().getTokenWrapper().token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZegoErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
                     CallActivity.startCallActivity(userInfo);
                 } else {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
                     ToastUtils.showShort("responseCall " + errorCode);
                 }
                 if (listener != null) {
@@ -90,12 +91,13 @@ public class ReceiveCallView extends FrameLayout {
         });
         binding.dialogCallAcceptVideo.setOnClickListener(v -> {
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-            String token = TokenManager.getInstance().tokenWrapper.token;
+            String token = TokenManager.getInstance().getTokenWrapper().token;
             callService.acceptCall(token, errorCode -> {
                 if (errorCode == ZegoErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
                     CallActivity.startCallActivity(userInfo);
                 } else {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_COMPLETED);
                     ToastUtils.showShort("responseCall " + errorCode);
                 }
                 if (listener != null) {

@@ -14,6 +14,7 @@ import im.zego.callsdk.model.ZegoUserInfo;
 public class TokenManager {
 
     private static volatile TokenManager singleton = null;
+    private static final String TAG = "TokenManager";
 
     private TokenManager() {
         tokenWrapper = getTokenFromDisk();
@@ -29,7 +30,8 @@ public class TokenManager {
                             @Override
                             public void onResult(int errorCode, Object obj) {
                                 Log.d("TAG",
-                                    "getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
+                                    "getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj
+                                        + "]");
                                 if (errorCode == 0) {
                                     saveToken((String) obj, effectiveTime * 1000L);
                                 }
@@ -54,7 +56,16 @@ public class TokenManager {
         return singleton;
     }
 
-    public TokenWrapper tokenWrapper;
+    private TokenWrapper tokenWrapper;
+
+    public TokenWrapper getTokenWrapper() {
+        if (tokenWrapper != null) {
+            Log.d(TAG, "getTokenWrapper() called,isTokenValid: " + tokenWrapper.isTokenValid());
+        } else {
+            Log.d(TAG, "getTokenWrapper: null");
+        }
+        return tokenWrapper;
+    }
 
     private void saveToken(String token, long effectiveTimeInSeconds) {
         long expiryTime = System.currentTimeMillis() + effectiveTimeInSeconds;
