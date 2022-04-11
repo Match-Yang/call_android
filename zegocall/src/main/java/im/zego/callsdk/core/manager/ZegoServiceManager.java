@@ -6,7 +6,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import im.zego.callsdk.command.ZegoCommandManager;
-import im.zego.callsdk.listener.ZegoCallingState;
+import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.zegoexpress.entity.ZegoUser;
 import org.json.JSONObject;
 

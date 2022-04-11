@@ -1,4 +1,4 @@
-package im.zego.callsdk.listener;
+package im.zego.callsdk.model;
 
 public enum ZegoCallingState {
     DISCONNECTED(0),

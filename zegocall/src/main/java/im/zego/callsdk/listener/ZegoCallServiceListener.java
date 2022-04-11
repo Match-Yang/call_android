@@ -2,10 +2,10 @@ package im.zego.callsdk.listener;
 
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.zegoexpress.constants.ZegoRoomState;
 
 public interface ZegoCallServiceListener {
 
