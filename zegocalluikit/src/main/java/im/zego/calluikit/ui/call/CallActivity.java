@@ -22,7 +22,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
-import im.zego.callsdk.listener.ZegoCallingState;
+import im.zego.callsdk.model.ZegoCallingState;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -44,10 +44,6 @@ import im.zego.calluikit.ui.dialog.VideoSettingsDialog;
 import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
 import im.zego.calluikit.utils.AvatarHelper;
 import im.zego.calluikit.utils.TokenManager;
-import im.zego.zegoexpress.constants.ZegoRoomState;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 

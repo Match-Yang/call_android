@@ -25,7 +25,7 @@ import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
-import im.zego.callsdk.listener.ZegoCallingState;
+import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
@@ -38,7 +38,6 @@ import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.ReceiveCallView;
 import im.zego.calluikit.view.ZegoCallKitView;
-import im.zego.zegoexpress.constants.ZegoRoomState;
 
 /**
  * Created by rocket_wang on 2022/3/31.
