@@ -112,9 +112,6 @@ public class ZegoServiceManager {
             public void onNetworkQuality(String userID, ZegoStreamQualityLevel upstreamQuality,
                 ZegoStreamQualityLevel downstreamQuality) {
                 super.onNetworkQuality(userID, upstreamQuality, downstreamQuality);
-                Log.d(TAG,
-                    "onNetworkQuality() called with: userID = [" + userID + "], upstreamQuality = [" + upstreamQuality
-                        + "], downstreamQuality = [" + downstreamQuality + "]");
                 if (userService.listener != null) {
                     if (upstreamQuality == ZegoStreamQualityLevel.BAD
                         || upstreamQuality == ZegoStreamQualityLevel.DIE

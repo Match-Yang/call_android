@@ -287,7 +287,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     }
                 } else {
                     declineCallInner(currentUser.getUid(), caller.caller_id,
-                        databaseCall.call_id, databaseCall.call_type, null);
+                        databaseCall.call_id, ZegoDeclineType.Busy.getValue(), null);
                 }
             }
 
