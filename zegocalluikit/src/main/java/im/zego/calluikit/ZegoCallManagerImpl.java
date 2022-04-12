@@ -141,7 +141,12 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType) {
-                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+                if (declineType == ZegoDeclineType.Decline) {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+                } else {
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_BUSY);
+
+                }
                 callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
             }
@@ -246,7 +251,8 @@ public class ZegoCallManagerImpl {
         intent.putExtra(USER_INFO, userInfo);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent
+            .getActivity(topActivity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         int callState = CallStateManager.getInstance().getCallState();

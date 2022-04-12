@@ -83,9 +83,6 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
         ZegoExpressEngine.getEngine().setMinVideoBitrateForTrafficControl(120, ZegoTrafficControlMinVideoBitrateMode.ULTRA_LOW_FPS);
         ZegoExpressEngine.getEngine().setTrafficControlFocusOn(ZegoTrafficControlFocusOnMode.ZEGO_TRAFFIC_CONTROL_FOUNS_ON_REMOTE);
         ZegoExpressEngine.getEngine().enableANS(false);
-        ZegoEngineConfig config = new ZegoEngineConfig();
-        config.advancedConfig.put("room_retry_time", "30");
-        ZegoExpressEngine.setEngineConfig(config);
     }
 
     @Override

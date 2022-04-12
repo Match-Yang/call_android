@@ -33,6 +33,7 @@ public class CallStateManager {
     public static final int TYPE_CALL_COMPLETED = 8;
     public static final int TYPE_CALL_MISSED = 9;
     public static final int TYPE_CALL_DECLINE = 10;
+    public static final int TYPE_CALL_BUSY= 11;
     private Vibrator vibrator;
 
     private CallStateManager() {

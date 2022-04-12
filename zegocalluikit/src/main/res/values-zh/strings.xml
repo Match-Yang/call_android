@@ -53,6 +53,7 @@
   <string name="call_page_status_completed">已完成</string>
   <string name="call_page_status_missed">未接听</string>
   <string name="call_page_status_declined">已拒绝</string>
+  <string name="call_page_status_busy">对方正忙</string>
   <string name="call_notification">与%s 通话中, 可点击返回。</string>
   <string name="receive_call_notification">%s 请求通话，可点击查看。</string>
   <string name="request_call_notification">正在呼叫%s, 可点击查看。</string>
