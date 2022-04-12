@@ -216,7 +216,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 if (callback != null) {
                     callback.onResult(-1000, null);
                 }
-                removeCallData(databaseCall.call_id);
+                removeCallListener(databaseCall.call_id);
             }
         });
         setCurrentCallData(databaseCall);
@@ -287,7 +287,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     }
                 } else {
                     declineCallInner(currentUser.getUid(), caller.caller_id,
-                        databaseCall.call_id, databaseCall.call_type, null);
+                        databaseCall.call_id, ZegoDeclineType.Busy.getValue(), null);
                 }
             }
 
@@ -299,7 +299,8 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
                 DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
                 if (databaseCall != null) {
-                    removeCallData(databaseCall.call_id);
+                    Log.d(TAG, "onChildRemoved() called with: databaseCall.call_id = [" + databaseCall.call_id + "]");
+                    removeCallListener(databaseCall.call_id);
                 }
             }
 
@@ -373,6 +374,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                                 data.put("user_id", other.user_id);
                                 data.put("call_id", callID);
                                 updater.receiveUpdate(ZegoListenerManager.TIMEOUT_CALL, data);
+                                removeCallListener(callID);
                             }
                         }
                         return;
@@ -387,6 +389,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         data.put("id", other.user_id);
                         data.put("call_id", callID);
                         updater.receiveUpdate(ZegoListenerManager.END_CALL, data);
+                        removeCallListener(callID);
                     } else if (Status.DECLINED.getValue() == caller.status) {
                         HashMap<String, String> data = new HashMap<>();
                         data.put("callee_id", receiver.user_id);
@@ -406,6 +409,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         data.put("call_id", callID);
                         updater.receiveUpdate(ZegoListenerManager.CANCEL_CALL, data);
                     }
+                    removeCallListener(callID);
                 } else {
                     if (receiver.status == Status.CONNECTED.getValue()) {
                         HashMap<String, String> data = new HashMap<>();
@@ -481,7 +485,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 data.put("call_id", callID);
                 updater.receiveUpdate(ZegoListenerManager.END_CALL, data);
             }
-            removeCallData(callID);
         }
         removeCallListener(callID);
     }
@@ -674,6 +677,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
     }
 
     private void setCurrentCallData(DatabaseCall call) {
+        Log.d(TAG, "setCurrentCallData() called with: call = [" + call.call_id + "]");
         if (!isCurrentIdle()) {
             selfCalls.clear();
         }

@@ -40,12 +40,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         Map<String, String> data = remoteMessage.getData();
 
         boolean isAppNotStart = !AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
         boolean isDeviceRestart = AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
+        Log.d(TAG, "cloud message,isAppNotStart:" + isAppNotStart + ",isDeviceRestart:" + isDeviceRestart);
         if (isAppNotStart || isDeviceRestart) {
             if (data.size() > 0) {
                 AppUtils.relaunchApp();

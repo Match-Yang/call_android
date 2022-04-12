@@ -40,10 +40,10 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
 
         ZegoRoomConfig roomConfig = new ZegoRoomConfig();
         roomConfig.token = token;
+        roomConfig.isUserStatusNotify = true;
         ZegoExpressEngine.getEngine().loginRoom(roomID, user, roomConfig);
 
         String streamID = ZegoCallHelper.getStreamID(localUserInfo.userID, roomID);
-        Log.d(CoreTest.TAG, "startPublishingStream() called with: streamID = [" + streamID + "]");
         ZegoExpressEngine.getEngine().startPublishingStream(streamID);
 
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;

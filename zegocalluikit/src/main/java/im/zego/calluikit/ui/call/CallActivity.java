@@ -225,6 +225,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
                     updateStateText(R.string.call_page_status_declined);
                     finishActivityDelayed();
+                }else if(after == CallStateManager.TYPE_CALL_BUSY){
+                    updateStateText(R.string.call_page_status_busy);
+                    finishActivityDelayed();
                 }
                 updateUi(after);
             }

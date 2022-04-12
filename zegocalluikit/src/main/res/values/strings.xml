@@ -53,6 +53,7 @@
   <string name="call_page_status_completed">Ended</string>
   <string name="call_page_status_missed">Missed</string>
   <string name="call_page_status_declined">Declined</string>
+  <string name="call_page_status_busy">The one you dialed is busy.</string>
   <string name="call_notification">On the line with %s. Tap here to go back.</string>
   <string name="receive_call_notification">%s is calling you. Tap here to check.ap here to go back.</string>
   <string name="request_call_notification">You are calling %s. Tap here to check.</string>
