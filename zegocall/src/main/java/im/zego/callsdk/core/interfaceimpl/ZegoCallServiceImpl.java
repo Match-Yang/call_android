@@ -410,6 +410,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                 if (Objects.equals(getCallInfo().callID, call_id)) {
                     handler.removeCallbacks(callTimeoutRunnable);
                     stopHeartBeatTimer();
+                    ZegoServiceManager.getInstance().roomService.leaveRoom();
                     status = ZegoLocalUserStatus.Free;
                     if (listener != null) {
                         ZegoUserInfo userInfo = new ZegoUserInfo();
