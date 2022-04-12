@@ -120,6 +120,8 @@ public abstract class ZegoDeviceService {
 
     public abstract void setBestConfig();
 
+    public abstract void setVideoMirroring(boolean mirroring);
+
     public abstract ZegoAudioRoute getAudioRouteType();
 
 }

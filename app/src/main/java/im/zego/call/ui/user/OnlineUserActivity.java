@@ -6,6 +6,7 @@ import android.view.View.OnClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.scwang.smart.refresh.header.MaterialHeader;
 import im.zego.call.R;
@@ -22,6 +23,7 @@ import java.util.List;
 public class OnlineUserActivity extends UIKitActivity<ActivityOnlineUserBinding> {
 
     private OnlineUserAdapter onlineUserAdapter;
+    private boolean isDisconnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,11 @@ public class OnlineUserActivity extends UIKitActivity<ActivityOnlineUserBinding>
                 if (adapterPosition == RecyclerView.NO_POSITION) {
                     return;
                 }
+                if (isDisconnected) {
+                    ToastUtils.showShort(R.string.network_connect_failed_title);
+                    return;
+                }
+
                 ZegoUserInfo userInfo = onlineUserAdapter.getUserInfo(adapterPosition);
                 boolean inACallStream = CallStateManager.getInstance().isInACallStream();
                 if (inACallStream) {
@@ -71,6 +78,18 @@ public class OnlineUserActivity extends UIKitActivity<ActivityOnlineUserBinding>
                     ZegoCallManager.getInstance()
                         .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
                 }
+            }
+        });
+
+        NetworkUtils.registerNetworkStatusChangedListener(new NetworkUtils.OnNetworkStatusChangedListener() {
+            @Override
+            public void onDisconnected() {
+                isDisconnected = true;
+            }
+
+            @Override
+            public void onConnected(NetworkUtils.NetworkType networkType) {
+                isDisconnected = false;
             }
         });
     }

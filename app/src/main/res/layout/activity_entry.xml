@@ -25,12 +25,15 @@
 
     <TextView
       android:id="@+id/entry_user_name"
-      android:layout_width="wrap_content"
+      android:layout_width="250dp"
       android:layout_height="wrap_content"
       android:layout_marginStart="7dp"
-      android:text="User name"
+      android:layout_marginEnd="7dp"
+      android:singleLine="true"
+      android:text="User nameUser nameUser nameUser nameUser nameUser nameUser nameUser nameUser nameUser nameUser name"
       android:textColor="#2A2A2A"
       android:textSize="15sp"
+      android:ellipsize="end"
       app:layout_constraintStart_toEndOf="@id/entry_user_avatar"
       app:layout_constraintTop_toTopOf="@id/entry_user_avatar" />
 

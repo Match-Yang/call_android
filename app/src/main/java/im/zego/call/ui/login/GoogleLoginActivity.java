@@ -12,7 +12,9 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -23,6 +25,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 import im.zego.call.R;
 import im.zego.call.databinding.ActivityGoogleLoginBinding;
 import im.zego.call.firebase.FirebaseUserManager;
@@ -50,12 +53,11 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             finish();
             return;
         }
-        //        ImmersionBar.with(this).reset().init();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(CLIENT_ID)
-            .requestEmail()
-            .build();
+                .requestIdToken(CLIENT_ID)
+                .requestEmail()
+                .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         binding.loginButton.setOnClickListener(v -> {
@@ -125,6 +127,13 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
         systemPermissionCheck();
     }
 
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        isTermsChecked = false;
+//        binding.termsServiceCheckbox.setChecked(false);
+//    }
+
     private void systemPermissionCheck() {
         PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
             if (isAllGranted) {
@@ -133,7 +142,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                     ActivityUtils.startActivity(EntryActivity.class);
-
                     TokenManager.getInstance();
                 }
             }

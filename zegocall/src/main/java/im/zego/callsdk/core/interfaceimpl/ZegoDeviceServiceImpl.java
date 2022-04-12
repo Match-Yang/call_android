@@ -3,11 +3,11 @@ package im.zego.callsdk.core.interfaceimpl;
 
 import android.util.Log;
 
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoAudioBitrate;
 import im.zego.callsdk.model.ZegoDevicesType;
 import im.zego.callsdk.model.ZegoVideoResolution;
-import im.zego.callsdk.core.interfaces.ZegoDeviceService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.utils.CoreTest;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
@@ -15,6 +15,7 @@ import im.zego.zegoexpress.constants.ZegoCapturePipelineScaleMode;
 import im.zego.zegoexpress.constants.ZegoTrafficControlFocusOnMode;
 import im.zego.zegoexpress.constants.ZegoTrafficControlMinVideoBitrateMode;
 import im.zego.zegoexpress.constants.ZegoVideoConfigPreset;
+import im.zego.zegoexpress.constants.ZegoVideoMirrorMode;
 import im.zego.zegoexpress.entity.ZegoAudioConfig;
 import im.zego.zegoexpress.entity.ZegoEngineConfig;
 import im.zego.zegoexpress.entity.ZegoVideoConfig;
@@ -90,5 +91,10 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
     @Override
     public ZegoAudioRoute getAudioRouteType() {
         return ZegoExpressEngine.getEngine().getAudioRouteType();
+    }
+
+    @Override
+    public void setVideoMirroring(boolean mirroring) {
+        ZegoExpressEngine.getEngine().setVideoMirrorMode(mirroring ? ZegoVideoMirrorMode.BOTH_MIRROR : ZegoVideoMirrorMode.NO_MIRROR);
     }
 }

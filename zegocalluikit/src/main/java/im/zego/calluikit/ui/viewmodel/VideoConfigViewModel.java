@@ -30,7 +30,7 @@ public class VideoConfigViewModel extends ViewModel {
         settingConfig.setMicVolumeAutoAdjustment(false);
         settingConfig.setMirroring(false);
         settingConfig.setVideoResolution(videoResolutionStringArray[1]);
-        settingConfig.setAudioBitrate(audioBitrateStringArray[0]);
+        settingConfig.setAudioBitrate(audioBitrateStringArray[1]);
     }
 
     public void updateVideoConfig() {
@@ -48,6 +48,8 @@ public class VideoConfigViewModel extends ViewModel {
 
         int audioBitrate = VideoSettingConfig.calculateAudioBitrate(settingConfig.getAudioBitrate());
         deviceService.setAudioBitrate(ZegoAudioBitrate.getAudioBitrate(audioBitrate));
+
+        deviceService.setVideoMirroring(settingConfig.isMirroring());
 
         deviceService.setDeviceStatus(ZegoDevicesType.NOISE_SUPPRESSION, settingConfig.isBackgroundNoiseReduction());
 

@@ -17,15 +17,18 @@ import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import java.util.Objects;
 
+import im.zego.callsdk.core.interfaces.ZegoCallService;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.interfaces.ZegoStreamService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
 import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.databinding.LayoutOutgoingCallBinding;
 import im.zego.calluikit.ui.call.CallStateManager;
+import im.zego.calluikit.ui.common.MinimalView;
 import im.zego.calluikit.utils.AvatarHelper;
-import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoCallService;
-import im.zego.callsdk.core.interfaces.ZegoDeviceService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
 
 public class OutgoingCallView extends ConstraintLayout {
 
@@ -123,6 +126,16 @@ public class OutgoingCallView extends ConstraintLayout {
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
         if (Objects.equals(this.userInfo, userInfo)) {
             setUserInfo(userInfo);
+        }
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
+        if (getVisibility() == View.VISIBLE && !MinimalView.isShowMinimal) {
+            streamService.startPlaying(userService.getLocalUserInfo().userID, binding.textureView);
         }
     }
 }

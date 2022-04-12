@@ -9,8 +9,9 @@
     </string-array>
 
     <string-array name="audio_bitrate">
-        <item>48kbps</item>
-        <item>96kbps</item>
+        <item>16kbps</item>
+        <item>32kbps</item>
+        <item>64kbps</item>
         <item>128kbps</item>
     </string-array>
 

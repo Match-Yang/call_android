@@ -1,5 +1,7 @@
 package im.zego.calluikit;
 
+import static im.zego.calluikit.ui.call.CallActivity.USER_INFO;
+
 import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
@@ -34,6 +36,7 @@ import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.service.ForegroundService;
+import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.ReceiveCallView;
@@ -90,9 +93,8 @@ public class ZegoCallManagerImpl {
             @Override
             public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
                 Activity topActivity = ActivityUtils.getTopActivity();
-                if (topActivity instanceof CallActivity) {
-                    CallActivity callActivity = (CallActivity) topActivity;
-                    callActivity.onNetworkQuality(userID, quality);
+                if (topActivity instanceof BaseActivity) {
+                    ((BaseActivity<?>) topActivity).onNetworkQuality(userID, quality);
                 }
             }
 
@@ -140,6 +142,8 @@ public class ZegoCallManagerImpl {
             @Override
             public void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType) {
                 CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
+                callView.dismissReceiveCallWindow();
+                dismissNotification(activity);
             }
 
             @Override
@@ -164,9 +168,8 @@ public class ZegoCallManagerImpl {
             @Override
             public void onCallingStateUpdated(ZegoCallingState state) {
                 Activity topActivity = ActivityUtils.getTopActivity();
-                if (topActivity instanceof CallActivity) {
-                    CallActivity callActivity = (CallActivity) topActivity;
-                    callActivity.onCallingStateUpdated(state);
+                if (topActivity instanceof BaseActivity) {
+                    ((BaseActivity<?>) topActivity).onCallingStateUpdated(state);
                 }
             }
         });
@@ -240,9 +243,10 @@ public class ZegoCallManagerImpl {
     public void showNotification(ZegoUserInfo userInfo) {
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent intent = new Intent(topActivity, CallActivity.class);
+        intent.putExtra(USER_INFO, userInfo);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(topActivity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         String notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         int callState = CallStateManager.getInstance().getCallState();
@@ -303,6 +307,10 @@ public class ZegoCallManagerImpl {
             callView.updateData(userInfo, type);
             callView.showReceiveCallWindow();
         });
+    }
+
+    public void dismissCallDialog() {
+        handler.post(callView::dismissReceiveCallWindow);
     }
 
     public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
