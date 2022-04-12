@@ -50,9 +50,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private static final String TAG = "CallActivity";
 
     public static final String USER_INFO = "user_info";
+    public static final String IS_AUTO_ACCEPT = "is_auto_accept";
+
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private ZegoUserInfo userInfo;
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private boolean isAutoAccept;
 
     private Runnable finishRunnable = () -> {
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_MISSED);
@@ -73,7 +76,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
             LiveEventBus
                 .get(Constants.EVENT_TIMER_CHANGE_KEY, String.class)
                 .post(timeFormat);
-            handler.postDelayed(timeCountRunnable, 1000);
+            mainHandler.postDelayed(timeCountRunnable, 1000);
         }
     };
 
@@ -89,9 +92,19 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         topActivity.startActivity(intent);
     }
 
+    public static void startCallActivity(ZegoUserInfo userInfo, boolean isAutoAccept) {
+        Log.d(TAG, "startCallActivity() called with: userInfo = [" + userInfo + "], isAutoAccept = [" + isAutoAccept + "]");
+        Activity topActivity = ActivityUtils.getTopActivity();
+        Intent intent = new Intent(topActivity, CallActivity.class);
+        intent.putExtra(USER_INFO, userInfo);
+        intent.putExtra(IS_AUTO_ACCEPT, isAutoAccept);
+        topActivity.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         userInfo = (ZegoUserInfo) getIntent().getSerializableExtra(USER_INFO);
+        isAutoAccept = getIntent().getBooleanExtra(IS_AUTO_ACCEPT, false);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
             | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -207,8 +220,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     (after == CallStateManager.TYPE_CONNECTED_VIDEO);
                 if ((beforeIsOutgoing || beforeIsInComing) && afterIsAccept) {
                     time = 0;
-                    handler.post(timeCountRunnable);
-                    handler.removeCallbacks(finishRunnable);
+                    mainHandler.post(timeCountRunnable);
+                    mainHandler.removeCallbacks(finishRunnable);
                     ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
                     deviceService.enableSpeaker(false);
                 } else if (after == CallStateManager.TYPE_CALL_CANCELED) {
@@ -271,20 +284,26 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 }
             });
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
-            handler.postDelayed(finishRunnable, 62 * 1000);
+            mainHandler.postDelayed(finishRunnable, 62 * 1000);
+            if (isAutoAccept) {
+                binding.layoutIncomingCall.acceptCallVideo();
+            }
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VOICE) {
-            handler.postDelayed(finishRunnable, 62 * 1000);
+            mainHandler.postDelayed(finishRunnable, 62 * 1000);
+            if (isAutoAccept) {
+                binding.layoutIncomingCall.acceptCallVoice();
+            }
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VOICE) {
-            handler.post(timeCountRunnable);
+            mainHandler.post(timeCountRunnable);
             deviceService.enableMic(true);
             deviceService.enableSpeaker(false);
-            handler.removeCallbacks(finishRunnable);
+            mainHandler.removeCallbacks(finishRunnable);
         } else if (typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
-            handler.post(timeCountRunnable);
+            mainHandler.post(timeCountRunnable);
             deviceService.enableMic(true);
             deviceService.enableSpeaker(false);
             deviceService.enableCamera(true);
-            handler.removeCallbacks(finishRunnable);
+            mainHandler.removeCallbacks(finishRunnable);
         }
     }
 
@@ -338,7 +357,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     private void finishActivityDelayed() {
-        handler.postDelayed(() -> {
+        mainHandler.postDelayed(() -> {
             finish();
         }, 1000);
     }
@@ -367,7 +386,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacksAndMessages(null);
+        mainHandler.removeCallbacksAndMessages(null);
         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_NO_CALL);
         CallStateManager.getInstance().removeListener(callStateChangedListener);
         ZegoServiceManager.getInstance().deviceService.listeners.clear();
