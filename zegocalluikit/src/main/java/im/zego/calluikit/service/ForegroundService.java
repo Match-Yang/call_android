@@ -42,16 +42,11 @@ public class ForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Activity topActivity = ActivityUtils.getTopActivity();
-        if (topActivity == null) {
-            stopService(new Intent(this, ForegroundService.class));
-            return super.onStartCommand(intent, flags, startId);
-        }
         createNotificationChannel();
 
         Intent appIntent = new Intent();
         try {
-            appIntent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.GoogleLoginActivity"));
+            appIntent = new Intent(this, Class.forName("im.zego.call.ui.login.GoogleLoginActivity"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -60,10 +55,10 @@ public class ForegroundService extends Service {
 
         PendingIntent pendingIntent;
         if (Build.VERSION.SDK_INT >= 23) {
-            pendingIntent = PendingIntent.getActivity(topActivity, 0, appIntent,
+            pendingIntent = PendingIntent.getActivity(this, 0, appIntent,
                 PendingIntent.FLAG_IMMUTABLE);
         } else {
-            pendingIntent = PendingIntent.getActivity(topActivity, 0, appIntent,
+            pendingIntent = PendingIntent.getActivity(this, 0, appIntent,
                 0);
         }
 
@@ -100,8 +95,10 @@ public class ForegroundService extends Service {
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             Activity topActivity = ActivityUtils.getTopActivity();
-            NotificationManager notificationManager = topActivity.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            if (topActivity != null) {
+                NotificationManager notificationManager = topActivity.getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
         }
     }
 }
