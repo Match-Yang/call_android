@@ -263,7 +263,8 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     }
                 }
                 boolean isSelfCaller = Objects.equals(currentUser.getUid(), caller.user_id);
-                if (isSelfCaller) {
+                boolean callTimeOut = System.currentTimeMillis() - caller.start_time > 80_000;
+                if (isSelfCaller || callTimeOut) {
                     return;
                 }
                 if (isCurrentIdle()) {
@@ -321,6 +322,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 }
                 if (previousCall != null && !Objects.equals(previousCall.call_id, changedValue.call_id)) {
                     removeCallListener(previousCall.call_id);
+                    previousCall = null;
                 }
                 setCurrentCallData(changedValue);
 

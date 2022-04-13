@@ -34,6 +34,12 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ZegoUserInfo localUserInfo = ZegoCallManager.getInstance().getLocalUserInfo();
+        Log.d(TAG, "onCreate: localUserInfo" + localUserInfo);
+        if (localUserInfo == null) {
+            logout();
+            return;
+        }
         ZegoCallManager.getInstance().startListen(this);
 
         binding.entrySetting.setOnClickListener(new OnClickListener() {
@@ -61,11 +67,6 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
             }
         });
 
-        ZegoUserInfo localUserInfo = ZegoCallManager.getInstance().getLocalUserInfo();
-        if (localUserInfo == null) {
-            logout();
-            return;
-        }
         binding.entryUserId.setText("ID:" + localUserInfo.userID);
         binding.entryUserName.setText(localUserInfo.userName);
         Drawable userIcon = AvatarHelper.getAvatarByUserName(localUserInfo.userName);
