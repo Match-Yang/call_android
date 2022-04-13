@@ -195,7 +195,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
 
         initDeviceState(typeOfCall);
-        updateUi(typeOfCall);
 
         callStateChangedListener = new CallStateManager.CallStateChangedListener() {
             @Override
@@ -290,6 +289,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     private void updateUi(int type) {
+        Log.d(TAG, "updateUi() called with: type = [" + type + "]");
         binding.layoutOutgoingCall.setUserInfo(userInfo);
         binding.layoutOutgoingCall.setCallType(type);
         binding.layoutIncomingCall.setCallType(type);

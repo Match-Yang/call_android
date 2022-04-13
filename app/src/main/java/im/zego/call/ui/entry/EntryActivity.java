@@ -62,6 +62,10 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
         });
 
         ZegoUserInfo localUserInfo = ZegoCallManager.getInstance().getLocalUserInfo();
+        if (localUserInfo == null) {
+            logout();
+            return;
+        }
         binding.entryUserId.setText("ID:" + localUserInfo.userID);
         binding.entryUserName.setText(localUserInfo.userName);
         Drawable userIcon = AvatarHelper.getAvatarByUserName(localUserInfo.userName);
@@ -71,14 +75,6 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
             @Override
             public void onForeground(Activity activity) {
                 ZegoCallManager.getInstance().dismissNotification(activity);
-                // some phone will freeze app when phone is desktop,even if we start foreground service,
-                // such as vivo.
-                // so when app back to foreground, if heartbeat failed,relogin.
-//                WebClientManager.getInstance().tryReLogin((errorCode, message, response) -> {
-//                    if (errorCode != 0) {
-//                        logout();
-//                    }
-//                });
             }
 
             @Override
