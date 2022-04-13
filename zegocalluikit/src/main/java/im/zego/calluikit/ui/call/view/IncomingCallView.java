@@ -1,7 +1,11 @@
 package im.zego.calluikit.ui.call.view;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RotateDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,36 +60,13 @@ public class IncomingCallView extends ConstraintLayout {
         binding.callAcceptVideo.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
-
-                String token = TokenManager.getInstance().getTokenWrapper().token;
-                callService.acceptCall(token, errorCode -> {
-                    if (errorCode == ZegoErrorCode.SUCCESS) {
-                        deviceService.enableMic(true);
-                        deviceService.enableCamera(true);
-                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
-                    } else {
-                        ToastUtils.showShort(R.string.response_failed, errorCode);
-                    }
-                });
+                acceptCallVideo();
             }
         });
         binding.callAcceptVoice.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ZegoCallService callService = ZegoServiceManager.getInstance().callService;
-                ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
-
-                String token = TokenManager.getInstance().getTokenWrapper().token;
-                callService.acceptCall(token, errorCode -> {
-                    if (errorCode == ZegoErrorCode.SUCCESS) {
-                        deviceService.enableMic(true);
-                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
-                    } else {
-                        ToastUtils.showShort("responseCall " + errorCode);
-                    }
-                });
+                acceptCallVoice();
             }
         });
         binding.callDecline.setOnClickListener(new OnClickListener() {
@@ -131,5 +112,51 @@ public class IncomingCallView extends ConstraintLayout {
 
     public void updateStateText(int stringID) {
         binding.callStateText.setText(stringID);
+    }
+
+    public void acceptCallVoice() {
+        showLoading();
+        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+        ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+
+        String token = TokenManager.getInstance().getTokenWrapper().token;
+        callService.acceptCall(token, errorCode -> {
+            if (errorCode == ZegoErrorCode.SUCCESS) {
+                deviceService.enableMic(true);
+                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
+            } else {
+                ToastUtils.showShort("responseCall " + errorCode);
+            }
+        });
+    }
+
+    public void acceptCallVideo() {
+        showLoading();
+        ZegoCallService callService = ZegoServiceManager.getInstance().callService;
+        ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+
+        String token = TokenManager.getInstance().getTokenWrapper().token;
+        callService.acceptCall(token, errorCode -> {
+            if (errorCode == ZegoErrorCode.SUCCESS) {
+                deviceService.enableMic(true);
+                deviceService.enableCamera(true);
+                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
+            } else {
+                ToastUtils.showShort(R.string.response_failed, errorCode);
+            }
+        });
+    }
+
+    private void showLoading() {
+        binding.callAcceptLoading.setVisibility(VISIBLE);
+        binding.callAcceptVoice.setVisibility(GONE);
+        binding.callAcceptVideo.setVisibility(GONE);
+
+        LayerDrawable layerDrawable = (LayerDrawable) binding.callAcceptLoading.getCompoundDrawables()[1];
+        RotateDrawable drawable = ((RotateDrawable) layerDrawable.getDrawable(1));
+        ObjectAnimator animator = ObjectAnimator.ofInt(drawable, "level", 0, 10000);
+        animator.setDuration(2000);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.start();
     }
 }

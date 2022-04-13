@@ -42,7 +42,7 @@ public class TokenManager {
             }
         };
         Timer timer = new Timer();
-        timer.schedule(task, 0, 10 * 1000L);
+        timer.schedule(task, 0, 5 * 1000L);
     }
 
     public static TokenManager getInstance() {
@@ -65,6 +65,10 @@ public class TokenManager {
             Log.d(TAG, "getTokenWrapper: null");
         }
         return tokenWrapper;
+    }
+
+    public void reset() {
+        saveToken(null, 0);
     }
 
     private void saveToken(String token, long effectiveTimeInSeconds) {

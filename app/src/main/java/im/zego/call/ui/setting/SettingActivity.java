@@ -13,6 +13,7 @@ import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.model.ZegoErrorCode;
 import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.utils.TokenManager;
 import im.zego.zegoexpress.ZegoExpressEngine;
 
 public class SettingActivity extends UIKitActivity<ActivitySettingBinding> {
@@ -64,6 +65,7 @@ public class SettingActivity extends UIKitActivity<ActivitySettingBinding> {
             public void onClick(View v) {
                 FirebaseUserManager.getInstance().signOutFirebaseAuth();
                 ZegoCallManager.getInstance().callKitService.logout();
+                TokenManager.getInstance().reset();
                 ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
             }
         });

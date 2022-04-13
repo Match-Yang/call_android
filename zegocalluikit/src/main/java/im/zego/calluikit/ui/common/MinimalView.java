@@ -35,6 +35,7 @@ public class MinimalView extends ConstraintLayout {
     private MinimalStatus currentStatus;
     public static boolean isShowMinimal;
     private boolean isShowVideo;
+    private Boolean isClickable = true;
 
     public MinimalView(@NonNull Context context) {
         super(context);
@@ -60,10 +61,12 @@ public class MinimalView extends ConstraintLayout {
     private void initView(Context context) {
         binding = LayoutMinimalViewBinding.inflate(LayoutInflater.from(context), this, true);
         binding.voiceTouchView.setOnClickListener(v -> {
+            if (!isClickable) return;
             LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(false);
             ActivityUtils.startActivity(CallActivity.class);
         });
         binding.videoTouchView.setOnClickListener(v -> {
+            if (!isClickable) return;
             LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(false);
             ActivityUtils.startActivity(CallActivity.class);
         });
@@ -73,6 +76,9 @@ public class MinimalView extends ConstraintLayout {
                     isShowMinimal = isMinimal;
                     updateStatus(currentStatus);
                 });
+        LiveEventBus
+                .get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class)
+                .observeForever(clickable -> isClickable = clickable);
         updateStatus(MinimalStatus.Initialized);
     }
 
