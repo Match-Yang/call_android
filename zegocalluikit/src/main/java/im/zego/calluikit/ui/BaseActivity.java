@@ -16,6 +16,7 @@ import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.Utils;
 import com.gyf.immersionbar.ImmersionBar;
+import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -25,6 +26,7 @@ import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.calluikit.R;
 import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.LoadingDialog;
 import im.zego.calluikit.ui.common.TipsDialog;
@@ -152,8 +154,10 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     public void onCallingStateUpdated(ZegoCallingState state) {
         if (state == ZegoCallingState.CONNECTING && CallStateManager.getInstance().isInACallStream()) {
             showLoading(getString(R.string.call_page_call_disconnected), true);
+            LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(false);
         } else {
             dismissLoading();
+            LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(true);
         }
     }
 }

@@ -72,6 +72,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                         userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                         ActivityUtils.startActivity(EntryActivity.class);
+                        TokenManager.getInstance();
                     } else {
                         signIn();
                     }
@@ -181,6 +182,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                         userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                         ActivityUtils.startActivity(EntryActivity.class);
+                        TokenManager.getInstance();
                     } else {
                         showWarnTips(getString(R.string.toast_login_fail, errorCode));
                     }
