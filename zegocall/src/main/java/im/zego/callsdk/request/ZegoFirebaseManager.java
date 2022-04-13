@@ -30,6 +30,7 @@ import im.zego.callsdk.listener.ZegoListenerUpdater;
 import im.zego.callsdk.model.DatabaseCall;
 import im.zego.callsdk.model.DatabaseCall.DatabaseCallUser;
 import im.zego.callsdk.model.DatabaseCall.Status;
+import im.zego.callsdk.model.ZegoCallErrorCode;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                             Object details = ffe.getDetails();
                         }
                         if (callback != null) {
-                            callback.onResult(-1000, e);
+                            callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, e);
                         }
                         return;
                     }
@@ -214,7 +215,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             public void onFailure(@NonNull Exception e) {
                 Log.d(TAG, "startCallUser onFailure() called with: e = [" + e + "]");
                 if (callback != null) {
-                    callback.onResult(-1000, null);
+                    callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, null);
                 }
                 removeCallListener(databaseCall.call_id);
             }
@@ -510,7 +511,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             public void onFailure(@NonNull Exception e) {
                 Log.d(TAG, "acceptUserCall onFailure() called with: e = [" + e + "]");
                 if (callback != null) {
-                    callback.onResult(-1000, null);
+                    callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, null);
                 }
             }
         });
@@ -558,7 +559,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 public void onFailure(@NonNull Exception e) {
                     Log.d(TAG, "declineCallInner onFailure() called with: e = [" + e + "]");
                     if (callback != null) {
-                        callback.onResult(-1000, null);
+                        callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, null);
                     }
                 }
             });
@@ -591,7 +592,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             public void onFailure(@NonNull Exception e) {
                 Log.d(TAG, "cancelUserCall onFailure() called with: e = [" + e + "]");
                 if (callback != null) {
-                    callback.onResult(-1000, null);
+                    callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, null);
                 }
             }
         });
@@ -634,7 +635,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             public void onFailure(@NonNull Exception e) {
                 Log.d(TAG, "endCallUser onFailure() called with: e = [" + e + "]");
                 if (callback != null) {
-                    callback.onResult(-1000, null);
+                    callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, null);
                 }
             }
         });

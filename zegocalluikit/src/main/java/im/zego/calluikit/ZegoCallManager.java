@@ -16,6 +16,7 @@ public class ZegoCallManager {
     private static final String TAG = "ZegoCallManager";
 
     private static volatile ZegoCallManager singleton = null;
+    public String token;
 
     private ZegoCallManager() {
         callKitService = new ZegoCallUIService();
@@ -90,6 +91,10 @@ public class ZegoCallManager {
      */
     public ZegoUserInfo getLocalUserInfo() {
         return impl.getLocalUserInfo();
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {

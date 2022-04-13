@@ -11,7 +11,7 @@ import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
-import im.zego.callsdk.model.ZegoErrorCode;
+import im.zego.callsdk.model.ZegoCallErrorCode;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.utils.TokenManager;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -51,7 +51,7 @@ public class SettingActivity extends UIKitActivity<ActivitySettingBinding> {
             @Override
             public void onClick(View v) {
                 ZegoCallManager.getInstance().uploadLog(errorCode -> {
-                    if (errorCode == ZegoErrorCode.SUCCESS) {
+                    if (errorCode == ZegoCallErrorCode.SUCCESS) {
                         showNormalTips(getString(R.string.toast_upload_log_success));
                     } else {
                         showWarnTips(getString(R.string.toast_upload_log_fail, errorCode));
