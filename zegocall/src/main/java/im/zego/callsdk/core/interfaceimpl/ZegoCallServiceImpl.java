@@ -48,6 +48,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             handler.removeCallbacks(callTimeoutRunnable);
 
             if (listener != null) {
+                ZegoServiceManager.getInstance().roomService.leaveRoom();
                 ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 if (userService.getLocalUserInfo() != null) {
                     listener.onReceiveCallTimeout(userService.getLocalUserInfo(), ZegoCallTimeoutType.Calling);
