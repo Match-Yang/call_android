@@ -42,9 +42,13 @@ public class ForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Activity topActivity = ActivityUtils.getTopActivity();
+        if (topActivity == null) {
+            stopService(new Intent(this, ForegroundService.class));
+            return super.onStartCommand(intent, flags, startId);
+        }
         createNotificationChannel();
 
-        Activity topActivity = ActivityUtils.getTopActivity();
         Intent appIntent = new Intent();
         try {
             appIntent = new Intent(topActivity, Class.forName("im.zego.call.ui.login.GoogleLoginActivity"));

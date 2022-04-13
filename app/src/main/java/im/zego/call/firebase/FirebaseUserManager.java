@@ -179,8 +179,6 @@ public class FirebaseUserManager {
         }
         FirebaseAuth.getInstance().signOut();
 
-        removeSelfListener(userID);
-
         makeSelfOffline(userID);
 
         removePushToken(userID);
@@ -215,13 +213,6 @@ public class FirebaseUserManager {
             database.getReference("online_user").child(uid)
                 .removeEventListener(selfOnlineListener);
         }
-    }
-
-    private void removeSelfListener(String userID) {
-        Log.d(TAG, "removeSelfListener() called with: userID = [" + userID + "]");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference selfRef = database.getReference("online_user").child(userID);
-        selfRef.removeEventListener(selfOnlineListener);
     }
 
     private void makeSelfOffline(String userID) {
@@ -328,6 +319,8 @@ public class FirebaseUserManager {
                             return;
                         }
                         String pushToken = task.getResult();
+                        Log.d(TAG, "getSelfOnlineListener pushToken: " + pushToken);
+                        Log.d(TAG, "getSelfOnlineListener token_id:  " + databaseUser.token_id);
                         if (!Objects.equals(pushToken, databaseUser.token_id)) {
                             String userID = FirebaseAuth.getInstance().getUid();
                             if (userID == null) {
@@ -335,7 +328,7 @@ public class FirebaseUserManager {
                             }
                             FirebaseAuth.getInstance().signOut();
                             Log.d(TAG, "sign out because of other device sign in same account");
-                            removeSelfListener(userID);
+                            removeSelfOnlineListener(userID);
                             removePushToken(userID);
                             if (signInOtherDeviceListener != null) {
                                 signInOtherDeviceListener.onSignIn();
