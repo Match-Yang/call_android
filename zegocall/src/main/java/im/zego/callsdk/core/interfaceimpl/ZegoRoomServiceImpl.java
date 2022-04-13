@@ -1,21 +1,25 @@
 package im.zego.callsdk.core.interfaceimpl;
 
 import android.util.Log;
-
+import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.core.interfaces.ZegoRoomService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.core.interfaces.ZegoRoomService;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
+import im.zego.zegoexpress.constants.ZegoRoomState;
 import im.zego.zegoexpress.entity.ZegoRoomConfig;
 import im.zego.zegoexpress.entity.ZegoUser;
+import java.util.HashMap;
+import org.json.JSONObject;
 
 public class ZegoRoomServiceImpl extends ZegoRoomService {
 
     private static final String TAG = "ZegoRoomServiceImpl";
+    private HashMap<String, ZegoCallback> callbackHashMap = new HashMap<>();
 
     /**
      * Join a room.
@@ -28,7 +32,7 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
      * @param token  refers to the authentication token. To get this, see the documentation:
      *               https://doc-en.zego.im/article/11648
      */
-    public void joinRoom(String roomID, String token) {
+    public void joinRoom(String roomID, String token, ZegoCallback callback) {
         Log.d(CoreTest.TAG, "joinRoom() called with: roomID = [" + roomID + "], token = [" + token + "]");
         if (roomInfo == null) {
             roomInfo = new ZegoRoomInfo();
@@ -49,6 +53,9 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         userService.userInfoList.clear();
         userService.userInfoList.add(localUserInfo);
+
+        callbackHashMap.clear();
+        callbackHashMap.put(roomID, callback);
     }
 
     /**
@@ -63,5 +70,22 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
         ZegoExpressEngine.getEngine().logoutRoom();
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         userService.userInfoList.clear();
+        callbackHashMap.clear();
+    }
+
+    public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
+        if (state == ZegoRoomState.CONNECTED) {
+            ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
+            if (zegoCallback != null) {
+                // join room result
+                zegoCallback.onResult(0);
+            }
+        } else if (state == ZegoRoomState.DISCONNECTED) {
+            ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
+            if (zegoCallback != null) {
+                // join room result
+                zegoCallback.onResult(errorCode);
+            }
+        }
     }
 }

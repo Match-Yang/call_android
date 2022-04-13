@@ -11,20 +11,20 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-
 import androidx.annotation.RequiresApi;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
-import im.zego.calluikit.R;
-import im.zego.calluikit.utils.PermissionHelper;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.calluikit.R;
+import im.zego.calluikit.utils.PermissionHelper;
 
 public class ReceiveCallDialog {
 
@@ -95,6 +95,7 @@ public class ReceiveCallDialog {
     }
 
     public void showReceiveCallWindow() {
+        Log.d("TAG", "showReceiveCallWindow() called");
         if (AppUtils.isAppForeground()) {
             showAppDialog();
         } else {
