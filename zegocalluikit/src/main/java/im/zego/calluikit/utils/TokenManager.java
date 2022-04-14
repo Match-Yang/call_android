@@ -2,14 +2,12 @@ package im.zego.calluikit.utils;
 
 import android.util.Log;
 import com.blankj.utilcode.util.SPStaticUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
-
-import im.zego.calluikit.ZegoCallManager;
-import im.zego.calluikit.constant.Constants;
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.constant.Constants;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TokenManager {
 
@@ -22,27 +20,32 @@ public class TokenManager {
             @Override
             public void run() {
                 if (needUpdateToken()) {
-                    ZegoUserInfo userInfo = ZegoCallManager.getInstance().getLocalUserInfo();
-                    if (userInfo != null) {
-                        String userID = userInfo.userID;
-                        long effectiveTime = 3600;
-                        ZegoCallManager.getInstance().getToken(userID, effectiveTime, new ZegoRequestCallback() {
-                            @Override
-                            public void onResult(int errorCode, Object obj) {
-                                Log.d("TAG",
-                                    "getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj
-                                        + "]");
-                                if (errorCode == 0) {
-                                    saveToken((String) obj, effectiveTime * 1000L);
-                                }
-                            }
-                        });
-                    }
+                    requestRTCToken();
                 }
             }
         };
         Timer timer = new Timer();
-        timer.schedule(task, 0, 5 * 1000L);
+        timer.schedule(task, 0, 60_1000);
+    }
+
+    private void requestRTCToken() {
+        ZegoUserInfo userInfo = ZegoCallManager.getInstance().getLocalUserInfo();
+        if (userInfo != null) {
+            String userID = userInfo.userID;
+            long effectiveTime = 3600;
+            ZegoCallManager.getInstance().getToken(userID, effectiveTime, new ZegoRequestCallback() {
+                @Override
+                public void onResult(int errorCode, Object obj) {
+                    Log.d(TAG,
+                        "getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj
+                            + "]");
+                    if (errorCode == 0) {
+                        ZegoCallManager.getInstance().setToken((String) obj);
+                        saveToken((String) obj, effectiveTime * 1000L);
+                    }
+                }
+            });
+        }
     }
 
     public static TokenManager getInstance() {
@@ -58,13 +61,21 @@ public class TokenManager {
 
     private TokenWrapper tokenWrapper;
 
-    public TokenWrapper getTokenWrapper() {
+    public String getToken() {
+        String result;
         if (tokenWrapper != null) {
-            Log.d(TAG, "getTokenWrapper() called,isTokenValid: " + tokenWrapper.isTokenValid());
+            Log.d(TAG, "getToken() called,isTokenValid: " + tokenWrapper.isTokenValid());
+            if (!tokenWrapper.isTokenValid()) {
+                reset();
+                result = null;
+            } else {
+                result = tokenWrapper.token;
+            }
         } else {
-            Log.d(TAG, "getTokenWrapper: null");
+            result = null;
         }
-        return tokenWrapper;
+        Log.d(TAG, "getToken() called,result:" + result);
+        return result;
     }
 
     public void reset() {
@@ -72,12 +83,18 @@ public class TokenManager {
     }
 
     private void saveToken(String token, long effectiveTimeInSeconds) {
-        long expiryTime = System.currentTimeMillis() + effectiveTimeInSeconds;
+        if (token == null || effectiveTimeInSeconds == 0) {
+            this.tokenWrapper = null;
+            SPStaticUtils.remove(Constants.ZEGO_TOKEN_KEY);
+            SPStaticUtils.remove(Constants.ZEGO_TOKEN_EXPIRY_TIME_KEY);
+        } else {
+            long expiryTime = System.currentTimeMillis() + effectiveTimeInSeconds;
 
-        SPStaticUtils.put(Constants.ZEGO_TOKEN_KEY, token);
-        SPStaticUtils.put(Constants.ZEGO_TOKEN_EXPIRY_TIME_KEY, expiryTime);
+            SPStaticUtils.put(Constants.ZEGO_TOKEN_KEY, token);
+            SPStaticUtils.put(Constants.ZEGO_TOKEN_EXPIRY_TIME_KEY, expiryTime);
 
-        this.tokenWrapper = new TokenWrapper(token, expiryTime);
+            this.tokenWrapper = new TokenWrapper(token, expiryTime);
+        }
     }
 
     private boolean needUpdateToken() {

@@ -4,15 +4,14 @@ import android.util.Log;
 
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.model.ZegoCallErrorCode;
 import im.zego.zegoexpress.constants.ZegoUpdateType;
 import im.zego.zegoexpress.entity.ZegoUser;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.core.commands.ZegoGetTokenCommand;
-import im.zego.callsdk.listener.ZegoUserListCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
@@ -37,7 +36,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
             });
         } else {
             if (callback != null) {
-                callback.onResult(-1000, null);
+                callback.onResult(ZegoCallErrorCode.ZegoErrorNotLogin, null);
             }
         }
     }

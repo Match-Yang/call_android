@@ -15,7 +15,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoErrorCode;
+import im.zego.callsdk.model.ZegoCallErrorCode;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
 import im.zego.calluikit.databinding.LayoutReceiveCallBinding;
@@ -89,7 +89,7 @@ public class ReceiveCallView extends FrameLayout {
         binding.dialogCallDecline.setOnClickListener(v -> {
             ZegoCallService callService = ZegoServiceManager.getInstance().callService;
             callService.declineCall(errorCode -> {
-                if (errorCode == ZegoErrorCode.SUCCESS) {
+                if (errorCode == ZegoCallErrorCode.SUCCESS) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                 } else {
                     ToastUtils.showShort("Decline Call" + errorCode);

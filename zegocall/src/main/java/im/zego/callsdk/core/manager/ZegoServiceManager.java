@@ -77,7 +77,6 @@ public class ZegoServiceManager {
     public ZegoRoomService roomService;
     public ZegoDeviceService deviceService;
     public ZegoStreamService streamService;
-    public Gson mGson = new Gson();
     private static final String TAG = "ZegoService";
 
     private static final int MIC = 0x01;
@@ -173,6 +172,9 @@ public class ZegoServiceManager {
                 Log.d(TAG,
                     "onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state + "], errorCode = ["
                         + errorCode + "], extendedData = [" + extendedData + "]");
+                if (roomService instanceof ZegoRoomServiceImpl) {
+                    ((ZegoRoomServiceImpl) roomService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
+                }
                 if (callService instanceof ZegoCallServiceImpl) {
                     ((ZegoCallServiceImpl) callService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 }
@@ -201,6 +203,11 @@ public class ZegoServiceManager {
      * application exits.</>
      */
     public void unInit() {
+        userService = null;
+        callService = null;
+        roomService = null;
+        deviceService = null;
+        streamService = null;
         ZegoExpressEngine.destroyEngine(null);
     }
 

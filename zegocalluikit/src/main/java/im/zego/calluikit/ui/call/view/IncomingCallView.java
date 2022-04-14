@@ -21,7 +21,7 @@ import java.util.Objects;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.model.ZegoErrorCode;
+import im.zego.callsdk.model.ZegoCallErrorCode;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
 import im.zego.calluikit.databinding.LayoutIncomingCallBinding;
@@ -74,7 +74,7 @@ public class IncomingCallView extends ConstraintLayout {
             public void onClick(View v) {
                 ZegoCallService callService = ZegoServiceManager.getInstance().callService;
                 callService.declineCall(errorCode -> {
-                        if (errorCode == ZegoErrorCode.SUCCESS) {
+                        if (errorCode == ZegoCallErrorCode.SUCCESS) {
                             CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                         } else {
                             ToastUtils.showShort("Decline Call" + errorCode);
@@ -119,9 +119,9 @@ public class IncomingCallView extends ConstraintLayout {
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-        String token = TokenManager.getInstance().getTokenWrapper().token;
+        String token = TokenManager.getInstance().getToken();
         callService.acceptCall(token, errorCode -> {
-            if (errorCode == ZegoErrorCode.SUCCESS) {
+            if (errorCode == ZegoCallErrorCode.SUCCESS) {
                 deviceService.enableMic(true);
                 CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
             } else {
@@ -135,9 +135,9 @@ public class IncomingCallView extends ConstraintLayout {
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-        String token = TokenManager.getInstance().getTokenWrapper().token;
+        String token = TokenManager.getInstance().getToken();
         callService.acceptCall(token, errorCode -> {
-            if (errorCode == ZegoErrorCode.SUCCESS) {
+            if (errorCode == ZegoCallErrorCode.SUCCESS) {
                 deviceService.enableMic(true);
                 deviceService.enableCamera(true);
                 CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);

@@ -14,7 +14,7 @@ public abstract class ZegoCallService {
     // callService refers to the listener instance of call service.
     protected ZegoCallServiceListener listener;
     // The status of a local user.
-    protected ZegoLocalUserStatus status;
+    protected ZegoLocalUserStatus status = ZegoLocalUserStatus.Free;
     // The call information.
     protected ZegoCallInfo callInfo = new ZegoCallInfo();
 
