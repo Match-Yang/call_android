@@ -184,16 +184,19 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                     }
                 });
             });
+        LiveEventBus
+            .get(Constants.EVENT_USER_INFO_UPDATED, ZegoUserInfo.class)
+            .observe(this, this::onUserInfoUpdated);
     }
 
-    private void setExcludeFromRecents(boolean isMinimal) {
-        Log.d(TAG, "setExcludeFromRecents() called with: isMinimal = [" + isMinimal + "]");
+    private void setExcludeFromRecents(boolean isExclude) {
+        Log.d(TAG, "setExcludeFromRecents() called with: isExclude = [" + isExclude + "]");
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         if (am != null) {
             List<ActivityManager.AppTask> tasks = am.getAppTasks();
             for (ActivityManager.AppTask task : tasks) {
                 if (getTaskId() == task.getTaskInfo().id) {
-                    task.setExcludeFromRecents(isMinimal);
+                    task.setExcludeFromRecents(isExclude);
                 }
             }
         }
@@ -358,6 +361,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
     private void finishActivityDelayed() {
         mainHandler.postDelayed(() -> {
+            setExcludeFromRecents(true);
             finish();
         }, 1000);
     }

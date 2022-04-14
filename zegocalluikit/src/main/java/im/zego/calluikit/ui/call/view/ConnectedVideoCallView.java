@@ -135,14 +135,17 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
         if (getVisibility() == View.VISIBLE && !MinimalView.isShowMinimal) {
+            ZegoUserInfo localUserInfo = userService.getLocalUserInfo();
             AudioHelper.updateAudioSelect(binding.callVideoSpeaker, ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
             if (isSelfCenter) {
-                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewCenterTexture);
+                streamService.startPlaying(localUserInfo.userID, binding.callVideoViewCenterTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
-                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewSmallTexture);
+                streamService.startPlaying(localUserInfo.userID, binding.callVideoViewSmallTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
             }
+//            onUserInfoUpdated(userInfo);
+//            onUserInfoUpdated(localUserInfo);
         }
     }
 
