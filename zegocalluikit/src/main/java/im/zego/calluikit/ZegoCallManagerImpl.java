@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
+import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
@@ -27,14 +28,15 @@ import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
-import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.listener.ZegoUserServiceListener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
+import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.service.ForegroundService;
 import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.ui.call.CallActivity;
@@ -82,11 +84,14 @@ public class ZegoCallManagerImpl {
         userService.setListener(new ZegoUserServiceListener() {
             @Override
             public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-                Activity topActivity = ActivityUtils.getTopActivity();
-                if (topActivity instanceof CallActivity) {
-                    CallActivity callActivity = (CallActivity) topActivity;
-                    callActivity.onUserInfoUpdated(userInfo);
-                }
+//                Activity topActivity = ActivityUtils.getTopActivity();
+//                if (topActivity instanceof CallActivity) {
+//                    CallActivity callActivity = (CallActivity) topActivity;
+//                    callActivity.onUserInfoUpdated(userInfo);
+//                }
+                LiveEventBus
+                        .get(Constants.EVENT_USER_INFO_UPDATED, ZegoUserInfo.class)
+                        .post(userInfo);
                 callView.onUserInfoUpdated(userInfo);
             }
 

@@ -103,7 +103,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
-        if (visibility == View.VISIBLE) {
+        if (getVisibility() == View.VISIBLE) {
             AudioHelper.updateAudioSelect(binding.callVoiceSpeaker,
                     ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
             streamService.startPlaying(userInfo.userID, null);
