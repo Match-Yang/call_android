@@ -1,13 +1,16 @@
 package im.zego.calluikit.utils;
 
 import android.util.Log;
+
 import com.blankj.utilcode.util.SPStaticUtils;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class TokenManager {
 
@@ -25,7 +28,8 @@ public class TokenManager {
             }
         };
         Timer timer = new Timer();
-        timer.schedule(task, 0, 60_1000);
+        // need check more frequently
+        timer.schedule(task, 0, 1000);
     }
 
     private void requestRTCToken() {
