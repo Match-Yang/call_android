@@ -36,7 +36,7 @@ public class TokenManager {
         ZegoUserInfo userInfo = ZegoCallManager.getInstance().getLocalUserInfo();
         if (userInfo != null) {
             String userID = userInfo.userID;
-            long effectiveTime = 3600;
+            long effectiveTime = 24 * 3600;
             ZegoCallManager.getInstance().getToken(userID, effectiveTime, new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
@@ -87,6 +87,9 @@ public class TokenManager {
     }
 
     private void saveToken(String token, long effectiveTimeInSeconds) {
+        Log.d(TAG,
+            "saveToken() called with: token = [" + token + "], effectiveTimeInSeconds = [" + effectiveTimeInSeconds
+                + "]");
         if (token == null || effectiveTimeInSeconds == 0) {
             this.tokenWrapper = null;
             SPStaticUtils.remove(Constants.ZEGO_TOKEN_KEY);
@@ -105,10 +108,11 @@ public class TokenManager {
         if (tokenWrapper == null) {
             return true;
         }
-        return System.currentTimeMillis() > tokenWrapper.expiryTime;
+        return !tokenWrapper.isTokenValid();
     }
 
     private TokenWrapper getTokenFromDisk() {
+        Log.d(TAG, "getTokenFromDisk() called");
         String token = SPStaticUtils.getString(Constants.ZEGO_TOKEN_KEY);
         long expiryTime = SPStaticUtils.getLong(Constants.ZEGO_TOKEN_EXPIRY_TIME_KEY);
 

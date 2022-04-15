@@ -29,9 +29,7 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ZegoUserInfo localUserInfo = ZegoCallManager.getInstance().getLocalUserInfo();
-        Log.d(TAG, "onCreate: localUserInfo" + localUserInfo);
         if (localUserInfo == null) {
-            logout();
             return;
         }
         ZegoCallManager.getInstance().startListen(this);
@@ -77,11 +75,5 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
     @Override
     public void onBackPressed() {
 
-    }
-
-    private void logout() {
-        FirebaseUserManager.getInstance().signOutFirebaseAuth();
-        ZegoCallManager.getInstance().callKitService.logout();
-        ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
     }
 }

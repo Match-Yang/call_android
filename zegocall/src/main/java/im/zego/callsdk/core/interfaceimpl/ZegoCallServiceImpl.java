@@ -242,6 +242,14 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     @Override
     public void declineCall(ZegoCallback callback) {
         Log.d(TAG, "declineCall() called with: callback = [" + callback + "]");
+        String callID = getCallInfo().callID;
+        if (TextUtils.isEmpty(callID)) {
+            if (callback != null) {
+                callback.onResult(0);
+            }
+            return;
+        }
+        String userID = getCallInfo().caller.userID;
         if (status != ZegoLocalUserStatus.Incoming) {
             if (callback != null) {
                 callback.onResult(ZegoCallErrorCode.ZegoErrorCallStatusWrong);
@@ -255,27 +263,29 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             }
             return;
         }
-        String callID = getCallInfo().callID;
-        if (!TextUtils.isEmpty(callID)) {
-            handler.removeCallbacks(callTimeoutRunnable);
-            ZegoDeclineCallCommand command = new ZegoDeclineCallCommand();
-            command.putParameter("userID", getCallInfo().caller.userID);
-            command.putParameter("selfUserID", userService.getLocalUserInfo().userID);
-            command.putParameter("type", 1);
-            command.putParameter("callID", callID);
-            command.execute(new ZegoRequestCallback() {
-                @Override
-                public void onResult(int errorCode, Object obj) {
-                    Log.d(TAG,
-                        "declineCall onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
-                }
-            });
-            setCallInfo(null);
-        }
+        declineCallInner(callID, userID, ZegoDeclineType.Decline, callback);
+        handler.removeCallbacks(callTimeoutRunnable);
+        setCallInfo(null);
+        setLocalStatus(ZegoLocalUserStatus.Free);
+    }
+
+    private void declineCallInner(String callID, String userID, ZegoDeclineType declineType, ZegoCallback callback) {
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoDeclineCallCommand command = new ZegoDeclineCallCommand();
+        command.putParameter("userID", userID);
+        command.putParameter("selfUserID", userService.getLocalUserInfo().userID);
+        command.putParameter("type", declineType.getValue());
+        command.putParameter("callID", callID);
+        command.execute(new ZegoRequestCallback() {
+            @Override
+            public void onResult(int errorCode, Object obj) {
+                Log.d(TAG,
+                    "declineCall onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
+            }
+        });
         if (callback != null) {
             callback.onResult(0);
         }
-        setLocalStatus(ZegoLocalUserStatus.Free);
     }
 
     @Override
@@ -373,14 +383,20 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                     }
                 }
                 callInfo.callType = type;
-                setLocalStatus(ZegoLocalUserStatus.Incoming);
                 if (getCallInfo().callID == null) {
+                    setLocalStatus(ZegoLocalUserStatus.Incoming);
                     setCallInfo(callInfo);
                     if (listener != null) {
                         listener.onReceiveCallInvite(callInfo.caller, callInfo.callID, callInfo.callType);
                     }
                 } else {
-                    Log.d(TAG, "RECEIVE_CALL: getCallInfo().callID != null");
+                    Log.d(TAG, "RECEIVE_CALL: declineCallInner");
+                    declineCallInner(callInfo.callID, callInfo.caller.userID, ZegoDeclineType.Busy, new ZegoCallback() {
+                        @Override
+                        public void onResult(int errorCode) {
+
+                        }
+                    });
                 }
             }
         });
@@ -538,8 +554,9 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                         listener.onReceiveCallTimeout(userService.getLocalUserInfo(), ZegoCallTimeoutType.Connecting);
                     }
                 }
-                setCallInfo(null);
+                endCall(null);
             }
+            setLocalStatus(ZegoLocalUserStatus.Free);
         }
     }
 

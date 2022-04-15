@@ -33,11 +33,14 @@ import im.zego.callsdk.model.DatabaseCall.Status;
 import im.zego.callsdk.model.ZegoCallErrorCode;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoDeclineType;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -271,8 +274,22 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 if (isCurrentIdle()) {
                     addCallListener(databaseCall);
                 } else {
-                    declineCallInner(currentUser.getUid(), caller.caller_id,
-                        databaseCall.call_id, ZegoDeclineType.Busy.getValue(), null);
+                    if (databaseCall.call_status == Status.WAIT.getValue()) {
+                        HashMap<String, Object> data = new HashMap<>();
+                        HashMap<String, String> callerData = new HashMap<>();
+                        callerData.put("id", caller.user_id);
+                        callerData.put("name", caller.user_name);
+                        data.put("caller", callerData);
+                        List<HashMap<String, String>> calleeData = new ArrayList<>();
+                        HashMap<String, String> callee = new HashMap<>();
+                        callee.put("id", receiver.user_id);
+                        callee.put("name", receiver.user_name);
+                        calleeData.add(callee);
+                        data.put("callees", calleeData);
+                        data.put("call_id", databaseCall.call_id);
+                        data.put("type", databaseCall.call_type);
+                        updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
+                    }
                 }
             }
 
@@ -282,9 +299,9 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "onChildRemoved() called with: snapshot = [" + snapshot + "]");
                 DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
                 if (databaseCall != null) {
-                    Log.d(TAG, "onChildRemoved() called with: databaseCall.call_id = [" + databaseCall.call_id + "]");
                     removeCallListener(databaseCall.call_id);
                 }
             }
@@ -355,6 +372,12 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     if (!callStatusChanged && !callerStatusChanged && !receiverStatusChanged) {
                         // no status changed , is heartbeat update
                         if (caller.heartbeat_time != 0 && receiver.heartbeat_time != 0) {
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss",
+                                Locale.getDefault());
+                            String callerTime = simpleDateFormat.format(new Date(caller.heartbeat_time));
+                            String receiverTime = simpleDateFormat.format(new Date(receiver.heartbeat_time));
+                            Log.d(TAG, "onDataChange() called with: " + caller.user_name + " = [" + callerTime + "],"
+                                + receiver.user_name + ": " + receiverTime);
                             if (Math.abs(caller.heartbeat_time - receiver.heartbeat_time) > 60_000) {
                                 HashMap<String, String> data = new HashMap<>();
                                 // i receive,means the other one timeout
@@ -479,6 +502,9 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
 
     private void removeCallListener(String callID) {
         Log.d(TAG, "removeCallListener() called with: callID = [" + callID + "]");
+        if (TextUtils.isEmpty(callID)) {
+            return;
+        }
         removeDatabaseListener("call/" + callID);
         removeCallData(callID);
     }

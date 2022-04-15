@@ -28,7 +28,10 @@ public class OnlineUserActivity extends UIKitActivity<ActivityOnlineUserBinding>
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        ZegoUserInfo localUserInfo = ZegoCallManager.getInstance().getLocalUserInfo();
+        if (localUserInfo == null) {
+            return;
+        }
         binding.userBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
