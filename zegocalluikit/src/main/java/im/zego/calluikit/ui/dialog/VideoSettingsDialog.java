@@ -54,6 +54,10 @@ public class VideoSettingsDialog extends BaseBottomDialog {
     @Override
     protected void initData() {
         super.initData();
+        backgroundNoiseReduction.setChecked(viewModel.getSettingConfig().isBackgroundNoiseReduction());
+        echoCancellation.setChecked(viewModel.getSettingConfig().isEchoCancellation());
+        micVolumeAutoAdjustment.setChecked(viewModel.getSettingConfig().isMicVolumeAutoAdjustment());
+        mirroring.setChecked(viewModel.getSettingConfig().isMirroring());
         settingsVideoResolution.setContent(viewModel.getSettingConfig().getVideoResolution());
         settingsAudioBitrate.setContent(viewModel.getSettingConfig().getAudioBitrate());
     }

@@ -50,7 +50,8 @@
   <string name="float_permission_tips">Please allow popup permission to receive incoming calls.</string>
   <string name="call_page_status_calling">Waiting...</string>
   <string name="call_page_status_canceled">Canceled</string>
-  <string name="call_page_status_completed">Ended</string>
+  <string name="call_page_status_completed">Completed</string>
+  <string name="call_page_status_ended">Ended</string>
   <string name="call_page_status_missed">Missed</string>
   <string name="call_page_status_declined">Declined</string>
   <string name="call_page_status_busy">The one you dialed is busy.</string>

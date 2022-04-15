@@ -142,7 +142,7 @@ public class MinimalView extends ConstraintLayout {
                 break;
             case Ended:
                 delayDismiss();
-                binding.voiceTv.setText(R.string.call_page_status_completed);
+                binding.voiceTv.setText(R.string.call_page_status_ended);
                 break;
             case Initialized:
             default:
