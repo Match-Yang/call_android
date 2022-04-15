@@ -12,6 +12,7 @@ import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.model.ZegoCallErrorCode;
+import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.utils.TokenManager;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -24,6 +25,10 @@ public class SettingActivity extends UIKitActivity<ActivitySettingBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ZegoUserInfo localUserInfo = ZegoCallManager.getInstance().getLocalUserInfo();
+        if (localUserInfo == null) {
+            return;
+        }
         binding.settingTitleBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
