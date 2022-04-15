@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 
 import im.zego.callsdk.command.ZegoCommandManager;
 import im.zego.callsdk.model.ZegoCallingState;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.zegoexpress.entity.ZegoUser;
 import org.json.JSONObject;
 
@@ -142,7 +143,7 @@ public class ZegoServiceManager {
                 JSONObject extendedData) {
                 super.onRoomStreamUpdate(roomID, updateType, streamList, extendedData);
                 for (ZegoStream zegoStream : streamList) {
-                    Log.d(TAG, "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
+                    CallUtils.d( "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
                 }
             }
 
@@ -169,7 +170,7 @@ public class ZegoServiceManager {
             @Override
             public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
                 super.onRoomStateUpdate(roomID, state, errorCode, extendedData);
-                Log.d(TAG,
+                CallUtils.d(
                     "onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state + "], errorCode = ["
                         + errorCode + "], extendedData = [" + extendedData + "]");
                 if (roomService instanceof ZegoRoomServiceImpl) {

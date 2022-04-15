@@ -2,6 +2,7 @@ package im.zego.callsdk.listener;
 
 import android.util.Log;
 import im.zego.callsdk.callback.ZegoNotifyListener;
+import im.zego.callsdk.utils.CallUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class ZegoListenerManager implements ZegoListener, ZegoListenerUpdater {
 
     @Override
     public void receiveUpdate(String path, Object parameter) {
-        Log.d(TAG, "receiveUpdate() called with: path = [" + path + "], parameter = [" + parameter + "]");
+        CallUtils.d( "receiveUpdate() called with: path = [" + path + "], parameter = [" + parameter + "]");
         ArrayList<ZegoNotifyListener> listenerList = (ArrayList<ZegoNotifyListener>) listenerMap.get(path);
         if (listenerList != null) {
             ArrayList<ZegoNotifyListener> clone = (ArrayList<ZegoNotifyListener>) listenerList.clone();

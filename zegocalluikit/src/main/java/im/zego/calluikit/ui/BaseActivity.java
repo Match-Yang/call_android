@@ -18,6 +18,7 @@ import com.blankj.utilcode.util.Utils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import im.zego.callsdk.utils.CallUtils;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -44,7 +45,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate() called with:  = [" + this + "]");
+        CallUtils.d( "onCreate() called with:  = [" + this + "]");
 
         try {
             ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
@@ -67,7 +68,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, this + ",onDestroy() called");
+        CallUtils.d( this + ",onDestroy() called");
         super.onDestroy();
         tipsHandler.removeCallbacksAndMessages(null);
         if (tipsDialog != null) {

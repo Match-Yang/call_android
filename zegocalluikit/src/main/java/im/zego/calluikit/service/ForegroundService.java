@@ -9,10 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import com.blankj.utilcode.util.ActivityUtils;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.calluikit.R;
 import im.zego.calluikit.ui.call.CallStateManager;
 
@@ -31,7 +31,7 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate() called");
+        CallUtils.d( "onCreate() called");
         isStarted = true;
     }
 
@@ -80,7 +80,7 @@ public class ForegroundService extends Service {
         super.onDestroy();
         stopForeground(true);
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
-        Log.d(TAG, "onDestroy() called");
+        CallUtils.d( "onDestroy() called");
     }
 
     private void createNotificationChannel() {

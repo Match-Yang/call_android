@@ -18,6 +18,8 @@ import im.zego.calluikit.utils.TokenManager;
 
 public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
 
+    private static final String TAG = "UIKitActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

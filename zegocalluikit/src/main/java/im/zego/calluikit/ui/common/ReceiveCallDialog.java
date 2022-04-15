@@ -23,6 +23,7 @@ import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.calluikit.R;
 import im.zego.calluikit.utils.PermissionHelper;
 
@@ -95,7 +96,7 @@ public class ReceiveCallDialog {
     }
 
     public void showReceiveCallWindow() {
-        Log.d("TAG", "showReceiveCallWindow() called");
+        CallUtils.d("showReceiveCallWindow() called");
         if (AppUtils.isAppForeground()) {
             showAppDialog();
         } else {

@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import im.zego.callsdk.utils.CallUtils;
 import java.util.Objects;
 
 import im.zego.calluikit.R;
@@ -155,7 +156,7 @@ public class ConnectedVideoCallView extends ConstraintLayout {
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-        Log.d("userInfo", "onUserInfoUpdated() called with: userInfo = [" + userInfo + "]");
+        CallUtils.d("onUserInfoUpdated() called with: userInfo = [" + userInfo + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (Objects.equals(userService.getLocalUserInfo(), userInfo)) {
             binding.callVideoMic.setSelected(userInfo.mic);

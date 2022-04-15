@@ -7,6 +7,7 @@ import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
@@ -33,7 +34,7 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
      *               https://doc-en.zego.im/article/11648
      */
     public void joinRoom(String roomID, String token, ZegoCallback callback) {
-        Log.d(CoreTest.TAG, "joinRoom() called with: roomID = [" + roomID + "], token = [" + token + "]");
+        CallUtils.d("joinRoom() called with: roomID = [" + roomID + "], token = [" + token + "]");
         if (roomInfo == null) {
             roomInfo = new ZegoRoomInfo();
         }

@@ -28,7 +28,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "onCreate() called");
+        Log.d(TAG,  "onCreate() called");
         super.onCreate();
     }
 
@@ -45,7 +45,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         boolean isAppNotStart = !AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
         boolean isDeviceRestart = AppUtils.isAppForeground() && ActivityUtils.getActivityList().isEmpty();
-        Log.d(TAG, "cloud message,isAppNotStart:" + isAppNotStart + ",isDeviceRestart:" + isDeviceRestart);
+        Log.d(TAG,  "cloud message,isAppNotStart:" + isAppNotStart + ",isDeviceRestart:" + isDeviceRestart);
         if (isAppNotStart || isDeviceRestart) {
             if (data.size() > 0) {
                 AppUtils.relaunchApp();
@@ -72,7 +72,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //        }
         //        Notification messageNotification = remoteMessage.getNotification();
         //        if (messageNotification != null) {
-        //            Log.d(TAG, "Message Notification Body: " + messageNotification.getBody());
+        //            Log.d(TAG,  "Message Notification Body: " + messageNotification.getBody());
         //        }
 
     }

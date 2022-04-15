@@ -54,7 +54,7 @@ public class AuthInfoManager {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "init() called with: appID = [" + appID
+        Log.d(TAG,  "init() called with: appID = [" + appID
             + "]" + ",serverSecret:" + serverSecret);
     }
 

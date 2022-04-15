@@ -14,7 +14,7 @@ import im.zego.call.databinding.ActivitySettingBinding;
 import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.call.ui.webview.WebViewActivity;
-import im.zego.callsdk.model.ZegoCallErrorCode;
+import im.zego.callsdk.utils.ZegoCallErrorCode;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;

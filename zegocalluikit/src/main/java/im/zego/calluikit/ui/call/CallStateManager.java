@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.blankj.utilcode.util.ActivityUtils;
 
+import im.zego.callsdk.utils.CallUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public class CallStateManager {
         int beforeState = this.callState;
         this.userInfo = userInfo;
         this.callState = callState;
-        Log.d("TAG",
+        CallUtils.d(
             "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
         if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_VOICE) {
             playRingTone();
