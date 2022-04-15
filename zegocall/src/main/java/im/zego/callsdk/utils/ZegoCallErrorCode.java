@@ -1,6 +1,7 @@
-package im.zego.callsdk.model;
+package im.zego.callsdk.utils;
 
 public class ZegoCallErrorCode {
+
     public static final int SUCCESS = 0;
     public static final int ZegoErrorInternal = 1001;
     public static final int ZegoErrorParamInvalid = 1002;

@@ -9,6 +9,7 @@ import java.util.TimerTask;
 
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;
 
@@ -40,7 +41,7 @@ public class TokenManager {
             ZegoCallManager.getInstance().getToken(userID, effectiveTime, new ZegoRequestCallback() {
                 @Override
                 public void onResult(int errorCode, Object obj) {
-                    Log.d(TAG,
+                    CallUtils.d(
                         "getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj
                             + "]");
                     if (errorCode == 0) {
@@ -68,7 +69,7 @@ public class TokenManager {
     public String getToken() {
         String result;
         if (tokenWrapper != null) {
-            Log.d(TAG, "getToken() called,isTokenValid: " + tokenWrapper.isTokenValid());
+            CallUtils.d( "getToken() called,isTokenValid: " + tokenWrapper.isTokenValid());
             if (!tokenWrapper.isTokenValid()) {
                 reset();
                 result = null;
@@ -78,7 +79,7 @@ public class TokenManager {
         } else {
             result = null;
         }
-        Log.d(TAG, "getToken() called,result:" + result);
+        CallUtils.d( "getToken() called,result:" + result);
         return result;
     }
 
@@ -87,7 +88,7 @@ public class TokenManager {
     }
 
     private void saveToken(String token, long effectiveTimeInSeconds) {
-        Log.d(TAG,
+        CallUtils.d(
             "saveToken() called with: token = [" + token + "], effectiveTimeInSeconds = [" + effectiveTimeInSeconds
                 + "]");
         if (token == null || effectiveTimeInSeconds == 0) {
@@ -112,7 +113,7 @@ public class TokenManager {
     }
 
     private TokenWrapper getTokenFromDisk() {
-        Log.d(TAG, "getTokenFromDisk() called");
+        CallUtils.d( "getTokenFromDisk() called");
         String token = SPStaticUtils.getString(Constants.ZEGO_TOKEN_KEY);
         long expiryTime = SPStaticUtils.getLong(Constants.ZEGO_TOKEN_EXPIRY_TIME_KEY);
 

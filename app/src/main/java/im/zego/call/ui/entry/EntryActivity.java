@@ -16,6 +16,7 @@ import im.zego.call.ui.setting.SettingActivity;
 import im.zego.call.ui.user.OnlineUserActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.utils.AvatarHelper;
 

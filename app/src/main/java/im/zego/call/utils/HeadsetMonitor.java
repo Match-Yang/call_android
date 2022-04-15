@@ -39,7 +39,7 @@ public class HeadsetMonitor {
     public boolean isHeadsetOn(Context context) {
         boolean wiredHeadsetOn = isWiredHeadsetOn(context);
         boolean bluetoothHeadsetOn = isBluetoothHeadsetOn(context);
-        Log.d(TAG, "isHeadsetOn() returned,wiredHeadsetOn:" + wiredHeadsetOn
+        Log.d(TAG,  "isHeadsetOn() returned,wiredHeadsetOn:" + wiredHeadsetOn
             + ",bluetoothHeadsetOn:" + bluetoothHeadsetOn);
         return wiredHeadsetOn || bluetoothHeadsetOn;
     }
@@ -63,7 +63,7 @@ public class HeadsetMonitor {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive() called with: context = [" + context + "], intent = [" + intent + "]");
+            Log.d(TAG,  "onReceive() called with: context = [" + context + "], intent = [" + intent + "]");
             String action = intent.getAction();
             if (BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED.equals(action)) {
                 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();

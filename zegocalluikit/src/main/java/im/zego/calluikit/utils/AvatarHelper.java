@@ -3,6 +3,7 @@ package im.zego.calluikit.utils;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import com.blankj.utilcode.util.ResourceUtils;
+import im.zego.callsdk.utils.CallUtils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -31,7 +32,7 @@ public final class AvatarHelper {
         } else {
             name = "user_icon_" + (index % MAX_INDEX + 1);
         }
-        Log.d(TAG,
+        CallUtils.d(
             "getResourceIndex() called with: userName = [" + userName + "], full = [" + full + "],:" + ",index:" + index
                 + ",name: " + name);
         return ResourceUtils.getDrawableIdByName(name);
@@ -41,7 +42,7 @@ public final class AvatarHelper {
     public static int getBlurResourceID(String userName) {
         int index = getIndex(userName);
         String name = "user_icon_" + (index % MAX_INDEX + 1) + "_blur";
-        Log.d(TAG, "getResourceIndex() called with: userName = [" + userName + "],index:" + index + ",name: " + name);
+        CallUtils.d( "getResourceIndex() called with: userName = [" + userName + "],index:" + index + ",name: " + name);
         return ResourceUtils.getDrawableIdByName(name);
 
     }

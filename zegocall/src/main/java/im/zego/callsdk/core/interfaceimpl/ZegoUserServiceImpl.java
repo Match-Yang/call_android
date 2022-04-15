@@ -1,10 +1,11 @@
 package im.zego.callsdk.core.interfaceimpl;
 
-import android.util.Log;
+import android.text.TextUtils;
 
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
-import im.zego.callsdk.model.ZegoCallErrorCode;
+import im.zego.callsdk.utils.ZegoCallErrorCode;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.zegoexpress.constants.ZegoUpdateType;
 import im.zego.zegoexpress.entity.ZegoUser;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ import java.util.Objects;
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.core.commands.ZegoGetTokenCommand;
 import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
 
@@ -48,6 +48,13 @@ public class ZegoUserServiceImpl extends ZegoUserService {
 
     @Override
     public void setLocalUser(String userID, String userName) {
+        if (TextUtils.isEmpty(userID) || TextUtils.isEmpty(userName)) {
+            return;
+        }
+        if (userID.length() > 64) {
+            CallUtils.e("setLocalUser: userID's length more than 64");
+            userID = userID.substring(0, 63);
+        }
         ZegoUserInfo userInfo = new ZegoUserInfo();
         userInfo.userID = userID;
         userInfo.userName = userName;
@@ -57,7 +64,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     @Override
     public void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state) {
         String userID = ZegoCallHelper.getUserID(streamID);
-        Log.d(CoreTest.TAG, "onRemoteMicStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
+        CallUtils.d("onRemoteMicStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
         if (state != ZegoRemoteDeviceState.OPEN && state != ZegoRemoteDeviceState.MUTE) {
             return;
         }
@@ -86,7 +93,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
     @Override
     public void onRemoteCameraStateUpdate(String streamID, ZegoRemoteDeviceState state) {
         String userID = ZegoCallHelper.getUserID(streamID);
-        Log.d(CoreTest.TAG,
+        CallUtils.d(
             "onRemoteCameraStateUpdate() called with: userID = [" + userID + "], state = [" + state + "]");
         if (state != ZegoRemoteDeviceState.OPEN && state != ZegoRemoteDeviceState.DISABLE) {
             return;

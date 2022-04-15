@@ -15,7 +15,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoCallType;
-import im.zego.callsdk.model.ZegoCallErrorCode;
+import im.zego.callsdk.utils.ZegoCallErrorCode;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
 import im.zego.calluikit.databinding.LayoutReceiveCallBinding;
