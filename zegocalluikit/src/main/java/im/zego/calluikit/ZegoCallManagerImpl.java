@@ -128,8 +128,8 @@ public class ZegoCallManagerImpl {
                 CallUtils.d(
                     "onReceiveCallCanceled() called with: userInfo = [" + userInfo + "], cancelType = [" + cancelType
                         + "]");
-                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 callView.dismissReceiveCallWindow();
+                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_CANCELED);
                 dismissNotification(activity);
 
             }
@@ -147,13 +147,13 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType) {
+                callView.dismissReceiveCallWindow();
                 if (declineType == ZegoDeclineType.Decline) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
                 } else {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_BUSY);
 
                 }
-                callView.dismissReceiveCallWindow();
                 dismissNotification(activity);
             }
 
@@ -171,8 +171,8 @@ public class ZegoCallManagerImpl {
                 } else {
                     callState = CallStateManager.TYPE_CALL_COMPLETED;
                 }
-                CallStateManager.getInstance().setCallState(null, callState);
                 callView.dismissReceiveCallWindow();
+                CallStateManager.getInstance().setCallState(null, callState);
                 dismissNotification(activity);
             }
 
