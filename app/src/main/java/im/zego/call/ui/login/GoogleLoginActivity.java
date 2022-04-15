@@ -16,6 +16,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +34,7 @@ import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.utils.PermissionHelper;
 import im.zego.calluikit.utils.TokenManager;
@@ -122,18 +124,19 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
         binding.termsServiceTv.setMovementMethod(LinkMovementMethod.getInstance());
 
         binding.termsServiceCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SPStaticUtils.put(Constants.ZEGO_IS_TERMS_CHECKED_KEY, isChecked, true);
             isTermsChecked = isChecked;
         });
 
         systemPermissionCheck();
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        isTermsChecked = false;
-//        binding.termsServiceCheckbox.setChecked(false);
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isTermsChecked = SPStaticUtils.getBoolean(Constants.ZEGO_IS_TERMS_CHECKED_KEY);
+        binding.termsServiceCheckbox.setChecked(isTermsChecked);
+    }
 
     private void systemPermissionCheck() {
         PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {

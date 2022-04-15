@@ -51,6 +51,7 @@
   <string name="call_page_status_calling">呼叫中...</string>
   <string name="call_page_status_canceled">已取消</string>
   <string name="call_page_status_completed">已完成</string>
+  <string name="call_page_status_ended">通话结束</string>
   <string name="call_page_status_missed">未接听</string>
   <string name="call_page_status_declined">已拒绝</string>
   <string name="call_page_status_busy">对方正忙</string>

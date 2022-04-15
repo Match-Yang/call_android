@@ -152,6 +152,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         ZegoCallManager.getInstance().dismissCallDialog();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(false);
+    }
+
     private void startObserve() {
         LiveEventBus
             .get(Constants.EVENT_MINIMAL, Boolean.class)

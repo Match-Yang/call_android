@@ -25,10 +25,10 @@ public class VideoConfigViewModel extends ViewModel {
     }
 
     public void init() {
-        settingConfig.setBackgroundNoiseReduction(false);
-        settingConfig.setEchoCancellation(false);
-        settingConfig.setMicVolumeAutoAdjustment(false);
-        settingConfig.setMirroring(false);
+        settingConfig.setBackgroundNoiseReduction(true);
+        settingConfig.setEchoCancellation(true);
+        settingConfig.setMicVolumeAutoAdjustment(true);
+        settingConfig.setMirroring(true);
         settingConfig.setVideoResolution(videoResolutionStringArray[1]);
         settingConfig.setAudioBitrate(audioBitrateStringArray[1]);
     }
