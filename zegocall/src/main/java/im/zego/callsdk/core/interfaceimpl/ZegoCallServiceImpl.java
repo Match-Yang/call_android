@@ -243,13 +243,13 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     public void declineCall(ZegoCallback callback) {
         Log.d(TAG, "declineCall() called with: callback = [" + callback + "]");
         String callID = getCallInfo().callID;
-        String userID = getCallInfo().caller.userID;
         if (TextUtils.isEmpty(callID)) {
             if (callback != null) {
                 callback.onResult(0);
             }
             return;
         }
+        String userID = getCallInfo().caller.userID;
         if (status != ZegoLocalUserStatus.Incoming) {
             if (callback != null) {
                 callback.onResult(ZegoCallErrorCode.ZegoErrorCallStatusWrong);

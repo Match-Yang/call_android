@@ -93,7 +93,8 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     public static void startCallActivity(ZegoUserInfo userInfo, boolean isAutoAccept) {
-        Log.d(TAG, "startCallActivity() called with: userInfo = [" + userInfo + "], isAutoAccept = [" + isAutoAccept + "]");
+        Log.d(TAG,
+            "startCallActivity() called with: userInfo = [" + userInfo + "], isAutoAccept = [" + isAutoAccept + "]");
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent intent = new Intent(topActivity, CallActivity.class);
         intent.putExtra(USER_INFO, userInfo);
@@ -240,7 +241,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 } else if (after == CallStateManager.TYPE_CALL_DECLINE) {
                     updateStateText(R.string.call_page_status_declined);
                     finishActivityDelayed();
-                }else if(after == CallStateManager.TYPE_CALL_BUSY){
+                } else if (after == CallStateManager.TYPE_CALL_BUSY) {
                     updateStateText(R.string.call_page_status_busy);
                     finishActivityDelayed();
                 }
@@ -262,7 +263,11 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
 
         deviceService.enableSpeaker(false);
-        deviceService.useFrontCamera(true);
+        if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO
+            || typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO
+            || typeOfCall == CallStateManager.TYPE_CONNECTED_VIDEO) {
+            deviceService.useFrontCamera(true);
+        }
 
         String token = TokenManager.getInstance().getToken();
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
