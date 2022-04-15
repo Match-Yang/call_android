@@ -22,7 +22,7 @@
         android:id="@+id/iv_back"
         android:layout_width="28dp"
         android:layout_height="28dp"
-        android:layout_marginStart="18dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="15dp"
         android:padding="4dp"
         android:src="@drawable/icon_arrow_left"
