@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import im.zego.callsdk.model.ZegoUserInfo;
+import java.util.Objects;
 
 public class CallStateManager {
 
@@ -78,10 +79,13 @@ public class CallStateManager {
 
     public void setCallState(ZegoUserInfo userInfo, int callState) {
         int beforeState = this.callState;
-        this.userInfo = userInfo;
-        this.callState = callState;
         CallUtils.d(
-            "onCallStateChanged() called with: before = [" + beforeState + "], after = [" + callState + "]");
+            "onCallStateChanged() called with:" + userInfo + "， before = [" + beforeState
+                + "], after = [" + callState + "]");
+        if (!Objects.equals(this.userInfo, userInfo)) {
+            this.userInfo = userInfo;
+        }
+        this.callState = callState;
         if (callState == TYPE_INCOMING_CALLING_VIDEO || callState == TYPE_INCOMING_CALLING_VOICE) {
             playRingTone();
         } else {
@@ -140,10 +144,6 @@ public class CallStateManager {
 
     public ZegoUserInfo getUserInfo() {
         return userInfo;
-    }
-
-    public void setUserInfo(ZegoUserInfo userInfo) {
-        this.userInfo = userInfo;
     }
 
     public void addListener(CallStateChangedListener listener) {
