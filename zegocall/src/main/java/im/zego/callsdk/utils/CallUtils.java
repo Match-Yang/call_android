@@ -36,7 +36,7 @@ public class CallUtils {
         }
     }
 
-    public static String printError(int errorCode) {
+    public static void printError(int errorCode) {
         String result = "";
         if (BuildConfig.DEBUG) {
             try {
@@ -62,7 +62,15 @@ public class CallUtils {
                 e.printStackTrace();
             }
         }
-        return result;
+    }
+
+    public static void printError(String string) {
+        if (BuildConfig.DEBUG) {
+            Log.e(TAG, string);
+            if (application != null) {
+                Toast.makeText(application, string, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public static void init(Application application) {
