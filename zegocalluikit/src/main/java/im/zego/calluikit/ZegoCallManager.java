@@ -2,7 +2,6 @@ package im.zego.calluikit;
 
 import android.app.Activity;
 import android.app.Application;
-
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
@@ -19,7 +18,6 @@ public class ZegoCallManager {
     public String token;
 
     private ZegoCallManager() {
-        callKitService = new ZegoCallUIService();
         impl = new ZegoCallManagerImpl();
     }
 
@@ -35,7 +33,6 @@ public class ZegoCallManager {
     }
 
     // CallKit服务类
-    public final ZegoCallUIService callKitService;
     private ZegoCallManagerImpl impl;
 
     /**

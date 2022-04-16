@@ -113,7 +113,6 @@ public class ZegoCallServiceImpl extends ZegoCallService {
                                     + "]");
                             handler.removeCallbacks(callTimeoutRunnable);
                             if (errorCode == 0) {
-                                //                        if (getCallInfo().callID == null) {
                                 ZegoCallInfo callInfo = new ZegoCallInfo();
                                 callInfo.callID = callID;
                                 callInfo.caller = userService.getLocalUserInfo();
@@ -148,12 +147,6 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             return;
         }
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.getLocalUserInfo() == null) {
-            if (callback != null) {
-                callback.onResult(ZegoCallErrorCode.ZegoErrorNotLogin);
-            }
-            return;
-        }
         String callID = getCallInfo().callID;
         if (!TextUtils.isEmpty(callID)) {
             handler.removeCallbacks(callTimeoutRunnable);
@@ -252,19 +245,6 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             return;
         }
         String userID = getCallInfo().caller.userID;
-        if (status != ZegoLocalUserStatus.Incoming) {
-            if (callback != null) {
-                callback.onResult(ZegoCallErrorCode.ZegoErrorCallStatusWrong);
-            }
-            return;
-        }
-        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.getLocalUserInfo() == null) {
-            if (callback != null) {
-                callback.onResult(ZegoCallErrorCode.ZegoErrorNotLogin);
-            }
-            return;
-        }
         declineCallInner(callID, userID, ZegoDeclineType.Decline, callback);
         handler.removeCallbacks(callTimeoutRunnable);
         setCallInfo(null);
@@ -299,12 +279,6 @@ public class ZegoCallServiceImpl extends ZegoCallService {
             return;
         }
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.getLocalUserInfo() == null) {
-            if (callback != null) {
-                callback.onResult(ZegoCallErrorCode.ZegoErrorNotLogin);
-            }
-            return;
-        }
         ZegoServiceManager.getInstance().roomService.leaveRoom();
         CallUtils.d( "endCall() called with: callback = [" + callback + "]");
         String callID = getCallInfo().callID;

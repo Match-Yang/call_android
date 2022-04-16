@@ -153,13 +153,13 @@ public class MinimalView extends ConstraintLayout {
         }
 
         binding.videoTouchView.setVisibility(isShowVideo ? VISIBLE : GONE);
-        binding.videoTextureView.setVisibility(isShowVideo ? VISIBLE : GONE);
+        binding.layoutVideoTextureView.setVisibility(isShowVideo ? VISIBLE : GONE);
     }
 
     private void delayDismiss() {
         isShowMinimal = false;
         LiveEventBus.get(Constants.EVENT_TIMER_CHANGE_KEY, String.class).removeObserver(timerObserver);
-        if (binding.videoTextureView.getVisibility() == VISIBLE) {
+        if (binding.layoutVideoTextureView.getVisibility() == VISIBLE) {
             toggleVoice(false);
             toggleVideo(false);
         } else {
@@ -180,7 +180,7 @@ public class MinimalView extends ConstraintLayout {
     private void toggleVideo(boolean show) {
         isShowVideo = show;
         binding.videoTouchView.setVisibility(show ? VISIBLE : GONE);
-        binding.videoTextureView.setVisibility(show ? VISIBLE : GONE);
+        binding.layoutVideoTextureView.setVisibility(show ? VISIBLE : GONE);
     }
 
     private boolean isVideoCall() {

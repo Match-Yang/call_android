@@ -2,6 +2,7 @@ package im.zego.callsdk.core.interfaceimpl;
 
 import android.text.TextUtils;
 
+import android.util.Log;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.utils.ZegoCallErrorCode;
@@ -21,6 +22,9 @@ public class ZegoUserServiceImpl extends ZegoUserService {
 
     @Override
     public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
+        CallUtils.d(
+            "getToken() called with: userID = [" + userID + "], effectiveTime = [" + effectiveTime + "], callback = ["
+                + callback + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (userService.getLocalUserInfo() != null) {
             ZegoGetTokenCommand command = new ZegoGetTokenCommand();

@@ -2,10 +2,12 @@ package im.zego.callsdk.core.interfaceimpl;
 
 
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoAudioBitrate;
 import im.zego.callsdk.model.ZegoDevicesType;
 import im.zego.callsdk.model.ZegoVideoResolution;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
 import im.zego.zegoexpress.constants.ZegoCapturePipelineScaleMode;
@@ -46,22 +48,26 @@ public class ZegoDeviceServiceImpl extends ZegoDeviceService {
     }
 
     public void enableCamera(boolean enable) {
+        CallUtils.d("enableCamera() called with: enable = [" + enable + "]");
         ZegoExpressEngine.getEngine().enableCamera(enable);
-        ZegoServiceManager.getInstance().userService.getLocalUserInfo().camera = enable;
-        if (ZegoServiceManager.getInstance().userService.listener != null) {
-            ZegoServiceManager.getInstance().userService.listener.onUserInfoUpdated(ZegoServiceManager.getInstance().userService.getLocalUserInfo());
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        userService.getLocalUserInfo().camera = enable;
+        if (userService.listener != null) {
+            userService.listener.onUserInfoUpdated(userService.getLocalUserInfo());
         }
     }
 
     public void enableMic(boolean enable) {
         ZegoExpressEngine.getEngine().muteMicrophone(!enable);
-        ZegoServiceManager.getInstance().userService.getLocalUserInfo().mic = enable;
-        if (ZegoServiceManager.getInstance().userService.listener != null) {
-            ZegoServiceManager.getInstance().userService.listener.onUserInfoUpdated(ZegoServiceManager.getInstance().userService.getLocalUserInfo());
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        userService.getLocalUserInfo().mic = enable;
+        if (userService.listener != null) {
+            userService.listener.onUserInfoUpdated(userService.getLocalUserInfo());
         }
     }
 
     public void useFrontCamera(boolean isFront) {
+        CallUtils.d("useFrontCamera() called with: isFront = [" + isFront + "]");
         ZegoExpressEngine.getEngine().useFrontCamera(isFront);
     }
 

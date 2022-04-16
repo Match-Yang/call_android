@@ -23,9 +23,9 @@ public class ZegoStreamServiceImpl extends ZegoStreamService {
     public void startPlaying(String userID, TextureView textureView) {
         ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
         zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
-
         if (ZegoCallHelper.isUserIDSelf(userID)) {
             ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
+            CallUtils.d("startPlaying() called with: userID = [" + userID + "], startPreview = ["  + "]");
             ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
         } else {
             String streamID = ZegoCallHelper.getStreamID(userID);

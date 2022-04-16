@@ -14,6 +14,7 @@ import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.ui.BaseActivity;
+import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.utils.TokenManager;
 
 public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
@@ -33,7 +34,7 @@ public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
     protected void onStart() {
         super.onStart();
         FirebaseUserManager.getInstance().setSignInOtherDeviceListener(() -> {
-            ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
+            logout();
             Activity loginActivity = null;
             for (Activity activity : ActivityUtils.getActivityList()) {
                 if (activity instanceof GoogleLoginActivity) {
@@ -62,7 +63,6 @@ public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
 
     private void logout() {
         FirebaseUserManager.getInstance().signOutFirebaseAuth();
-        ZegoCallManager.getInstance().callKitService.logout();
         TokenManager.getInstance().reset();
         ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
     }
