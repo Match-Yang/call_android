@@ -20,14 +20,15 @@ import java.util.Objects;
 
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.utils.ZegoCallErrorCode;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.ZegoCallErrorCode;
 import im.zego.calluikit.R;
+import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.databinding.LayoutIncomingCallBinding;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.utils.AvatarHelper;
-import im.zego.calluikit.utils.TokenManager;
 
 public class IncomingCallView extends ConstraintLayout {
 
@@ -119,14 +120,16 @@ public class IncomingCallView extends ConstraintLayout {
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-        String token = TokenManager.getInstance().getToken();
-        callService.acceptCall(token, errorCode -> {
-            if (errorCode == ZegoCallErrorCode.SUCCESS) {
-                deviceService.enableMic(true);
-                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
-            } else {
-                ToastUtils.showShort("responseCall " + errorCode);
-            }
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
+            callService.acceptCall(token, errorCode -> {
+                if (errorCode == ZegoCallErrorCode.SUCCESS) {
+                    deviceService.enableMic(true);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
+                } else {
+                    ToastUtils.showShort("responseCall " + errorCode);
+                }
+            });
         });
     }
 
@@ -135,15 +138,17 @@ public class IncomingCallView extends ConstraintLayout {
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
-        String token = TokenManager.getInstance().getToken();
-        callService.acceptCall(token, errorCode -> {
-            if (errorCode == ZegoCallErrorCode.SUCCESS) {
-                deviceService.enableMic(true);
-                deviceService.enableCamera(true);
-                CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
-            } else {
-                ToastUtils.showShort(R.string.response_failed, errorCode);
-            }
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
+            callService.acceptCall(token, errorCode -> {
+                if (errorCode == ZegoCallErrorCode.SUCCESS) {
+                    deviceService.enableMic(true);
+                    deviceService.enableCamera(true);
+                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
+                } else {
+                    ToastUtils.showShort(R.string.response_failed, errorCode);
+                }
+            });
         });
     }
 

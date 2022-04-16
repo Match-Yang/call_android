@@ -39,7 +39,6 @@ import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.utils.PermissionHelper;
-import im.zego.calluikit.utils.TokenManager;
 
 public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding> {
 
@@ -79,7 +78,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                         userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                         ActivityUtils.startActivity(EntryActivity.class);
-                        TokenManager.getInstance();
                     } else {
                         signIn();
                     }
@@ -151,7 +149,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                     ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                     userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                     ActivityUtils.startActivity(EntryActivity.class);
-                    TokenManager.getInstance();
                 }
             }
         });
@@ -190,7 +187,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                         userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                         ActivityUtils.startActivity(EntryActivity.class);
-                        TokenManager.getInstance();
                     } else {
                         showWarnTips(getString(R.string.toast_login_fail, errorCode));
                     }

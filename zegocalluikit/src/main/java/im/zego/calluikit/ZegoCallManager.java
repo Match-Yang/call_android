@@ -35,6 +35,8 @@ public class ZegoCallManager {
     // CallKit服务类
     private ZegoCallManagerImpl impl;
 
+    private ZegoCallTokenDelegate tokenDelegate;
+
     /**
      * 初始化sdk与rtc引擎 调用时机：应用启动时
      */
@@ -48,6 +50,14 @@ public class ZegoCallManager {
 
     public void setListener(ZegoCallServiceListener listener) {
         impl.setListener(listener);
+    }
+
+    public void setTokenDelegate(ZegoCallTokenDelegate tokenDelegate) {
+        this.tokenDelegate = tokenDelegate;
+    }
+
+    public ZegoCallTokenDelegate getTokenDelegate() {
+        return tokenDelegate;
     }
 
     /**
