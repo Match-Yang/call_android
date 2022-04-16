@@ -11,12 +11,14 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -57,14 +59,17 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
         }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(CLIENT_ID)
-                .requestEmail()
-                .build();
+            .requestIdToken(CLIENT_ID)
+            .requestEmail()
+            .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         binding.loginButton.setOnClickListener(v -> {
             if (!isTermsChecked) {
-                ToastUtils.showShort(R.string.toast_login_service_privacy);
+                ToastUtils toastUtils = ToastUtils.make().setGravity(Gravity.CENTER, 0, 0);
+                toastUtils.setBgColor(0x99000000);
+                toastUtils.setTextColor(Color.WHITE);
+                toastUtils.show(R.string.toast_login_service_privacy);
                 return;
             }
             PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
@@ -90,35 +95,35 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
         int privacyPolicyIndex = content.indexOf(privacyPolicyString);
         int color = Color.parseColor("#0055ff");
         spannableString.setSpan(
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(@NonNull View widget) {
-                        WebViewActivity.startWebViewActivity(TERMS_OF_SERVICE);
-                    }
+            new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View widget) {
+                    WebViewActivity.startWebViewActivity(TERMS_OF_SERVICE);
+                }
 
-                    @Override
-                    public void updateDrawState(@NonNull TextPaint ds) {
-                        super.updateDrawState(ds);
-                        ds.setColor(color);
-                        ds.setUnderlineText(false);
-                    }
-                },
-                termsOfUseIndex, termsOfUseString.length() + termsOfUseIndex, 33
+                @Override
+                public void updateDrawState(@NonNull TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setColor(color);
+                    ds.setUnderlineText(false);
+                }
+            },
+            termsOfUseIndex, termsOfUseString.length() + termsOfUseIndex, 33
         );
         spannableString.setSpan(
-                new ClickableSpan() {
-                    @Override
-                    public void onClick(@NonNull View widget) {
-                        WebViewActivity.startWebViewActivity(PRIVACY_POLICY);
-                    }
+            new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View widget) {
+                    WebViewActivity.startWebViewActivity(PRIVACY_POLICY);
+                }
 
-                    @Override
-                    public void updateDrawState(@NonNull TextPaint ds) {
-                        super.updateDrawState(ds);
-                        ds.setColor(color);
-                        ds.setUnderlineText(false);
-                    }
-                }, privacyPolicyIndex, privacyPolicyString.length() + privacyPolicyIndex, 33
+                @Override
+                public void updateDrawState(@NonNull TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setColor(color);
+                    ds.setUnderlineText(false);
+                }
+            }, privacyPolicyIndex, privacyPolicyString.length() + privacyPolicyIndex, 33
         );
         binding.termsServiceTv.setText(spannableString);
         binding.termsServiceTv.setMovementMethod(LinkMovementMethod.getInstance());

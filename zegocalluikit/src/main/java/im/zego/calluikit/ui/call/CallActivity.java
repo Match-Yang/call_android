@@ -402,6 +402,9 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (videoSettingsDialog != null) {
+            videoSettingsDialog.dismiss();
+        }
         ZegoServiceManager.getInstance().roomService.leaveRoom();
         mainHandler.removeCallbacksAndMessages(null);
         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_NO_CALL);

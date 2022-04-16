@@ -30,10 +30,10 @@
 
     <View
         android:id="@+id/login_button"
-        android:layout_width="match_parent"
+        android:layout_width="301dp"
         android:layout_height="50dp"
-        android:layout_marginStart="37dp"
-        android:layout_marginEnd="37dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="24dp"
         android:background="@drawable/grey_round_rect_bg"
         app:layout_constraintBottom_toTopOf="@id/terms_service_tv" />
@@ -65,28 +65,28 @@
 
     <androidx.appcompat.widget.AppCompatCheckBox
         android:id="@+id/terms_service_checkbox"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="37dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/login_button"
+        app:layout_constraintEnd_toStartOf="@id/terms_service_tv"
+        android:layout_marginTop="2dp"
         android:button="@null"
         android:drawableTop="@drawable/terms_service_checkbox"
-        app:layout_constraintEnd_toStartOf="@id/terms_service_tv"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/terms_service_tv" />
+        app:layout_constraintTop_toTopOf="@id/terms_service_tv"
+        />
 
     <TextView
         android:id="@+id/terms_service_tv"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="37dp"
         android:layout_marginBottom="38dp"
         android:maxWidth="280dp"
         android:text="@string/login_page_service_privacy"
         android:textColor="#ff7f8081"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/terms_service_checkbox" />
+        app:layout_constraintStart_toEndOf="@id/terms_service_checkbox"
+        android:layout_marginStart="6dp"
+        app:layout_constraintEnd_toEndOf="@id/login_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
