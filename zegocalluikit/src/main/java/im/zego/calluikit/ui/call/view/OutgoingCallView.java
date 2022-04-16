@@ -135,7 +135,11 @@ public class OutgoingCallView extends ConstraintLayout {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
         if (getVisibility() == View.VISIBLE && !MinimalView.isShowMinimal) {
-            streamService.startPlaying(userService.getLocalUserInfo().userID, binding.textureView);
+            TextureView textureView = binding.textureView;
+            if (isVideoCall()) {
+                textureView = null;
+            }
+            streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);
         }
     }
 }

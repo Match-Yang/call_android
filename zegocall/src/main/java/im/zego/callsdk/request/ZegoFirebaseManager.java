@@ -551,6 +551,8 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         int type = (int) parameter.get("type");
 
         declineCallInner(selfUserID, callerID, callID, type, callback);
+
+        removeCallListener(callID);
     }
 
     private void declineCallInner(String selfUserID, String callerID, String callID, int type,
@@ -589,7 +591,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     }
                 }
             });
-        removeCallListener(callID);
     }
 
     private void cancelUserCall(Map<String, Object> parameter, ZegoRequestCallback callback) {
