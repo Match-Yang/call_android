@@ -85,14 +85,14 @@ public class ZegoCallManagerImpl {
         userService.setListener(new ZegoUserServiceListener() {
             @Override
             public void onUserInfoUpdated(ZegoUserInfo userInfo) {
-//                Activity topActivity = ActivityUtils.getTopActivity();
-//                if (topActivity instanceof CallActivity) {
-//                    CallActivity callActivity = (CallActivity) topActivity;
-//                    callActivity.onUserInfoUpdated(userInfo);
-//                }
+                //                Activity topActivity = ActivityUtils.getTopActivity();
+                //                if (topActivity instanceof CallActivity) {
+                //                    CallActivity callActivity = (CallActivity) topActivity;
+                //                    callActivity.onUserInfoUpdated(userInfo);
+                //                }
                 LiveEventBus
-                        .get(Constants.EVENT_USER_INFO_UPDATED, ZegoUserInfo.class)
-                        .post(userInfo);
+                    .get(Constants.EVENT_USER_INFO_UPDATED, ZegoUserInfo.class)
+                    .post(userInfo);
                 callView.onUserInfoUpdated(userInfo);
             }
 
@@ -112,7 +112,7 @@ public class ZegoCallManagerImpl {
         callService.setListener(new ZegoCallServiceListener() {
             @Override
             public void onReceiveCallInvite(ZegoUserInfo userInfo, String callID, ZegoCallType type) {
-                CallUtils.d( "onReceiveCallInvite() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+                CallUtils.d("onReceiveCallInvite() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 int state;
                 if (type == ZegoCallType.Voice) {
                     state = CallStateManager.TYPE_INCOMING_CALLING_VOICE;
@@ -136,6 +136,7 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onReceiveCallAccept(ZegoUserInfo userInfo) {
+                CallUtils.d("onReceiveCallAccept() called with: userInfo = [" + userInfo + "]");
                 int callState = CallStateManager.getInstance().getCallState();
                 if (callState == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
                     callState = CallStateManager.TYPE_CONNECTED_VOICE;
@@ -147,6 +148,9 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onReceiveCallDecline(ZegoUserInfo userInfo, ZegoDeclineType declineType) {
+                CallUtils.d(
+                    "onReceiveCallDecline() called with: userInfo = [" + userInfo + "], declineType = [" + declineType
+                        + "]");
                 callView.dismissReceiveCallWindow();
                 if (declineType == ZegoDeclineType.Decline) {
                     CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CALL_DECLINE);
@@ -159,12 +163,13 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onReceiveCallEnded() {
+                CallUtils.d("onReceiveCallEnded() called");
                 CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
             }
 
             @Override
             public void onReceiveCallTimeout(ZegoUserInfo userInfo, ZegoCallTimeoutType type) {
-                CallUtils.d( "onReceiveCallTimeout() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
+                CallUtils.d("onReceiveCallTimeout() called with: userInfo = [" + userInfo + "], type = [" + type + "]");
                 int callState;
                 if (type == ZegoCallTimeoutType.Calling) {
                     callState = CallStateManager.TYPE_CALL_MISSED;

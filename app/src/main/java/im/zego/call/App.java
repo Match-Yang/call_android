@@ -3,14 +3,12 @@ package im.zego.call;
 import android.app.Activity;
 import android.app.Application;
 import android.view.Gravity;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.ColorUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 import com.tencent.mmkv.MMKV;
-
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;

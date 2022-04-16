@@ -52,7 +52,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
             return;
         }
         if (userID.length() > 64) {
-            CallUtils.e("setLocalUser: userID's length more than 64");
+            CallUtils.printError("setLocalUser: userID's length more than 64");
             userID = userID.substring(0, 63);
         }
         ZegoUserInfo userInfo = new ZegoUserInfo();

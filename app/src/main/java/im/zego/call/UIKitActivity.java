@@ -47,7 +47,6 @@ public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
                 builder.setPositiveButton(R.string.dialog_login_page_ok, new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
                         dialog.dismiss();
                     }
                 });

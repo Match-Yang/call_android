@@ -97,6 +97,7 @@ public class ZegoServiceManager {
         roomService = new ZegoRoomServiceImpl();
         deviceService = new ZegoDeviceServiceImpl();
         streamService = new ZegoStreamServiceImpl();
+        CallUtils.init(application);
 
         ZegoCommandManager.getInstance();
 

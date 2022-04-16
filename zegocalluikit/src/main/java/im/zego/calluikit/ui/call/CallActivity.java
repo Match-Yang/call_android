@@ -86,7 +86,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private VideoSettingsDialog videoSettingsDialog;
 
     public static void startCallActivity(ZegoUserInfo userInfo) {
-        CallUtils.d( "startCallActivity() called with: userInfo = [" + userInfo + "]");
+        CallUtils.d("startCallActivity() called with: userInfo = [" + userInfo + "]");
         Activity topActivity = ActivityUtils.getTopActivity();
         Intent intent = new Intent(topActivity, CallActivity.class);
         intent.putExtra(USER_INFO, userInfo);
@@ -118,19 +118,19 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
                 @Override
                 public void onDismissError() {
                     super.onDismissError();
-                    CallUtils.d( "onDismissError() called");
+                    CallUtils.d("onDismissError() called");
                 }
 
                 @Override
                 public void onDismissSucceeded() {
                     super.onDismissSucceeded();
-                    CallUtils.d( "onDismissSucceeded() called");
+                    CallUtils.d("onDismissSucceeded() called");
                 }
 
                 @Override
                 public void onDismissCancelled() {
                     super.onDismissCancelled();
-                    CallUtils.d( "onDismissCancelled() called");
+                    CallUtils.d("onDismissCancelled() called");
                 }
             });
         } else {
@@ -198,7 +198,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     private void setExcludeFromRecents(boolean isExclude) {
-        CallUtils.d( "setExcludeFromRecents() called with: isExclude = [" + isExclude + "]");
+        CallUtils.d("setExcludeFromRecents() called with: isExclude = [" + isExclude + "]");
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         if (am != null) {
             List<ActivityManager.AppTask> tasks = am.getAppTasks();
@@ -323,7 +323,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     }
 
     private void updateUi(int type) {
-        CallUtils.d( "updateUi() called with: type = [" + type + "]");
+        CallUtils.d("updateUi() called with: type = [" + type + "]");
         binding.layoutOutgoingCall.setUserInfo(userInfo);
         binding.layoutOutgoingCall.setCallType(type);
         binding.layoutIncomingCall.setCallType(type);
@@ -402,6 +402,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ZegoServiceManager.getInstance().roomService.leaveRoom();
         mainHandler.removeCallbacksAndMessages(null);
         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_NO_CALL);
         CallStateManager.getInstance().removeListener(callStateChangedListener);

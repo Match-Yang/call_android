@@ -1,6 +1,5 @@
 package im.zego.callsdk.core.interfaceimpl;
 
-import android.util.Log;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.core.interfaces.ZegoRoomService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
@@ -8,7 +7,6 @@ import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoRoomInfo;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CallUtils;
-import im.zego.callsdk.utils.CoreTest;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.constants.ZegoRoomState;
