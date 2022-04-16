@@ -73,7 +73,6 @@ public class SettingActivity extends UIKitActivity<ActivitySettingBinding> {
             @Override
             public void onClick(View v) {
                 FirebaseUserManager.getInstance().signOutFirebaseAuth();
-                ZegoCallManager.getInstance().callKitService.logout();
                 SPStaticUtils.put(Constants.ZEGO_IS_TERMS_CHECKED_KEY, false, true);
                 TokenManager.getInstance().reset();
                 ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
