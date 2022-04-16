@@ -4,18 +4,20 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.viewbinding.ViewBinding;
+
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ToastUtils;
+
 import im.zego.call.firebase.FirebaseUserManager;
+import im.zego.call.token.ZegoTokenManager;
 import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.ui.BaseActivity;
-import im.zego.calluikit.ui.call.CallStateManager;
-import im.zego.calluikit.utils.TokenManager;
 
 public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
 
@@ -63,7 +65,7 @@ public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
 
     private void logout() {
         FirebaseUserManager.getInstance().signOutFirebaseAuth();
-        TokenManager.getInstance().reset();
+        ZegoTokenManager.getInstance().reset();
         ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
     }
 }
