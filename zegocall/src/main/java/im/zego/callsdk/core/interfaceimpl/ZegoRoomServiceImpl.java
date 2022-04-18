@@ -80,11 +80,11 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
 
     public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
         if (state == ZegoRoomState.CONNECTED) {
-                        ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
-                        if (zegoCallback != null) {
-                            // join room result
-                            zegoCallback.onResult(0);
-                        }
+            ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
+            if (zegoCallback != null) {
+                // join room result
+                zegoCallback.onResult(0);
+            }
         } else if (state == ZegoRoomState.DISCONNECTED) {
             ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
             if (zegoCallback != null) {

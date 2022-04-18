@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import im.zego.call.token.ZegoTokenManager;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.model.DatabaseUser;
 import im.zego.callsdk.model.ZegoUserInfo;
@@ -62,6 +63,7 @@ public class FirebaseUserManager {
                     database.getReference("online_user").removeEventListener(onlineListener);
                     database.getReference(".info/connected").removeEventListener(connectListener);
                 }
+                ZegoTokenManager.getInstance().setCurrentUserID(firebaseAuth.getUid());
             }
         });
     }

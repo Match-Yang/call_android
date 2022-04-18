@@ -12,7 +12,6 @@ import com.blankj.utilcode.util.Utils;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.token.ZegoTokenManager;
-import im.zego.call.ui.login.GoogleLoginActivity;
 import im.zego.callsdk.callback.ZegoTokenCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;

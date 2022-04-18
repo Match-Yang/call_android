@@ -35,6 +35,7 @@ import im.zego.calluikit.ui.common.TipsDialog;
 import im.zego.calluikit.ui.common.TipsDialog.TipsMessageType;
 
 public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
+
     private static final String TAG = "BaseActivity";
 
     protected T binding;
@@ -42,11 +43,12 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     public static final int TIPS_TIME = 3 * 1000;
     protected TipsDialog tipsDialog;
     protected LoadingDialog loadingDialog;
+    private ZegoCallingState state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CallUtils.d( "onCreate() called with:  = [" + this + "]");
+        CallUtils.d("onCreate() called with:  = [" + this + "]");
 
         try {
             ParameterizedType parameterizedType = (ParameterizedType) this.getClass().getGenericSuperclass();
@@ -69,7 +71,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        CallUtils.d( this + ",onDestroy() called");
+        CallUtils.d(this + ",onDestroy() called");
         super.onDestroy();
         tipsHandler.removeCallbacksAndMessages(null);
         if (tipsDialog != null) {
@@ -118,6 +120,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     private void hideTips() {
         tipsDialog.dismiss();
     }
+
     protected void showLoading() {
         this.showLoading(null, true);
     }
@@ -144,27 +147,28 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
         if (quality == ZegoNetWorkQuality.Bad && CallStateManager.getInstance().isConnected()) {
             if (userID.equals(ZegoCallManager.getInstance().getLocalUserInfo().userID)) {
-//                showLoading(getString(R.string.network_connnect_me_unstable), false);
+                //                showLoading(getString(R.string.network_connnect_me_unstable), false);
                 ToastUtils.showShort(getString(R.string.network_connnect_me_unstable));
             } else {
-//                showLoading(getString(R.string.network_connnect_other_unstable), false);
+                //                showLoading(getString(R.string.network_connnect_other_unstable), false);
                 ToastUtils.showShort(getString(R.string.network_connnect_other_unstable));
             }
         } else {
-//            dismissLoading();
+            //            dismissLoading();
             ToastUtils.cancel();
         }
     }
 
     public void onCallingStateUpdated(ZegoCallingState state) {
-        if (state == ZegoCallingState.CONNECTING && CallStateManager.getInstance().isInACallStream()) {
-//            showLoading(getString(R.string.call_page_call_disconnected), true);
-            ToastUtils.showShort(getString(R.string.call_page_call_disconnected));
-            LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(false);
+        if (this.state == ZegoCallingState.CONNECTED && state == ZegoCallingState.CONNECTING) {
+            if (CallStateManager.getInstance().isInACallStream()) {
+                ToastUtils.showShort(getString(R.string.call_page_call_disconnected));
+                LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(false);
+            }
         } else {
-//            dismissLoading();
             ToastUtils.cancel();
             LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(true);
         }
+        this.state = state;
     }
 }
