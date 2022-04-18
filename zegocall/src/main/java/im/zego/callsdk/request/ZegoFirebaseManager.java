@@ -135,7 +135,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                             Object details = ffe.getDetails();
                         }
                         if (callback != null) {
-                            callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, e);
+                            callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, e.getMessage());
                         }
                         return;
                     }

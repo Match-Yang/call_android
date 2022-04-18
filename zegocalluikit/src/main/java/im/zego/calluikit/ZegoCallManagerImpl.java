@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
+import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -182,6 +183,7 @@ public class ZegoCallManagerImpl {
 
             @Override
             public void onCallingStateUpdated(ZegoCallingState state) {
+                Log.d(TAG, "onCallingStateUpdated() called with: state = [" + state + "]");
                 Activity topActivity = ActivityUtils.getTopActivity();
                 if (topActivity instanceof BaseActivity) {
                     ((BaseActivity<?>) topActivity).onCallingStateUpdated(state);

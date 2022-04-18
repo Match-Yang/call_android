@@ -139,13 +139,7 @@ public class ZegoCallServiceImpl extends ZegoCallService {
 
     @Override
     public void cancelCall(ZegoCallback callback) {
-        CallUtils.d( "cancelCall() called with: callback = [" + callback + "]");
-        if (status != ZegoLocalUserStatus.Outgoing) {
-            if (callback != null) {
-                callback.onResult(ZegoCallErrorCode.ZegoErrorCallStatusWrong);
-            }
-            return;
-        }
+        CallUtils.d( "cancelCall() called with: status = [" + status + "]");
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         String callID = getCallInfo().callID;
         if (!TextUtils.isEmpty(callID)) {

@@ -124,9 +124,9 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     protected void showLoading(String content, boolean progressVisible) {
         if (loadingDialog == null) {
             loadingDialog = new LoadingDialog(this);
-            if (!StringUtils.isEmpty(content)) {
-                loadingDialog.setLoadingText(content);
-            }
+        }
+        if (!StringUtils.isEmpty(content)) {
+            loadingDialog.setLoadingText(content);
         }
         if (!loadingDialog.isShowing()) {
             loadingDialog.setProgressVisibility(progressVisible);

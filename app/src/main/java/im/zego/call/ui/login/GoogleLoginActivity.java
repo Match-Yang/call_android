@@ -130,8 +130,6 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             SPStaticUtils.put(Constants.ZEGO_IS_TERMS_CHECKED_KEY, isChecked, true);
             isTermsChecked = isChecked;
         });
-
-        systemPermissionCheck();
     }
 
     @Override
@@ -158,10 +156,12 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = FirebaseUserManager.getInstance().getCurrentUser();
+        Log.d(TAG, "onStart() called,currentUser:" + currentUser);
         if (currentUser == null) {
             mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
             });
         }
+        systemPermissionCheck();
     }
 
     private void signIn() {
