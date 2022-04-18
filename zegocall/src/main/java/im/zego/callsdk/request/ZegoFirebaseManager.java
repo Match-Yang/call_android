@@ -1,6 +1,7 @@
 package im.zego.callsdk.request;
 
 import android.text.TextUtils;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.Continuation;
@@ -42,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 public class ZegoFirebaseManager implements ZegoRequestProtocol {
@@ -60,7 +62,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         CallUtils.d( "ZegoFirebaseManager() called");
         updater = ZegoListenerManager.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.setPersistenceEnabled(true);
         FirebaseAuth.getInstance().addAuthStateListener(new AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -78,6 +79,9 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     if (callEventListener != null) {
                         CallUtils.d( "remove call listener");
                         database.getReference("/call").removeEventListener(callEventListener);
+                    }
+                    for (Entry<String, ValueEventListener> entry : databaseListenerMap.entrySet()) {
+                        removeDatabaseListener(entry.getKey());
                     }
                 }
             }
@@ -135,7 +139,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                             Object details = ffe.getDetails();
                         }
                         if (callback != null) {
-                            callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, e);
+                            callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, e.getMessage());
                         }
                         return;
                     }
@@ -249,8 +253,8 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 if (currentUser == null) {
                     return;
                 }
-                CallUtils.d( "onChildAdded() called with: snapshot = [" + snapshot + "], previousChildName = ["
-                    + previousChildName + "]");
+                CallUtils.d( "onChildAdded() called with: snapshot = [" + snapshot + "], isCurrentIdle() = ["
+                    + isCurrentIdle() + "]");
                 DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
                 if (databaseCall.call_status == 0 || !isCallIDContainsSelf(snapshot)) {
                     return;

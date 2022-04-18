@@ -46,6 +46,7 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
         roomConfig.isUserStatusNotify = true;
         ZegoExpressEngine.getEngine().loginRoom(roomID, user, roomConfig);
 
+        ZegoServiceManager.getInstance().deviceService.enableCamera(false);
         String streamID = ZegoCallHelper.getStreamID(localUserInfo.userID, roomID);
         ZegoExpressEngine.getEngine().startPublishingStream(streamID);
 
@@ -66,6 +67,11 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
      * Call this method at: After joining a room
      */
     public void leaveRoom() {
+        if (roomInfo != null) {
+            ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
+            String streamID = ZegoCallHelper.getStreamID(localUserInfo.userID, roomInfo.roomID);
+            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
+        }
         ZegoExpressEngine.getEngine().logoutRoom();
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         userService.userInfoList.clear();
@@ -74,11 +80,11 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
 
     public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
         if (state == ZegoRoomState.CONNECTED) {
-            ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
-            if (zegoCallback != null) {
-                // join room result
-                zegoCallback.onResult(0);
-            }
+                        ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
+                        if (zegoCallback != null) {
+                            // join room result
+                            zegoCallback.onResult(0);
+                        }
         } else if (state == ZegoRoomState.DISCONNECTED) {
             ZegoCallback zegoCallback = callbackHashMap.remove(roomID);
             if (zegoCallback != null) {

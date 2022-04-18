@@ -13,20 +13,13 @@ import android.os.Looper;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
@@ -43,6 +36,9 @@ import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.ui.dialog.VideoSettingsDialog;
 import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
 import im.zego.calluikit.utils.AvatarHelper;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
@@ -276,28 +272,38 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
 
         if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VOICE) {
             ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
-                callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
-                    if (errorCode == 0) {
-                        deviceService.enableMic(true);
-                    } else {
-                        showWarnTips(getString(R.string.call_page_call_fail, errorCode));
-                        finishActivityDelayed();
-                    }
-                });
+                if (errorCode1 == 0) {
+                    callService.callUser(userInfo, ZegoCallType.Voice, token, errorCode -> {
+                        if (errorCode == 0) {
+                            deviceService.enableMic(true);
+                        } else {
+                            showWarnTips(getString(R.string.call_page_call_fail, errorCode));
+                            finishActivityDelayed();
+                        }
+                    });
+                } else {
+                    showWarnTips(getString(R.string.call_page_call_fail, errorCode1));
+                    finishActivityDelayed();
+                }
             });
         } else if (typeOfCall == CallStateManager.TYPE_OUTGOING_CALLING_VIDEO) {
             ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
-                callService.callUser(userInfo, ZegoCallType.Video, token, errorCode -> {
-                    if (errorCode == 0) {
-                        TextureView textureView = binding.layoutOutgoingCall.getTextureView();
-                        deviceService.enableMic(true);
-                        deviceService.enableCamera(true);
-                        streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);
-                    } else {
-                        showWarnTips(getString(R.string.call_page_call_fail, errorCode));
-                        finishActivityDelayed();
-                    }
-                });
+                if (errorCode1 == 0) {
+                    callService.callUser(userInfo, ZegoCallType.Video, token, errorCode -> {
+                        if (errorCode == 0) {
+                            TextureView textureView = binding.layoutOutgoingCall.getTextureView();
+                            deviceService.enableMic(true);
+                            deviceService.enableCamera(true);
+                            streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);
+                        } else {
+                            showWarnTips(getString(R.string.call_page_call_fail, errorCode));
+                            finishActivityDelayed();
+                        }
+                    });
+                } else {
+                    showWarnTips(getString(R.string.call_page_call_fail, errorCode1));
+                    finishActivityDelayed();
+                }
             });
         } else if (typeOfCall == CallStateManager.TYPE_INCOMING_CALLING_VIDEO) {
             mainHandler.postDelayed(finishRunnable, 62 * 1000);

@@ -3,6 +3,7 @@ package im.zego.calluikit.ui.call.view;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import im.zego.callsdk.utils.CallUtils;
 import java.util.Objects;
 
 import im.zego.callsdk.core.interfaces.ZegoCallService;
@@ -136,7 +138,7 @@ public class OutgoingCallView extends ConstraintLayout {
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
         if (getVisibility() == View.VISIBLE && !MinimalView.isShowMinimal) {
             TextureView textureView = binding.textureView;
-            if (isVideoCall()) {
+            if (!isVideoCall()) {
                 textureView = null;
             }
             streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);

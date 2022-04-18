@@ -1,5 +1,6 @@
 package im.zego.callsdk.core.interfaceimpl;
 
+import android.util.Log;
 import android.view.TextureView;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
 import im.zego.callsdk.utils.CallUtils;
@@ -21,12 +22,15 @@ public class ZegoStreamServiceImpl extends ZegoStreamService {
      * @param textureView refers to the target view that you want to be rendered.
      */
     public void startPlaying(String userID, TextureView textureView) {
+        CallUtils.d("startPlaying() called with: userID = [" + userID + "], textureView = [" + textureView + "]");
         ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
         zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
         if (ZegoCallHelper.isUserIDSelf(userID)) {
-            ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
-            CallUtils.d("startPlaying() called with: userID = [" + userID + "], startPreview = ["  + "]");
-            ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
+            if (textureView != null) {
+                ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
+                CallUtils.d("startPlaying() called with: userID = [" + userID + "], startPreview = [" + zegoCanvas + "]");
+                ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
+            }
         } else {
             String streamID = ZegoCallHelper.getStreamID(userID);
             CallUtils.d("startPlayingStream() called with: streamID = [" + streamID + "]");
@@ -36,6 +40,7 @@ public class ZegoStreamServiceImpl extends ZegoStreamService {
 
     public void stopPlaying(String userID) {
         if (ZegoCallHelper.isUserIDSelf(userID)) {
+            CallUtils.d("stopPlaying() called with: userID = [" + userID + "]");
             ZegoExpressEngine.getEngine().stopPreview();
         } else {
             String streamID = ZegoCallHelper.getStreamID(userID);

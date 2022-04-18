@@ -122,14 +122,18 @@ public class IncomingCallView extends ConstraintLayout {
 
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
-            callService.acceptCall(token, errorCode -> {
-                if (errorCode == ZegoCallErrorCode.SUCCESS) {
-                    deviceService.enableMic(true);
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
-                } else {
-                    ToastUtils.showShort("responseCall " + errorCode);
-                }
-            });
+            if (errorCode1 == 0) {
+                callService.acceptCall(token, errorCode -> {
+                    if (errorCode == ZegoCallErrorCode.SUCCESS) {
+                        deviceService.enableMic(true);
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VOICE);
+                    } else {
+                        ToastUtils.showShort(R.string.response_failed, errorCode);
+                    }
+                });
+            } else {
+                ToastUtils.showShort(R.string.response_failed, errorCode1);
+            }
         });
     }
 
@@ -140,15 +144,19 @@ public class IncomingCallView extends ConstraintLayout {
 
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
-            callService.acceptCall(token, errorCode -> {
-                if (errorCode == ZegoCallErrorCode.SUCCESS) {
-                    deviceService.enableMic(true);
-                    deviceService.enableCamera(true);
-                    CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
-                } else {
-                    ToastUtils.showShort(R.string.response_failed, errorCode);
-                }
-            });
+            if(errorCode1 == 0){
+                callService.acceptCall(token, errorCode -> {
+                    if (errorCode == ZegoCallErrorCode.SUCCESS) {
+                        deviceService.enableMic(true);
+                        deviceService.enableCamera(true);
+                        CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_CONNECTED_VIDEO);
+                    } else {
+                        ToastUtils.showShort(R.string.response_failed, errorCode);
+                    }
+                });
+            }else {
+                ToastUtils.showShort(R.string.response_failed, errorCode1);
+            }
         });
     }
 

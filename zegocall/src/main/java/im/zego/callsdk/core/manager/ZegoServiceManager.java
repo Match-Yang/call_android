@@ -2,19 +2,12 @@ package im.zego.callsdk.core.manager;
 
 import android.app.Application;
 import android.util.Log;
-
-import com.google.gson.Gson;
-
-import im.zego.callsdk.command.ZegoCommandManager;
-import im.zego.callsdk.model.ZegoCallingState;
-import im.zego.callsdk.utils.CallUtils;
-import im.zego.zegoexpress.entity.ZegoUser;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import androidx.annotation.NonNull;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.FirebaseUser;
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.command.ZegoCommandManager;
 import im.zego.callsdk.core.interfaceimpl.ZegoCallServiceImpl;
 import im.zego.callsdk.core.interfaceimpl.ZegoDeviceServiceImpl;
 import im.zego.callsdk.core.interfaceimpl.ZegoRoomServiceImpl;
@@ -26,10 +19,13 @@ import im.zego.callsdk.core.interfaces.ZegoRoomService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
+import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.callback.IZegoEventHandler;
 import im.zego.zegoexpress.constants.ZegoAudioRoute;
+import im.zego.zegoexpress.constants.ZegoPublisherState;
 import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
 import im.zego.zegoexpress.constants.ZegoRoomState;
 import im.zego.zegoexpress.constants.ZegoScenario;
@@ -38,6 +34,10 @@ import im.zego.zegoexpress.constants.ZegoUpdateType;
 import im.zego.zegoexpress.entity.ZegoEngineConfig;
 import im.zego.zegoexpress.entity.ZegoEngineProfile;
 import im.zego.zegoexpress.entity.ZegoStream;
+import im.zego.zegoexpress.entity.ZegoUser;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.json.JSONObject;
 
 /**
  * Class LiveAudioRoom business logic management.
@@ -157,6 +157,14 @@ public class ZegoServiceManager {
             }
 
             @Override
+            public void onPublisherStateUpdate(String streamID, ZegoPublisherState state, int errorCode,
+                JSONObject extendedData) {
+                super.onPublisherStateUpdate(streamID, state, errorCode, extendedData);
+                Log.d(TAG, "ssssssssss onPublisherStateUpdate() called with: streamID = [" + streamID + "], state = [" + state
+                    + "], errorCode = [" + errorCode + "], extendedData = [" + extendedData + "]");
+            }
+
+            @Override
             public void onRemoteMicStateUpdate(String streamID, ZegoRemoteDeviceState state) {
                 super.onRemoteMicStateUpdate(streamID, state);
                 userService.onRemoteMicStateUpdate(streamID, state);
@@ -172,7 +180,7 @@ public class ZegoServiceManager {
             public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
                 super.onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 CallUtils.d(
-                    "onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state + "], errorCode = ["
+                    "ssssssssss onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state + "], errorCode = ["
                         + errorCode + "], extendedData = [" + extendedData + "]");
                 if (roomService instanceof ZegoRoomServiceImpl) {
                     ((ZegoRoomServiceImpl) roomService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
@@ -196,6 +204,16 @@ public class ZegoServiceManager {
         });
 
         deviceService.setBestConfig();
+
+        FirebaseAuth.getInstance().addAuthStateListener(new AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    callService.setCallInfo(null);
+                }
+            }
+        });
     }
 
     /**
