@@ -14,6 +14,7 @@ import androidx.viewbinding.ViewBinding;
 
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.StringUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
@@ -103,7 +104,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
         }
         tipsHandler.post(() -> {
             tipsDialog.showColorTips(type, message);
-            if (!tipsDialog.isShowing()) {
+            if (!tipsDialog.isShowing() && !isFinishing() && !isDestroyed()) {
                 tipsDialog.show();
             }
         });
@@ -143,21 +144,26 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
         if (quality == ZegoNetWorkQuality.Bad && CallStateManager.getInstance().isConnected()) {
             if (userID.equals(ZegoCallManager.getInstance().getLocalUserInfo().userID)) {
-                showLoading(getString(R.string.network_connnect_me_unstable), false);
+//                showLoading(getString(R.string.network_connnect_me_unstable), false);
+                ToastUtils.showShort(getString(R.string.network_connnect_me_unstable));
             } else {
-                showLoading(getString(R.string.network_connnect_other_unstable), false);
+//                showLoading(getString(R.string.network_connnect_other_unstable), false);
+                ToastUtils.showShort(getString(R.string.network_connnect_other_unstable));
             }
         } else {
-            dismissLoading();
+//            dismissLoading();
+            ToastUtils.cancel();
         }
     }
 
     public void onCallingStateUpdated(ZegoCallingState state) {
         if (state == ZegoCallingState.CONNECTING && CallStateManager.getInstance().isInACallStream()) {
-            showLoading(getString(R.string.call_page_call_disconnected), true);
+//            showLoading(getString(R.string.call_page_call_disconnected), true);
+            ToastUtils.showShort(getString(R.string.call_page_call_disconnected));
             LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(false);
         } else {
-            dismissLoading();
+//            dismissLoading();
+            ToastUtils.cancel();
             LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(true);
         }
     }

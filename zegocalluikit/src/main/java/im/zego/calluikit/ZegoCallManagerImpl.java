@@ -14,12 +14,16 @@ import android.os.Handler;
 import android.os.Looper;
 
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.StringUtils;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import im.zego.callsdk.callback.ZegoCallback;
@@ -211,6 +215,17 @@ public class ZegoCallManagerImpl {
             @Override
             public void onWindowClicked() {
                 dismissNotification(activity);
+            }
+        });
+
+        FirebaseAuth.getInstance().addAuthStateListener(new AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    callView.dismissReceiveCallWindow();
+                    dismissNotification(activity);
+                }
             }
         });
 

@@ -2,6 +2,10 @@ package im.zego.callsdk.core.manager;
 
 import android.app.Application;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener;
+import com.google.firebase.auth.FirebaseUser;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.command.ZegoCommandManager;
 import im.zego.callsdk.core.interfaceimpl.ZegoCallServiceImpl;
@@ -200,6 +204,16 @@ public class ZegoServiceManager {
         });
 
         deviceService.setBestConfig();
+
+        FirebaseAuth.getInstance().addAuthStateListener(new AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    callService.setCallInfo(null);
+                }
+            }
+        });
     }
 
     /**

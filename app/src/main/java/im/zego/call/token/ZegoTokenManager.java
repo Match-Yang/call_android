@@ -32,7 +32,7 @@ public class ZegoTokenManager {
         };
         Timer timer = new Timer();
         // need check more frequently
-        timer.schedule(task, 0, 1000);
+        timer.schedule(task, 0, 10_000);
     }
 
     public static ZegoTokenManager getInstance() {

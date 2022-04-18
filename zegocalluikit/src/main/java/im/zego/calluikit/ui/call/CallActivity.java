@@ -13,20 +13,13 @@ import android.os.Looper;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
@@ -43,6 +36,9 @@ import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.ui.dialog.VideoSettingsDialog;
 import im.zego.calluikit.ui.viewmodel.VideoConfigViewModel;
 import im.zego.calluikit.utils.AvatarHelper;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 public class CallActivity extends BaseActivity<ActivityCallBinding> {
 

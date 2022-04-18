@@ -1,6 +1,7 @@
 package im.zego.callsdk.request;
 
 import android.text.TextUtils;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.gms.tasks.Continuation;
@@ -61,7 +62,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
         CallUtils.d( "ZegoFirebaseManager() called");
         updater = ZegoListenerManager.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.setPersistenceEnabled(true);
         FirebaseAuth.getInstance().addAuthStateListener(new AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -83,7 +83,6 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     for (Entry<String, ValueEventListener> entry : databaseListenerMap.entrySet()) {
                         removeDatabaseListener(entry.getKey());
                     }
-                    clearCallData();
                 }
             }
         });
@@ -254,8 +253,8 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                 if (currentUser == null) {
                     return;
                 }
-                CallUtils.d( "onChildAdded() called with: snapshot = [" + snapshot + "], previousChildName = ["
-                    + previousChildName + "]");
+                CallUtils.d( "onChildAdded() called with: snapshot = [" + snapshot + "], isCurrentIdle() = ["
+                    + isCurrentIdle() + "]");
                 DatabaseCall databaseCall = snapshot.getValue(DatabaseCall.class);
                 if (databaseCall.call_status == 0 || !isCallIDContainsSelf(snapshot)) {
                     return;

@@ -49,10 +49,12 @@ public class ZegoCallServiceImpl extends ZegoCallService {
 
             if (listener != null) {
                 ZegoServiceManager.getInstance().roomService.leaveRoom();
+                endCall(null);
                 ZegoUserService userService = ZegoServiceManager.getInstance().userService;
                 if (userService.getLocalUserInfo() != null) {
                     listener.onReceiveCallTimeout(userService.getLocalUserInfo(), ZegoCallTimeoutType.Calling);
                 }
+                setLocalStatus(ZegoLocalUserStatus.Free);
                 setCallInfo(null);
             }
         }
@@ -534,6 +536,8 @@ public class ZegoCallServiceImpl extends ZegoCallService {
     public void setListener(ZegoCallServiceListener listener) {
         super.setListener(listener);
         if (callInfo.callID != null && listener != null) {
+            setLocalStatus(ZegoLocalUserStatus.Incoming);
+            setCallInfo(callInfo);
             listener.onReceiveCallInvite(callInfo.caller, callInfo.callID, callInfo.callType);
         }
     }
