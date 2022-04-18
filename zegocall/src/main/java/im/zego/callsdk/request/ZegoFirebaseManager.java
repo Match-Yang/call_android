@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 public class ZegoFirebaseManager implements ZegoRequestProtocol {
@@ -79,6 +80,10 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         CallUtils.d( "remove call listener");
                         database.getReference("/call").removeEventListener(callEventListener);
                     }
+                    for (Entry<String, ValueEventListener> entry : databaseListenerMap.entrySet()) {
+                        removeDatabaseListener(entry.getKey());
+                    }
+                    clearCallData();
                 }
             }
         });
