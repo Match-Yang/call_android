@@ -22,10 +22,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
 
     @Override
     public void setLocalUser(String userID, String userName) {
-        if (TextUtils.isEmpty(userID) || TextUtils.isEmpty(userName)) {
-            return;
-        }
-        if (userID.length() > 64) {
+        if (!TextUtils.isEmpty(userID) && userID.length() > 64) {
             CallUtils.printError("setLocalUser: userID's length more than 64");
             userID = userID.substring(0, 63);
         }
@@ -55,7 +52,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
             userInfo.mic = state == ZegoRemoteDeviceState.OPEN;
         }
 
-        if (Objects.equals(localUserInfo.userID, userID)) {
+        if (localUserInfo != null && Objects.equals(localUserInfo.userID, userID)) {
             localUserInfo.mic = state == ZegoRemoteDeviceState.OPEN;
         }
 
@@ -85,7 +82,7 @@ public class ZegoUserServiceImpl extends ZegoUserService {
             userInfo.camera = state == ZegoRemoteDeviceState.OPEN;
         }
 
-        if (Objects.equals(localUserInfo.userID, userID)) {
+        if (localUserInfo != null && Objects.equals(localUserInfo.userID, userID)) {
             localUserInfo.camera = state == ZegoRemoteDeviceState.OPEN;
         }
 

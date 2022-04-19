@@ -25,26 +25,28 @@ public class ZegoStreamServiceImpl extends ZegoStreamService {
         CallUtils.d("startPlaying() called with: userID = [" + userID + "], textureView = [" + textureView + "]");
         ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
         zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
-        if (ZegoCallHelper.isUserIDSelf(userID)) {
-            if (textureView != null) {
-                ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
-                CallUtils.d("startPlaying() called with: userID = [" + userID + "], startPreview = [" + zegoCanvas + "]");
-                ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
-            }
-        } else {
-            String streamID = ZegoCallHelper.getStreamID(userID);
-            CallUtils.d("startPlayingStream() called with: streamID = [" + streamID + "]");
-            ZegoExpressEngine.getEngine().startPlayingStream(streamID, zegoCanvas);
-        }
+        String streamID = ZegoCallHelper.getStreamID(userID);
+        ZegoExpressEngine.getEngine().startPlayingStream(streamID, zegoCanvas);
     }
 
     public void stopPlaying(String userID) {
-        if (ZegoCallHelper.isUserIDSelf(userID)) {
-            CallUtils.d("stopPlaying() called with: userID = [" + userID + "]");
-            ZegoExpressEngine.getEngine().stopPreview();
-        } else {
-            String streamID = ZegoCallHelper.getStreamID(userID);
-            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
-        }
+        CallUtils.d("stopPlaying() called with: userID = [" + userID + "]");
+        String streamID = ZegoCallHelper.getStreamID(userID);
+        ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
+    }
+
+    @Override
+    public void startPreview(TextureView textureView) {
+        CallUtils.d("startPreview() called with: textureView = [" + textureView + "]");
+        ZegoCanvas zegoCanvas = new ZegoCanvas(textureView);
+        zegoCanvas.viewMode = ZegoViewMode.ASPECT_FILL;
+        ZegoExpressEngine.getEngine().setAppOrientation(ZegoOrientation.ORIENTATION_0);
+        ZegoExpressEngine.getEngine().startPreview(zegoCanvas);
+    }
+
+    @Override
+    public void stopPreview() {
+        CallUtils.d("stopPreview() called");
+        ZegoExpressEngine.getEngine().stopPreview();
     }
 }

@@ -35,6 +35,7 @@ import im.zego.call.ui.entry.EntryActivity;
 import im.zego.call.ui.webview.WebViewActivity;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.ui.BaseActivity;
 import im.zego.calluikit.utils.PermissionHelper;
@@ -71,8 +72,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                 if (isAllGranted) {
                     FirebaseUser currentUser = FirebaseUserManager.getInstance().getCurrentUser();
                     if (currentUser != null) {
-                        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-                        userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
+                        ZegoCallManager.getInstance().setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                         ActivityUtils.startActivity(EntryActivity.class);
                     } else {
                         signIn();
@@ -140,8 +140,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
             if (isAllGranted) {
                 FirebaseUser currentUser = FirebaseUserManager.getInstance().getCurrentUser();
                 if (currentUser != null) {
-                    ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-                    userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
+                    ZegoCallManager.getInstance().setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                     ActivityUtils.startActivity(EntryActivity.class);
                 }
             }
@@ -182,8 +181,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
                             dismissLoading();
                             if (errorCode == 0) {
                                 FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-                                userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
+                                ZegoCallManager.getInstance().setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
                                 ActivityUtils.startActivity(EntryActivity.class);
                             } else {
                                 showWarnTips(getString(R.string.toast_login_fail, errorCode));

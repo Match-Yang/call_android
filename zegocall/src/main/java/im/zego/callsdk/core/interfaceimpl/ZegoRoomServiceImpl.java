@@ -78,6 +78,11 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
         callbackHashMap.clear();
     }
 
+    @Override
+    public void renewToken(String token, String roomID) {
+        ZegoExpressEngine.getEngine().renewToken(roomID, token);
+    }
+
     public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
         if (state == ZegoRoomState.CONNECTED) {
             ZegoCallback zegoCallback = callbackHashMap.remove(roomID);

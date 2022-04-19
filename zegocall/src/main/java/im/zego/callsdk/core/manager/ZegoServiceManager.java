@@ -18,7 +18,9 @@ import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoRoomService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.listener.ZegoDeviceServiceListener;
+import im.zego.callsdk.listener.ZegoRoomServiceListener;
 import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
 import im.zego.callsdk.utils.CallUtils;
@@ -144,7 +146,7 @@ public class ZegoServiceManager {
                 JSONObject extendedData) {
                 super.onRoomStreamUpdate(roomID, updateType, streamList, extendedData);
                 for (ZegoStream zegoStream : streamList) {
-                    CallUtils.d( "onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
+                    CallUtils.d("onRoomStreamUpdate: " + zegoStream.streamID + ",updateType:" + updateType);
                 }
             }
 
@@ -160,8 +162,9 @@ public class ZegoServiceManager {
             public void onPublisherStateUpdate(String streamID, ZegoPublisherState state, int errorCode,
                 JSONObject extendedData) {
                 super.onPublisherStateUpdate(streamID, state, errorCode, extendedData);
-                Log.d(TAG, "ssssssssss onPublisherStateUpdate() called with: streamID = [" + streamID + "], state = [" + state
-                    + "], errorCode = [" + errorCode + "], extendedData = [" + extendedData + "]");
+                Log.d(TAG,
+                    "ssssssssss onPublisherStateUpdate() called with: streamID = [" + streamID + "], state = [" + state
+                        + "], errorCode = [" + errorCode + "], extendedData = [" + extendedData + "]");
             }
 
             @Override
@@ -180,7 +183,8 @@ public class ZegoServiceManager {
             public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
                 super.onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 CallUtils.d(
-                    "ssssssssss onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state + "], errorCode = ["
+                    "ssssssssss onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state
+                        + "], errorCode = ["
                         + errorCode + "], extendedData = [" + extendedData + "]");
                 if (roomService instanceof ZegoRoomServiceImpl) {
                     ((ZegoRoomServiceImpl) roomService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
@@ -189,8 +193,9 @@ public class ZegoServiceManager {
                     ((ZegoCallServiceImpl) callService).onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 }
                 ZegoCallingState callingState = ZegoCallingState.getCallingState(state.value());
-                if (callService.getListener() != null) {
-                    callService.getListener().onCallingStateUpdated(callingState);
+                ZegoCallServiceListener listener = callService.getListener();
+                if (listener != null) {
+                    listener.onCallingStateUpdated(callingState);
                 }
             }
 
@@ -199,6 +204,15 @@ public class ZegoServiceManager {
                 super.onRoomUserUpdate(roomID, updateType, userList);
                 if (userService instanceof ZegoUserServiceImpl) {
                     ((ZegoUserServiceImpl) userService).onRoomUserUpdate(roomID, updateType, userList);
+                }
+            }
+
+            @Override
+            public void onRoomTokenWillExpire(String roomID, int remainTimeInSecond) {
+                super.onRoomTokenWillExpire(roomID, remainTimeInSecond);
+                ZegoRoomServiceListener listener = roomService.getListener();
+                if (listener != null) {
+                    listener.onRoomTokenWillExpire(remainTimeInSecond, roomID);
                 }
             }
         });

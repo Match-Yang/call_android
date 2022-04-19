@@ -138,10 +138,6 @@ public class ReceiveCallDialog {
 
     private void showAppDialog() {
         Activity topActivity = ActivityUtils.getTopActivity();
-        if (topActivity.getComponentName().getClassName().contains("LoginActivity")) {
-            return;
-        }
-
         floatDialog = new FloatDialog(topActivity, receiveCallView);
         if (!floatDialog.isShowing()) {
             floatDialog.show();
@@ -152,7 +148,9 @@ public class ReceiveCallDialog {
         Activity activity = ActivityUtils.getActivityByContext(receiveCallView.getContext());
         if (activity != null && !isViewAddedToWindow) {
             isViewAddedToWindow = true;
-            windowManager.addView(receiveCallView, lp);
+            if (!receiveCallView.isAttachedToWindow()) {
+                windowManager.addView(receiveCallView, lp);
+            }
         }
     }
 
@@ -161,7 +159,10 @@ public class ReceiveCallDialog {
             floatDialog.dismiss();
         }
         if (isViewAddedToWindow) {
-            windowManager.removeViewImmediate(receiveCallView);
+            Activity activity = ActivityUtils.getActivityByContext(receiveCallView.getContext());
+            if (activity != null && receiveCallView.isAttachedToWindow()) {
+                windowManager.removeViewImmediate(receiveCallView);
+            }
             isViewAddedToWindow = false;
         }
         ViewGroup viewParent = (ViewGroup) receiveCallView.getParent();
@@ -184,5 +185,9 @@ public class ReceiveCallDialog {
 
     public ZegoUserInfo getUserInfo() {
         return receiveCallView.getUserInfo();
+    }
+
+    public Context getContext() {
+        return receiveCallView.getContext();
     }
 }

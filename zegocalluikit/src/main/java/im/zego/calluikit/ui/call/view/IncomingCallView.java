@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.blankj.utilcode.util.ToastUtils;
 
+import im.zego.calluikit.ZegoTokenProvider;
 import java.util.Objects;
 
 import im.zego.callsdk.core.interfaces.ZegoCallService;
@@ -121,7 +122,12 @@ public class IncomingCallView extends ConstraintLayout {
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
+        ZegoTokenProvider tokenProvider = ZegoCallManager.getInstance().getTokenProvider();
+        if (tokenProvider == null) {
+            ToastUtils.showShort(R.string.response_failed, ZegoCallErrorCode.ZegoErrorParamInvalid);
+            return;
+        }
+        tokenProvider.getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
             if (errorCode1 == 0) {
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZegoCallErrorCode.SUCCESS) {
@@ -143,8 +149,13 @@ public class IncomingCallView extends ConstraintLayout {
         ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
 
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        ZegoCallManager.getInstance().getTokenDelegate().getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
-            if(errorCode1 == 0){
+        ZegoTokenProvider tokenProvider = ZegoCallManager.getInstance().getTokenProvider();
+        if (tokenProvider == null) {
+            ToastUtils.showShort(R.string.response_failed, ZegoCallErrorCode.ZegoErrorParamInvalid);
+            return;
+        }
+        tokenProvider.getToken(userService.getLocalUserInfo().userID, (errorCode1, token) -> {
+            if (errorCode1 == 0) {
                 callService.acceptCall(token, errorCode -> {
                     if (errorCode == ZegoCallErrorCode.SUCCESS) {
                         deviceService.enableMic(true);
@@ -154,7 +165,7 @@ public class IncomingCallView extends ConstraintLayout {
                         ToastUtils.showShort(R.string.response_failed, errorCode);
                     }
                 });
-            }else {
+            } else {
                 ToastUtils.showShort(R.string.response_failed, errorCode1);
             }
         });
