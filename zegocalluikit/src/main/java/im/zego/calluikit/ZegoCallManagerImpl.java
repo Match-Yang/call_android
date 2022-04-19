@@ -163,6 +163,8 @@ public class ZegoCallManagerImpl {
             @Override
             public void onReceiveCallEnded() {
                 CallUtils.d("onReceiveCallEnded() called");
+                dismissNotification(activity);
+                callView.dismissReceiveCallWindow();
                 CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_CALL_COMPLETED);
             }
 
@@ -273,9 +275,14 @@ public class ZegoCallManagerImpl {
         intent.putExtra(USER_INFO, userInfo);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent
-            .getActivity(topActivity, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent pendingIntent;
+        if (Build.VERSION.SDK_INT >= 23) {
+            pendingIntent = PendingIntent.getActivity(topActivity, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        } else {
+            pendingIntent = PendingIntent.getActivity(topActivity, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        }
         String notificationText = StringUtils.getString(R.string.call_notification, userInfo.userName);
         int callState = CallStateManager.getInstance().getCallState();
         if (callState == CallStateManager.TYPE_INCOMING_CALLING_VIDEO ||

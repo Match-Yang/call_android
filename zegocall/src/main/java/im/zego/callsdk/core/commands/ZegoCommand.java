@@ -11,14 +11,12 @@ public class ZegoCommand {
     protected String path;
     protected Map<String, Object> parameter;
 
-    public static final String GET_TOKEN = "/user/get_token";
     public static final String HEARTBEAT = "/call/heartbeat";
     public static final String START_CALL = "/call/start_call";
     public static final String CANCEL_CALL = "/call/cancel_call";
     public static final String ACCEPT_CALL = "/call/accept_call";
     public static final String DECLINE_CALL = "/call/decline_call";
     public static final String END_CALL = "/call/end_call";
-    public static final String Listener_CALL = "/call/listen_call";
 
     public ZegoCommand(String path) {
         this.path = path;

@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="im.zego.calluikit">
+  package="im.zego.calluikit">
 
-    <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+  <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
-    <application>
-        <activity
-            android:name=".ui.call.CallActivity"
-            android:exported="true"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:taskAffinity="im.zego.call.ui.call.CallActivity" />
+  <application>
+    <activity
+      android:name=".ui.call.CallActivity"
+      android:exported="true"
+      android:launchMode="singleInstance"
+      android:screenOrientation="portrait"
+      android:taskAffinity="im.zego.call.ui.call.CallActivity" />
 
-        <service
-            android:name=".service.ForegroundService"
-            android:exported="false"
-            android:foregroundServiceType="camera|microphone|phoneCall" />
-    </application>
+    <service
+      android:name=".service.ForegroundService"
+      android:exported="false"
+      android:foregroundServiceType="camera|microphone|phoneCall" />
+  </application>
 </manifest>

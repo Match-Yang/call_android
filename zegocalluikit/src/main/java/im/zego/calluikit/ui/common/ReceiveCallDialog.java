@@ -149,8 +149,11 @@ public class ReceiveCallDialog {
     }
 
     private void showGlobalWindow() {
-        isViewAddedToWindow = true;
-        windowManager.addView(receiveCallView, lp);
+        Activity activity = ActivityUtils.getActivityByContext(receiveCallView.getContext());
+        if (activity != null && !isViewAddedToWindow) {
+            isViewAddedToWindow = true;
+            windowManager.addView(receiveCallView, lp);
+        }
     }
 
     public void dismissReceiveCallWindow() {

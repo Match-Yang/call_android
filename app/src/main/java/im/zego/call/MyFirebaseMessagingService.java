@@ -51,30 +51,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 AppUtils.relaunchApp();
             }
         }
-        //        if (isAppNotStart) {
-        //            if (data.size() > 0) {
-        //                AppUtils.relaunchApp();
-        //                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-        //                    handleNow(data);
-        //                }, 200);
-        //            }
-        //        } else if (isDeviceRestart) {
-        //            if (data.size() > 0) {
-        //                AppUtils.relaunchApp();
-        //                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-        //                    handleNow(data);
-        //                }, 600);
-        //            }
-        //        } else {
-        //            if (data.size() > 0) {
-        //                handleNow(data);
-        //            }
-        //        }
-        //        Notification messageNotification = remoteMessage.getNotification();
-        //        if (messageNotification != null) {
-        //            Log.d(TAG,  "Message Notification Body: " + messageNotification.getBody());
-        //        }
-
     }
 
     @Override
