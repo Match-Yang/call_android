@@ -62,8 +62,8 @@ public class FirebaseUserManager {
                 } else {
                     database.getReference("online_user").removeEventListener(onlineListener);
                     database.getReference(".info/connected").removeEventListener(connectListener);
+                    ZegoTokenManager.getInstance().reset();
                 }
-                ZegoTokenManager.getInstance().setCurrentUserID(firebaseAuth.getUid());
             }
         });
     }

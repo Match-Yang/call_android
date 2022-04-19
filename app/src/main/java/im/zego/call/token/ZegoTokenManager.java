@@ -1,24 +1,20 @@
 package im.zego.call.token;
 
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.SPStaticUtils;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import im.zego.callsdk.callback.ZegoTokenCallback;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CallUtils;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;
 import im.zego.zegoexpress.ZegoExpressErrorCode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ZegoTokenManager {
 
@@ -29,15 +25,18 @@ public class ZegoTokenManager {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                CallUtils.d("run: " + (needUpdateToken()));
-                if (needUpdateToken()) {
+                ZegoUserInfo userInfo = ZegoCallManager.getInstance().getLocalUserInfo();
+                if (userInfo == null) {
+                    return;
+                }
+                boolean updateToken = needUpdateToken(userInfo.userID);
+                if (updateToken) {
                     forceUpdateToken();
                 }
             }
         };
         Timer timer = new Timer();
-        // need check more frequently
-        timer.schedule(task, 0, 10_000);
+        timer.schedule(task, 0, 60_000);
     }
 
     public static ZegoTokenManager getInstance() {
@@ -59,22 +58,9 @@ public class ZegoTokenManager {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss",
         Locale.getDefault());
 
-    public void getToken(@NonNull String userID, @NonNull ZegoTokenCallback callback) {
-        this.getToken(userID, false, callback);
-    }
-
     public void getToken(@NonNull String userID, boolean isForceUpdate, @NonNull ZegoTokenCallback callback) {
-        CallUtils.d(
-            "getToken() called with: userID = [" + userID + "], isForceUpdate = [" + isForceUpdate
-                + "], currentToken = ["
-                + currentToken + "]");
-        if (currentToken != null) {
-            CallUtils.d("currentUserID:" + currentUserID
-                + ",currentTokenExpiryTime : " + (simpleDateFormat.format(new Date(currentTokenExpiryTime))));
-        }
-        if (!isForceUpdate &&
-            !TextUtils.isEmpty(this.currentUserID) && Objects.equals(this.currentUserID, userID) &&
-            !TextUtils.isEmpty(this.currentToken) && this.currentTokenExpiryTime > System.currentTimeMillis()) {
+        CallUtils.d("getToken() called with: userID = [" + userID + "], isForceUpdate = [" + isForceUpdate + "]");
+        if (!isForceUpdate && !needUpdateToken(userID)) {
             callback.onTokenCallback(ZegoExpressErrorCode.CommonSuccess, this.currentToken);
             return;
         }
@@ -105,8 +91,8 @@ public class ZegoTokenManager {
 
     private void saveToken(String token, long expiryTime, String userID) {
         CallUtils
-            .d("saveToken() called with: token = [" + token + "], expiryTime = [" + expiryTime
-                + "]");
+            .d("saveToken() called with: token = [" + token + "], expiryTime = ["
+                + simpleDateFormat.format(new Date(expiryTime)) + "]");
         if (token == null || expiryTime == 0 || TextUtils.isEmpty(userID)) {
             SPStaticUtils.remove(Constants.ZEGO_TOKEN_KEY);
             SPStaticUtils.remove(Constants.ZEGO_TOKEN_UID);
@@ -115,18 +101,21 @@ public class ZegoTokenManager {
             this.currentToken = null;
             this.currentUserID = null;
         } else {
-            CallUtils.d("saveToken expiryTime: " + simpleDateFormat.format(new Date(expiryTime)));
             SPStaticUtils.put(Constants.ZEGO_TOKEN_KEY, token);
             SPStaticUtils.put(Constants.ZEGO_TOKEN_UID, userID);
             SPStaticUtils.put(Constants.ZEGO_TOKEN_EXPIRY_TIME_KEY, expiryTime);
         }
     }
 
-    private boolean needUpdateToken() {
-        if (currentToken == null) {
-            return true;
+    private boolean needUpdateToken(String userID) {
+        CallUtils.d("currentUserID:" + currentUserID
+            + ",currentTokenExpiryTime : " + (simpleDateFormat.format(new Date(currentTokenExpiryTime)))
+            + ",currentToken: " + currentToken);
+        if (!TextUtils.isEmpty(this.currentUserID) && Objects.equals(this.currentUserID, userID)
+            && !TextUtils.isEmpty(this.currentToken) && (currentTokenExpiryTime > System.currentTimeMillis())) {
+            return false;
         }
-        return System.currentTimeMillis() > currentTokenExpiryTime;
+        return true;
     }
 
     private void initTokenFromDisk() {
@@ -144,9 +133,5 @@ public class ZegoTokenManager {
 
             });
         }
-    }
-
-    public void setCurrentUserID(String uid) {
-        this.currentUserID = uid;
     }
 }

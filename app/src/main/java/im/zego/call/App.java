@@ -39,7 +39,7 @@ public class App extends Application {
         ZegoCallManager.getInstance().setTokenDelegate(new ZegoCallTokenDelegate() {
             @Override
             public void getToken(@NonNull String userID, @NonNull ZegoTokenCallback callback) {
-                ZegoTokenManager.getInstance().getToken(userID, callback);
+                ZegoTokenManager.getInstance().getToken(userID,false, callback);
             }
         });
 

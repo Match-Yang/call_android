@@ -4,28 +4,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
-
 import com.blankj.utilcode.util.AppUtils;
 import com.blankj.utilcode.util.StringUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 import com.gyf.immersionbar.ImmersionBar;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-
-import im.zego.callsdk.utils.CallUtils;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import im.zego.callsdk.model.ZegoCallingState;
 import im.zego.callsdk.model.ZegoNetWorkQuality;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.calluikit.R;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.constant.Constants;
@@ -33,6 +25,9 @@ import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.LoadingDialog;
 import im.zego.calluikit.ui.common.TipsDialog;
 import im.zego.calluikit.ui.common.TipsDialog.TipsMessageType;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
 

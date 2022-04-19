@@ -65,7 +65,6 @@ public class UIKitActivity<T extends ViewBinding> extends BaseActivity<T> {
 
     private void logout() {
         FirebaseUserManager.getInstance().signOutFirebaseAuth();
-        ZegoTokenManager.getInstance().reset();
         ActivityUtils.finishToActivity(GoogleLoginActivity.class, false);
     }
 }
