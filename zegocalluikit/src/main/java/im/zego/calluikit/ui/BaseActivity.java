@@ -38,7 +38,7 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
     public static final int TIPS_TIME = 3 * 1000;
     protected TipsDialog tipsDialog;
     protected LoadingDialog loadingDialog;
-    private ZegoCallingState state;
+    protected ZegoCallingState state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,29 +139,14 @@ public class BaseActivity<T extends ViewBinding> extends AppCompatActivity {
         }
     }
 
-    public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
-        if (quality == ZegoNetWorkQuality.Bad && CallStateManager.getInstance().isConnected()) {
-            if (userID.equals(ZegoCallManager.getInstance().getLocalUserInfo().userID)) {
-                //                showLoading(getString(R.string.network_connnect_me_unstable), false);
-                ToastUtils.showShort(getString(R.string.network_connnect_me_unstable));
-            } else {
-                //                showLoading(getString(R.string.network_connnect_other_unstable), false);
-                ToastUtils.showShort(getString(R.string.network_connnect_other_unstable));
-            }
-        } else {
-            //            dismissLoading();
-            ToastUtils.cancel();
-        }
-    }
-
     public void onCallingStateUpdated(ZegoCallingState state) {
         if (this.state == ZegoCallingState.CONNECTED && state == ZegoCallingState.CONNECTING) {
             if (CallStateManager.getInstance().isInACallStream()) {
-                ToastUtils.showShort(getString(R.string.call_page_call_disconnected));
+                showLoading(getString(R.string.call_page_call_disconnected), true);
                 LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(false);
             }
         } else {
-            ToastUtils.cancel();
+            dismissLoading();
             LiveEventBus.get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class).post(true);
         }
         this.state = state;

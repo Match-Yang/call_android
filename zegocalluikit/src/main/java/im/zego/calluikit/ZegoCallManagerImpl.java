@@ -103,13 +103,9 @@ public class ZegoCallManagerImpl {
             @Override
             public void onNetworkQuality(String userID, ZegoNetWorkQuality quality) {
                 Activity topActivity = ActivityUtils.getTopActivity();
-                if (topActivity instanceof BaseActivity) {
-                    ((BaseActivity<?>) topActivity).onNetworkQuality(userID, quality);
+                if (topActivity instanceof CallActivity) {
+                    ((CallActivity) topActivity).onNetworkQuality(userID, quality);
                 }
-            }
-
-            @Override
-            public void onReceiveUserError(int errorCode) {
             }
         });
 
