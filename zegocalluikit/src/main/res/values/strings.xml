@@ -56,7 +56,7 @@
   <string name="call_page_status_declined">Declined</string>
   <string name="call_page_status_busy">The one you dialed is busy.</string>
   <string name="call_notification">On the line with %s. Tap here to go back.</string>
-  <string name="receive_call_notification">%s is calling you. Tap here to check.ap here to go back.</string>
+  <string name="receive_call_notification">%s is calling you. Tap here to check.</string>
   <string name="request_call_notification">You are calling %s. Tap here to check.</string>
   <string name="call_page_call_fail">Call failed. Error code: %d.</string>
   <string name="call_page_call_quality_poor">Poor call quality...</string>
@@ -72,7 +72,7 @@
   <string name="room_settings_page_noise_suppression">Noise suppression</string>
   <string name="room_settings_page_echo_cancellation">Echo cancellation</string>
   <string name="room_settings_page_mic_volume">Mic volume auto-adjustment</string>
-  <string name="room_settings_page_mirroring">Video Mirroring</string>
+  <string name="room_settings_page_mirroring">Video mirroring</string>
   <string name="room_settings_page_video_resolution">Resolution</string>
   <string name="room_settings_page_audio_bitrate">Audio bitrate</string>
 

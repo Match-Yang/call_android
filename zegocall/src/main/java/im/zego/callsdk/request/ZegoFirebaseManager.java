@@ -103,52 +103,9 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             declineUserCall(parameter, callback);
         } else if (ZegoCommand.CANCEL_CALL.equals(path)) {
             cancelUserCall(parameter, callback);
-        } else if (ZegoCommand.GET_TOKEN.equals(path)) {
-            getTokenFromCloudFunction(parameter, callback);
         } else if (ZegoCommand.HEARTBEAT.equals(path)) {
             sendHeartBeat(parameter, callback);
         }
-    }
-
-    private void getTokenFromCloudFunction(Map<String, Object> parameter,
-        ZegoRequestCallback callback) {
-        CallUtils.d(
-            "getTokenFromCloudFunction() called with: parameter = [" + parameter + "], callback = [" + callback + "]");
-        String userID = (String) parameter.get("userID");
-        Long time = (Long) parameter.get("effectiveTime");
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", userID);
-        data.put("effective_time", time);
-
-        FirebaseFunctions.getInstance().getHttpsCallable("getToken")
-            .call(data)
-            .continueWith(new Continuation<HttpsCallableResult, Object>() {
-                @Override
-                public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                    return task.getResult().getData();
-                }
-            })
-            .addOnCompleteListener(new OnCompleteListener<Object>() {
-                @Override
-                public void onComplete(@NonNull Task<Object> task) {
-                    if (!task.isSuccessful()) {
-                        Exception e = task.getException();
-                        if (e instanceof FirebaseFunctionsException) {
-                            FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                            FirebaseFunctionsException.Code code = ffe.getCode();
-                            Object details = ffe.getDetails();
-                        }
-                        if (callback != null) {
-                            callback.onResult(ZegoCallErrorCode.ZegoErrorNetworkError, e.getMessage());
-                        }
-                        return;
-                    }
-                    HashMap<String, String> result = (HashMap<String, String>) task.getResult();
-                    if (callback != null) {
-                        callback.onResult(0, result.get("token"));
-                    }
-                }
-            });
     }
 
     private void sendHeartBeat(Map<String, Object> parameter, ZegoRequestCallback callback) {

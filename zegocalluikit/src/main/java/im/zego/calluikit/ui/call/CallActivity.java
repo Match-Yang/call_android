@@ -209,7 +209,7 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     private void initView() {
         int typeOfCall = CallStateManager.getInstance().getCallState();
         updateUi(typeOfCall);
-        if (CallStateManager.TYPE_CALL_COMPLETED == typeOfCall) {
+        if (!CallStateManager.getInstance().isInACallStream()) {
             finishActivityDelayed();
             return;
         }
