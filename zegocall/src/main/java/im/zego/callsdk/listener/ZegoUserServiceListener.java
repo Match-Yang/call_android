@@ -27,13 +27,4 @@ public interface ZegoUserServiceListener {
      * @param quality: refers to the stream quality level.
      */
     void onNetworkQuality(String userID, ZegoNetWorkQuality quality);
-
-    /**
-     * Callback when the user was forced to log out
-     * <p>
-     * Description: this callback will be triggered when the user is logged in from another device.
-     *
-     * @param errorCode the error type.
-     */
-    void onReceiveUserError(int errorCode);
 }

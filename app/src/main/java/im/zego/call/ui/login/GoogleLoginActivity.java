@@ -65,10 +65,7 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
 
         binding.loginButton.setOnClickListener(v -> {
             if (!isTermsChecked) {
-                ToastUtils toastUtils = ToastUtils.make().setGravity(Gravity.CENTER, 0, 0);
-                toastUtils.setBgColor(0x99000000);
-                toastUtils.setTextColor(Color.WHITE);
-                toastUtils.show(R.string.toast_login_service_privacy);
+                ToastUtils.showShort(R.string.toast_login_service_privacy);
                 return;
             }
             PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
