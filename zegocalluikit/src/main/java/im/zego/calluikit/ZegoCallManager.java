@@ -2,8 +2,8 @@ package im.zego.calluikit;
 
 import android.app.Activity;
 import android.app.Application;
+
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.listener.ZegoCallServiceListener;
 import im.zego.callsdk.model.ZegoUserInfo;
 
@@ -102,10 +102,6 @@ public class ZegoCallManager {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
-        impl.getToken(userID, effectiveTime, callback);
     }
 
     /**

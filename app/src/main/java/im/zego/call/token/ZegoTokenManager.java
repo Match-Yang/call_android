@@ -1,20 +1,29 @@
 package im.zego.call.token;
 
 import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.SPStaticUtils;
-import im.zego.callsdk.callback.ZegoTokenCallback;
-import im.zego.callsdk.model.ZegoUserInfo;
-import im.zego.callsdk.utils.CallUtils;
-import im.zego.calluikit.ZegoCallManager;
-import im.zego.calluikit.constant.Constants;
-import im.zego.zegoexpress.ZegoExpressErrorCode;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import im.zego.callsdk.callback.ZegoRequestCallback;
+import im.zego.callsdk.callback.ZegoTokenCallback;
+import im.zego.callsdk.core.commands.ZegoGetTokenCommand;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
+import im.zego.callsdk.core.manager.ZegoServiceManager;
+import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.CallUtils;
+import im.zego.callsdk.utils.ZegoCallErrorCode;
+import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.constant.Constants;
+import im.zego.zegoexpress.ZegoExpressErrorCode;
 
 public class ZegoTokenManager {
 
@@ -83,15 +92,34 @@ public class ZegoTokenManager {
     }
 
     private void getTokenFromServer(@NonNull String userID, long effectiveTime, @NonNull ZegoTokenCallback callback) {
-        ZegoCallManager.getInstance().getToken(userID, effectiveTime, (errorCode, obj) -> {
+        getTokenInternal(userID, effectiveTime, (errorCode, obj) -> {
             CallUtils.d("getToken onResult() called with: errorCode = [" + errorCode + "], obj = [" + obj + "]");
             callback.onTokenCallback(errorCode, (String) obj);
         });
     }
 
+    private void getTokenInternal(String userID, long effectiveTime, ZegoRequestCallback callback) {
+        CallUtils.d("getToken() called with: userID = [" + userID + "], effectiveTime = [" + effectiveTime + "], callback = ["
+                        + callback + "]");
+        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+        if (userService.getLocalUserInfo() != null) {
+            ZegoGetTokenCommand command = new ZegoGetTokenCommand();
+            command.putParameter("userID", userID);
+            command.putParameter("effectiveTime", effectiveTime);
+            command.execute((errorCode, obj) -> {
+                if (callback != null) {
+                    callback.onResult(errorCode, obj);
+                }
+            });
+        } else {
+            if (callback != null) {
+                callback.onResult(ZegoCallErrorCode.ZegoErrorNotLogin, null);
+            }
+        }
+    }
+
     private void saveToken(String token, long expiryTime, String userID) {
-        CallUtils
-            .d("saveToken() called with: token = [" + token + "], expiryTime = ["
+        CallUtils.d("saveToken() called with: token = [" + token + "], expiryTime = ["
                 + simpleDateFormat.format(new Date(expiryTime)) + "]");
         if (token == null || expiryTime == 0 || TextUtils.isEmpty(userID)) {
             SPStaticUtils.remove(Constants.ZEGO_TOKEN_KEY);

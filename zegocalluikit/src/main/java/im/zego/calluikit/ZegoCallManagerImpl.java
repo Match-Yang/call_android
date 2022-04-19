@@ -12,8 +12,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-
 import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -27,7 +27,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.callback.ZegoRequestCallback;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
@@ -340,10 +339,6 @@ public class ZegoCallManagerImpl {
 
     public void dismissCallDialog() {
         handler.post(callView::dismissReceiveCallWindow);
-    }
-
-    public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
-        ZegoServiceManager.getInstance().userService.getToken(userID, effectiveTime, callback);
     }
 
     public void unInit() {
