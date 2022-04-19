@@ -10,6 +10,7 @@ public class Constants {
    public static final String EVENT_USER_INFO_UPDATED = "event_user_info_updated";
 
    public static final String ZEGO_TOKEN_KEY = "zego_token_key";
+   public static final String ZEGO_TOKEN_UID = "zego_token_uid";
    public static final String ZEGO_TOKEN_EXPIRY_TIME_KEY = "zego_token_expiry_time_key";
    public static final String ZEGO_IS_TERMS_CHECKED_KEY = "zego_is_terms_checked";
 }
