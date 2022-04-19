@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
-import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -172,27 +171,31 @@ public class GoogleLoginActivity extends BaseActivity<ActivityGoogleLoginBinding
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                showLoading();
-                FirebaseUserManager.getInstance().signInFirebase(account.getIdToken(), errorCode -> {
-                    dismissLoading();
-                    if (errorCode == 0) {
-                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-                        userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
-                        ActivityUtils.startActivity(EntryActivity.class);
-                    } else {
-                        showWarnTips(getString(R.string.toast_login_fail, errorCode));
+            PermissionHelper.requestCameraAndAudio(GoogleLoginActivity.this, isAllGranted -> {
+                if (isAllGranted) {
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                    try {
+                        // Google Sign In was successful, authenticate with Firebase
+                        GoogleSignInAccount account = task.getResult(ApiException.class);
+                        showLoading();
+                        FirebaseUserManager.getInstance().signInFirebase(account.getIdToken(), errorCode -> {
+                            dismissLoading();
+                            if (errorCode == 0) {
+                                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                ZegoUserService userService = ZegoServiceManager.getInstance().userService;
+                                userService.setLocalUser(currentUser.getUid(), currentUser.getDisplayName());
+                                ActivityUtils.startActivity(EntryActivity.class);
+                            } else {
+                                showWarnTips(getString(R.string.toast_login_fail, errorCode));
+                            }
+                        });
+                    } catch (ApiException e) {
+                        // Google Sign In failed, update UI appropriately
+                        Log.w(TAG, "Google sign in failed", e);
+                        showWarnTips(getString(R.string.toast_login_fail, -1000));
                     }
-                });
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
-                showWarnTips(getString(R.string.toast_login_fail, -1000));
-            }
+                }
+            });
         }
     }
 

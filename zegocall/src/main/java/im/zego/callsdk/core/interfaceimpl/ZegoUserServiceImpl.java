@@ -2,48 +2,18 @@ package im.zego.callsdk.core.interfaceimpl;
 
 import android.text.TextUtils;
 
-import android.util.Log;
-import im.zego.callsdk.core.manager.ZegoServiceManager;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
-import im.zego.callsdk.utils.ZegoCallErrorCode;
-import im.zego.callsdk.utils.CallUtils;
-import im.zego.zegoexpress.constants.ZegoUpdateType;
-import im.zego.zegoexpress.entity.ZegoUser;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import im.zego.callsdk.callback.ZegoRequestCallback;
-import im.zego.callsdk.core.commands.ZegoGetTokenCommand;
+import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.callsdk.utils.CallUtils;
 import im.zego.callsdk.utils.ZegoCallHelper;
 import im.zego.zegoexpress.constants.ZegoRemoteDeviceState;
+import im.zego.zegoexpress.constants.ZegoUpdateType;
+import im.zego.zegoexpress.entity.ZegoUser;
 
 public class ZegoUserServiceImpl extends ZegoUserService {
-
-    @Override
-    public void getToken(String userID, long effectiveTime, ZegoRequestCallback callback) {
-        CallUtils.d(
-            "getToken() called with: userID = [" + userID + "], effectiveTime = [" + effectiveTime + "], callback = ["
-                + callback + "]");
-        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        if (userService.getLocalUserInfo() != null) {
-            ZegoGetTokenCommand command = new ZegoGetTokenCommand();
-            command.putParameter("userID", userID);
-            command.putParameter("effectiveTime", effectiveTime);
-            command.execute(new ZegoRequestCallback() {
-                @Override
-                public void onResult(int errorCode, Object obj) {
-                    if (callback != null) {
-                        callback.onResult(errorCode, obj);
-                    }
-                }
-            });
-        } else {
-            if (callback != null) {
-                callback.onResult(ZegoCallErrorCode.ZegoErrorNotLogin, null);
-            }
-        }
-    }
 
     @Override
     public ZegoUserInfo getLocalUserInfo() {
