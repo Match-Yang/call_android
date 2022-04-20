@@ -25,7 +25,11 @@ public class MinimalView extends ConstraintLayout {
 
     private LayoutMinimalViewBinding binding;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Observer<String> timerObserver = s -> binding.voiceTv.setText(s);
+    private final Observer<String> timerObserver = s -> {
+        if (isShowMinimal) {
+            binding.voiceTv.setText(s);
+        }
+    };
 
     private ZegoUserInfo remoteUserInfo;
     private MinimalStatus currentStatus;
@@ -71,15 +75,14 @@ public class MinimalView extends ConstraintLayout {
             ActivityUtils.startActivity(CallActivity.class);
         });
         LiveEventBus
-            .get(Constants.EVENT_MINIMAL, Boolean.class)
-            .observeForever(isMinimal -> {
-                isShowMinimal = isMinimal;
-                updateStatus(currentStatus);
-            });
-        LiveEventBus
             .get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class)
             .observeForever(clickable -> isClickable = clickable);
         updateStatus(MinimalStatus.Initialized);
+    }
+
+    public void updateStatus() {
+        binding.voiceTv.setText("");
+        updateStatus(currentStatus);
     }
 
     public void updateStatus(MinimalStatus next) {
@@ -101,7 +104,7 @@ public class MinimalView extends ConstraintLayout {
 
             ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
 
-            if (CallStateManager.getInstance().isInCallingStream() && localUserInfo.camera) {
+            if (CallStateManager.getInstance().isOutgoing() && localUserInfo.camera) {
                 ZegoServiceManager.getInstance().streamService.startPreview(binding.videoTextureView);
                 toggleVideo(true);
             } else if (CallStateManager.getInstance().isConnected()) {

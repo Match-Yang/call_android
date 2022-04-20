@@ -9,7 +9,6 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
-import android.util.Log;
 
 import com.blankj.utilcode.util.ActivityUtils;
 
@@ -59,20 +58,20 @@ public class CallStateManager {
     }
 
     public boolean isInACallStream() {
-        return callState == TYPE_INCOMING_CALLING_VOICE ||
-            callState == TYPE_INCOMING_CALLING_VIDEO ||
-            callState == TYPE_CONNECTED_VOICE ||
-            callState == TYPE_CONNECTED_VIDEO ||
-            callState == TYPE_OUTGOING_CALLING_VOICE ||
-            callState == TYPE_OUTGOING_CALLING_VIDEO;
+        return isIncoming() || isConnected() || isOutgoing();
     }
 
-    public boolean isInCallingStream() {
+    public boolean isOutgoing() {
         return callState == TYPE_OUTGOING_CALLING_VOICE ||
             callState == TYPE_OUTGOING_CALLING_VIDEO;
     }
 
     public boolean isConnected() {
+        return callState == TYPE_CONNECTED_VIDEO ||
+            callState == TYPE_CONNECTED_VOICE;
+    }
+
+    public boolean isIncoming() {
         return callState == TYPE_CONNECTED_VIDEO ||
             callState == TYPE_CONNECTED_VOICE;
     }

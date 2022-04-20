@@ -46,7 +46,5 @@ dependencies {
     // live data bus
     api 'io.github.jeremyliao:live-event-bus-x:1.8.0'
 
-    implementation 'com.github.princekin-f:EasyFloat:2.0.4'
-
     api project(path: ':zegocall')
 }

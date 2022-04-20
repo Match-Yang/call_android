@@ -13,8 +13,6 @@
     android:layout_height="match_parent"
     android:scaleType="centerCrop" />
 
-
-
   <im.zego.calluikit.ui.call.view.IncomingCallView
     android:id="@+id/layout_incoming_call"
     android:layout_width="match_parent"

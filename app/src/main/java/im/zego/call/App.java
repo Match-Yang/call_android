@@ -1,10 +1,12 @@
 package im.zego.call;
 
 import android.app.Application;
+import android.util.Log;
 import android.view.Gravity;
 import com.blankj.utilcode.util.ColorUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.tencent.mmkv.MMKV;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.token.ZegoTokenManager;
@@ -33,5 +35,10 @@ public class App extends Application {
             .setGravity(Gravity.CENTER, 0, 0)
             .setTextColor(ColorUtils.getColor(R.color.white))
             .setBgColor(ColorUtils.getColor(R.color.dark_black));
+
+        Log.d("Application", "Application onCreate() called:" + BuildConfig.DEBUG);
+        if (BuildConfig.DEBUG) {
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(false);
+        }
     }
 }

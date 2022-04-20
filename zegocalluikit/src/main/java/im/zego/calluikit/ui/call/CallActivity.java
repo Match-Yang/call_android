@@ -432,6 +432,12 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         if (videoSettingsDialog != null) {
             videoSettingsDialog.dismiss();
         }
+        binding.layoutIncomingCall.onActivityDestroyed();
+        binding.layoutOutgoingCall.onActivityDestroyed();
+        binding.layoutConnectedVideoCall.onActivityDestroyed();
+        binding.layoutConnectedVoiceCall.onActivityDestroyed();
+        ToastUtils.cancel();
+
         ZegoServiceManager.getInstance().roomService.leaveRoom();
         mainHandler.removeCallbacksAndMessages(null);
         CallStateManager.getInstance().setCallState(userInfo, CallStateManager.TYPE_NO_CALL);

@@ -9,7 +9,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import im.zego.callsdk.core.interfaces.ZegoCallService;
@@ -23,6 +25,7 @@ import im.zego.calluikit.databinding.LayoutOutgoingCallBinding;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.MinimalView;
 import im.zego.calluikit.utils.AvatarHelper;
+import im.zego.calluikit.utils.PermissionHelper;
 import java.util.Objects;
 
 public class OutgoingCallView extends ConstraintLayout {
@@ -30,6 +33,7 @@ public class OutgoingCallView extends ConstraintLayout {
     private LayoutOutgoingCallBinding binding;
     private ZegoUserInfo userInfo;
     private int typeOfCall;
+    private AlertDialog dialog;
 
     public OutgoingCallView(@NonNull Context context) {
         super(context);
@@ -76,7 +80,20 @@ public class OutgoingCallView extends ConstraintLayout {
             }
         });
         binding.callMinimal.setOnClickListener(v -> {
-            LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
+            if (PermissionHelper.checkFloatWindowPermission()) {
+                LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
+            } else {
+                dialog = PermissionHelper.showMinimizePermissionDialog(getContext(), new SimpleCallback() {
+                    @Override
+                    public void onGranted() {
+                    }
+
+                    @Override
+                    public void onDenied() {
+
+                    }
+                });
+            }
         });
         binding.callSettings.setOnClickListener(v -> {
             LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(isVideoCall());
@@ -132,7 +149,12 @@ public class OutgoingCallView extends ConstraintLayout {
             if (isVideoCall()) {
                 streamService.startPreview(binding.textureView);
             }
+        }
+    }
 
+    public void onActivityDestroyed() {
+        if (dialog != null) {
+            dialog.dismiss();
         }
     }
 }

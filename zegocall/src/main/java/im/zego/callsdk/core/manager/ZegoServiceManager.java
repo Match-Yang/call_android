@@ -163,7 +163,7 @@ public class ZegoServiceManager {
                 JSONObject extendedData) {
                 super.onPublisherStateUpdate(streamID, state, errorCode, extendedData);
                 Log.d(TAG,
-                    "ssssssssss onPublisherStateUpdate() called with: streamID = [" + streamID + "], state = [" + state
+                    "onPublisherStateUpdate() called with: streamID = [" + streamID + "], state = [" + state
                         + "], errorCode = [" + errorCode + "], extendedData = [" + extendedData + "]");
             }
 
@@ -183,7 +183,7 @@ public class ZegoServiceManager {
             public void onRoomStateUpdate(String roomID, ZegoRoomState state, int errorCode, JSONObject extendedData) {
                 super.onRoomStateUpdate(roomID, state, errorCode, extendedData);
                 CallUtils.d(
-                    "ssssssssss onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state
+                    "onRoomStateUpdate() called with: roomID = [" + roomID + "], state = [" + state
                         + "], errorCode = ["
                         + errorCode + "], extendedData = [" + extendedData + "]");
                 if (roomService instanceof ZegoRoomServiceImpl) {
