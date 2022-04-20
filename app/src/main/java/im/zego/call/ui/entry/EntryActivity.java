@@ -2,7 +2,6 @@ package im.zego.call.ui.entry;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import com.blankj.utilcode.util.ActivityUtils;
@@ -28,6 +27,7 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
         if (localUserInfo == null) {
             return;
         }
+
         ZegoCallManager.getInstance().startListen(this);
 
         binding.entrySetting.setOnClickListener(new OnClickListener() {
@@ -64,7 +64,6 @@ public class EntryActivity extends UIKitActivity<ActivityEntryBinding> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "onDestroy() called");
         ZegoCallManager.getInstance().stopListen(this);
     }
 

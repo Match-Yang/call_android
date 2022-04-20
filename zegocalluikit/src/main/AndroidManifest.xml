@@ -19,7 +19,7 @@
       android:taskAffinity="im.zego.call.ui.call.CallActivity" />
 
     <service
-      android:name=".service.ForegroundService"
+      android:name=".ForegroundService"
       android:exported="false"
       android:foregroundServiceType="camera|microphone|phoneCall" />
   </application>

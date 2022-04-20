@@ -106,11 +106,11 @@ public class ConnectedVideoCallView extends ConstraintLayout {
             isSelfCenter = !isSelfCenter;
             if (isSelfCenter) {
                 binding.callVideoViewSmallName.setText(userInfo.userName);
-                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewCenterTexture);
+                streamService.startPreview(binding.callVideoViewCenterTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
                 binding.callVideoViewSmallName.setText(R.string.me);
-                streamService.startPlaying(userService.getLocalUserInfo().userID, binding.callVideoViewSmallTexture);
+                streamService.startPreview(binding.callVideoViewSmallTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
             }
             onUserInfoUpdated(userInfo);
@@ -136,17 +136,14 @@ public class ConnectedVideoCallView extends ConstraintLayout {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
         if (getVisibility() == View.VISIBLE && !MinimalView.isShowMinimal) {
-            ZegoUserInfo localUserInfo = userService.getLocalUserInfo();
             AudioHelper.updateAudioSelect(binding.callVideoSpeaker, ZegoServiceManager.getInstance().deviceService.getAudioRouteType());
             if (isSelfCenter) {
-                streamService.startPlaying(localUserInfo.userID, binding.callVideoViewCenterTexture);
+                streamService.startPreview(binding.callVideoViewCenterTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewSmallTexture);
             } else {
-                streamService.startPlaying(localUserInfo.userID, binding.callVideoViewSmallTexture);
+                streamService.startPreview(binding.callVideoViewSmallTexture);
                 streamService.startPlaying(userInfo.userID, binding.callVideoViewCenterTexture);
             }
-//            onUserInfoUpdated(userInfo);
-//            onUserInfoUpdated(localUserInfo);
         }
     }
 

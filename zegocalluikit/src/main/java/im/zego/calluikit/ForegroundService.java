@@ -1,6 +1,5 @@
-package im.zego.calluikit.service;
+package im.zego.calluikit;
 
-import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,13 +16,10 @@ import im.zego.calluikit.R;
 import im.zego.calluikit.ui.call.CallStateManager;
 
 /**
- * foreground service used to keep process foreground.
+ * foreground service, only used to keep process foreground.
  */
 public class ForegroundService extends Service {
 
-    public static boolean isStarted = false;
-    private static final String TAG = "ForegroundService";
-    private int notificationId = 888;
     private String CHANNEL_ID = "channel 2";
     private String CHANNEL_NAME = "channel2 name";
     private String CHANNEL_DESC = "channel2 desc";
@@ -31,8 +27,7 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        CallUtils.d( "onCreate() called");
-        isStarted = true;
+        CallUtils.d("onCreate() called");
     }
 
     @Override
@@ -46,7 +41,7 @@ public class ForegroundService extends Service {
 
         Intent appIntent = new Intent();
         try {
-            appIntent = new Intent(this, Class.forName("im.zego.call.ui.login.GoogleLoginActivity"));
+            appIntent = new Intent(this, Class.forName(ActivityUtils.getLauncherActivity()));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -56,10 +51,10 @@ public class ForegroundService extends Service {
         PendingIntent pendingIntent;
         if (Build.VERSION.SDK_INT >= 23) {
             pendingIntent = PendingIntent.getActivity(this, 0, appIntent,
-                PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         } else {
             pendingIntent = PendingIntent.getActivity(this, 0, appIntent,
-                0);
+                PendingIntent.FLAG_UPDATE_CURRENT);
         }
 
         Context context = getApplicationContext();
@@ -71,7 +66,7 @@ public class ForegroundService extends Service {
             .setOngoing(false)
             .setAutoCancel(true);
 
-        startForeground(notificationId, builder.build());
+        startForeground(65536, builder.build());
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -80,7 +75,6 @@ public class ForegroundService extends Service {
         super.onDestroy();
         stopForeground(true);
         CallStateManager.getInstance().setCallState(null, CallStateManager.TYPE_NO_CALL);
-        CallUtils.d( "onDestroy() called");
     }
 
     private void createNotificationChannel() {
@@ -92,13 +86,12 @@ public class ForegroundService extends Service {
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
+            channel.setSound(null, null);
+            channel.enableVibration(false);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
-            Activity topActivity = ActivityUtils.getTopActivity();
-            if (topActivity != null) {
-                NotificationManager notificationManager = topActivity.getSystemService(NotificationManager.class);
-                notificationManager.createNotificationChannel(channel);
-            }
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 }

@@ -21,6 +21,7 @@ import im.zego.call.token.ZegoTokenManager;
 import im.zego.callsdk.callback.ZegoCallback;
 import im.zego.callsdk.model.DatabaseUser;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.calluikit.ZegoCallManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +63,7 @@ public class FirebaseUserManager {
                 } else {
                     database.getReference("online_user").removeEventListener(onlineListener);
                     database.getReference(".info/connected").removeEventListener(connectListener);
+                    ZegoCallManager.getInstance().setLocalUser(null, null);
                     ZegoTokenManager.getInstance().reset();
                 }
             }
@@ -89,7 +91,7 @@ public class FirebaseUserManager {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG,  "signInWithCredential:success");
+                        Log.d(TAG, "signInWithCredential:success");
                         onFirebaseAuthSuccess(callback);
                     } else {
                         // If sign in fails, display a message to the user.
@@ -127,7 +129,7 @@ public class FirebaseUserManager {
                 }
                 // Get new FCM registration databasePushToken
                 String pushToken = task.getResult();
-                Log.d(TAG,  "onComplete() called with: databasePushToken = [" + pushToken + "]");
+                Log.d(TAG, "onComplete() called with: databasePushToken = [" + pushToken + "]");
 
                 makeSelfOnline(pushToken, currentUser);
 
@@ -174,7 +176,7 @@ public class FirebaseUserManager {
     }
 
     public void signOutFirebaseAuth() {
-        Log.d(TAG,  "signOutFirebaseAuth() called");
+        Log.d(TAG, "signOutFirebaseAuth() called");
         String userID = FirebaseAuth.getInstance().getUid();
         if (userID == null) {
             return;
@@ -189,7 +191,7 @@ public class FirebaseUserManager {
     }
 
     private void addSelfOnlineListener(String uid) {
-        Log.d(TAG,  "addSelfOnlineListener() called with: uid = [" + uid
+        Log.d(TAG, "addSelfOnlineListener() called with: uid = [" + uid
             + "],isSelfOnlineListenerAdded:" + isSelfOnlineListenerAdded);
         if (selfOnlineListener == null) {
             selfOnlineListener = getSelfOnlineListener();
@@ -204,7 +206,7 @@ public class FirebaseUserManager {
     }
 
     private void removeSelfOnlineListener(String uid) {
-        Log.d(TAG,  "removeSelfOnlineListener() called with: uid = [" + uid
+        Log.d(TAG, "removeSelfOnlineListener() called with: uid = [" + uid
             + "],isSelfOnlineListenerAdded" + isSelfOnlineListenerAdded);
         if (!isSelfOnlineListenerAdded) {
             return;
@@ -218,14 +220,14 @@ public class FirebaseUserManager {
     }
 
     private void makeSelfOffline(String userID) {
-        Log.d(TAG,  "removeSelfOnline() called with: userID = [" + userID + "]");
+        Log.d(TAG, "removeSelfOnline() called with: userID = [" + userID + "]");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference selfRef = database.getReference("online_user").child(userID);
         selfRef.removeValue();
     }
 
     private void removePushToken(String userID) {
-        Log.d(TAG,  "removePushToken() called with: userID = [" + userID + "]");
+        Log.d(TAG, "removePushToken() called with: userID = [" + userID + "]");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
             @Override
@@ -259,7 +261,7 @@ public class FirebaseUserManager {
                         onlineUserList.add(userInfo);
                     }
                 }
-                Log.d(TAG,  "onlineUserList() changed = [" + onlineUserList.size() + "]");
+                Log.d(TAG, "onlineUserList() changed = [" + onlineUserList.size() + "]");
             }
 
             @Override
@@ -296,7 +298,7 @@ public class FirebaseUserManager {
                         onlineUserRef.removeValue();
                     }
                 }
-                Log.d(TAG,  "info/connected., called with: connected = [" + connected + "]");
+                Log.d(TAG, "info/connected., called with: connected = [" + connected + "]");
             }
 
             @Override
@@ -310,7 +312,7 @@ public class FirebaseUserManager {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d(TAG,  "getSelfOnlineListener() called with: snapshot = [" + snapshot + "]");
+                Log.d(TAG, "getSelfOnlineListener() called with: snapshot = [" + snapshot + "]");
                 if (snapshot.getValue() != null) {
                     DatabaseUser databaseUser = snapshot.getValue(DatabaseUser.class);
                     if (databaseUser == null) {
@@ -321,15 +323,15 @@ public class FirebaseUserManager {
                             return;
                         }
                         String pushToken = task.getResult();
-                        Log.d(TAG,  "getSelfOnlineListener pushToken: " + pushToken);
-                        Log.d(TAG,  "getSelfOnlineListener token_id:  " + databaseUser.token_id);
+                        Log.d(TAG, "getSelfOnlineListener pushToken: " + pushToken);
+                        Log.d(TAG, "getSelfOnlineListener token_id:  " + databaseUser.token_id);
                         if (!Objects.equals(pushToken, databaseUser.token_id)) {
                             String userID = FirebaseAuth.getInstance().getUid();
                             if (userID == null) {
                                 return;
                             }
                             FirebaseAuth.getInstance().signOut();
-                            Log.d(TAG,  "sign out because of other device sign in same account");
+                            Log.d(TAG, "sign out because of other device sign in same account");
                             removeSelfOnlineListener(userID);
                             removePushToken(userID);
                             if (signInOtherDeviceListener != null) {

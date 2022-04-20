@@ -3,26 +3,18 @@ package im.zego.calluikit.ui.call.view;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.TextureView;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-
-import im.zego.callsdk.utils.CallUtils;
-import java.util.Objects;
-
 import im.zego.callsdk.core.interfaces.ZegoCallService;
 import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoStreamService;
-import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.R;
@@ -31,6 +23,7 @@ import im.zego.calluikit.databinding.LayoutOutgoingCallBinding;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.ui.common.MinimalView;
 import im.zego.calluikit.utils.AvatarHelper;
+import java.util.Objects;
 
 public class OutgoingCallView extends ConstraintLayout {
 
@@ -134,14 +127,12 @@ public class OutgoingCallView extends ConstraintLayout {
     @Override
     protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         ZegoStreamService streamService = ZegoServiceManager.getInstance().streamService;
         if (getVisibility() == View.VISIBLE && !MinimalView.isShowMinimal) {
-            TextureView textureView = binding.textureView;
-            if (!isVideoCall()) {
-                textureView = null;
+            if (isVideoCall()) {
+                streamService.startPreview(binding.textureView);
             }
-            streamService.startPlaying(userService.getLocalUserInfo().userID, textureView);
+
         }
     }
 }

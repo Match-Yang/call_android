@@ -26,4 +26,8 @@ public abstract class ZegoStreamService {
      * @param userID the ID of the user you are connecting
      */
     public abstract void stopPlaying(String userID);
+
+    public abstract void startPreview(TextureView textureView);
+
+    public abstract void stopPreview();
 }

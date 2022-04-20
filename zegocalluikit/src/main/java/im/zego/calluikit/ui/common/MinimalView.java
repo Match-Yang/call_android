@@ -5,17 +5,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
-
 import com.blankj.utilcode.util.ActivityUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-
-import java.util.Objects;
-
 import im.zego.callsdk.core.manager.ZegoServiceManager;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.ZegoCallHelper;
@@ -24,6 +19,7 @@ import im.zego.calluikit.constant.Constants;
 import im.zego.calluikit.databinding.LayoutMinimalViewBinding;
 import im.zego.calluikit.ui.call.CallActivity;
 import im.zego.calluikit.ui.call.CallStateManager;
+import java.util.Objects;
 
 public class MinimalView extends ConstraintLayout {
 
@@ -53,7 +49,7 @@ public class MinimalView extends ConstraintLayout {
     }
 
     public MinimalView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
-                       int defStyleRes) {
+        int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context);
     }
@@ -61,24 +57,28 @@ public class MinimalView extends ConstraintLayout {
     private void initView(Context context) {
         binding = LayoutMinimalViewBinding.inflate(LayoutInflater.from(context), this, true);
         binding.voiceTouchView.setOnClickListener(v -> {
-            if (!isClickable) return;
+            if (!isClickable) {
+                return;
+            }
             LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(false);
             ActivityUtils.startActivity(CallActivity.class);
         });
         binding.videoTouchView.setOnClickListener(v -> {
-            if (!isClickable) return;
+            if (!isClickable) {
+                return;
+            }
             LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(false);
             ActivityUtils.startActivity(CallActivity.class);
         });
         LiveEventBus
-                .get(Constants.EVENT_MINIMAL, Boolean.class)
-                .observeForever(isMinimal -> {
-                    isShowMinimal = isMinimal;
-                    updateStatus(currentStatus);
-                });
+            .get(Constants.EVENT_MINIMAL, Boolean.class)
+            .observeForever(isMinimal -> {
+                isShowMinimal = isMinimal;
+                updateStatus(currentStatus);
+            });
         LiveEventBus
-                .get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class)
-                .observeForever(clickable -> isClickable = clickable);
+            .get(Constants.EVENT_MINIMAL_CLICKABLE, Boolean.class)
+            .observeForever(clickable -> isClickable = clickable);
         updateStatus(MinimalStatus.Initialized);
     }
 
@@ -102,12 +102,16 @@ public class MinimalView extends ConstraintLayout {
             ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
 
             if (CallStateManager.getInstance().isInCallingStream() && localUserInfo.camera) {
-                ZegoServiceManager.getInstance().streamService.startPlaying(localUserInfo.userID, binding.videoTextureView);
+                ZegoServiceManager.getInstance().streamService.startPreview(binding.videoTextureView);
                 toggleVideo(true);
             } else if (CallStateManager.getInstance().isConnected()) {
                 if (remoteUserInfo.camera || localUserInfo.camera) {
                     String userID = remoteUserInfo.camera ? remoteUserInfo.userID : localUserInfo.userID;
-                    ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
+                    if (localUserInfo.camera) {
+                        ZegoServiceManager.getInstance().streamService.startPreview(binding.videoTextureView);
+                    } else {
+                        ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
+                    }
                     toggleVideo(true);
                 } else {
                     toggleVideo(false);

@@ -17,18 +17,19 @@ import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.SizeUtils;
 
+import com.lzf.easyfloat.EasyFloat;
 import im.zego.calluikit.R;
+import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.utils.PermissionHelper;
 import im.zego.callsdk.model.ZegoUserInfo;
 
 public class MinimalDialog {
+
     private MinimalView minimalView;
     private boolean isViewAddedToWindow;
     private WindowManager windowManager;
     private WindowManager.LayoutParams lp;
-    private Dialog floatDialog;
-    private AlertDialog floatPermissionDialog;
 
     private CallStateManager.CallStateChangedListener callStateChangedListener = (callInfo, before, after) -> {
         minimalView.updateRemoteUserInfo(callInfo);
@@ -58,6 +59,11 @@ public class MinimalDialog {
                 minimalView.reset();
                 break;
         }
+        if (CallStateManager.getInstance().isInACallStream()) {
+            showGlobalWindow();
+        } else {
+            dismissMinimalWindow();
+        }
     };
 
     public MinimalDialog(Activity activity) {
@@ -78,71 +84,17 @@ public class MinimalDialog {
         lp.y = SizeUtils.dp2px(66);
 
         minimalView = new MinimalView(activity);
-    }
-
-    public void showMinimalWindow() {
-//        if (AppUtils.isAppForeground()) {
-//            showAppDialog();
-//        } else {
-        if (PermissionHelper.checkFloatWindowPermission()) {
-            showGlobalWindow();
-        } else {
-            //if app is background and receive call, no overlay permission
-            // show app dialog android notification
-            Activity topActivity = ActivityUtils.getTopActivity();
-            showFloatPermissionDialog(topActivity, new PermissionUtils.SimpleCallback() {
-                @Override
-                public void onGranted() {
-                    showGlobalWindow();
-                }
-
-                @Override
-                public void onDenied() {
-                    showAppDialog();
-                }
-            });
-        }
-//        }
         CallStateManager.getInstance().addListener(callStateChangedListener);
     }
 
-    public void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.float_permission_tips);
-        builder.setPositiveButton(R.string.dialog_login_page_ok, new DialogInterface.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                PermissionUtils.requestDrawOverlays(callback);
-            }
-        });
-        floatPermissionDialog = builder.create();
-        floatPermissionDialog.setCancelable(false);
-        floatPermissionDialog.setCanceledOnTouchOutside(false);
-        floatPermissionDialog.show();
-    }
-
-    private void showAppDialog() {
-        Activity topActivity = ActivityUtils.getTopActivity();
-        if (topActivity.getComponentName().getClassName().contains("LoginActivity")) {
-            return;
-        }
-
-        floatDialog = new FloatDialog(topActivity, minimalView);
-        if (!floatDialog.isShowing()) {
-            floatDialog.show();
-        }
-    }
-
     private void showGlobalWindow() {
-        isViewAddedToWindow = true;
-        windowManager.addView(minimalView, lp);
+        if (!isViewAddedToWindow) {
+            isViewAddedToWindow = true;
+            windowManager.addView(minimalView, lp);
+        }
     }
 
     public void dismissMinimalWindow() {
-        if (floatDialog != null && floatDialog.isShowing()) {
-            floatDialog.dismiss();
-        }
         if (isViewAddedToWindow) {
             windowManager.removeViewImmediate(minimalView);
             isViewAddedToWindow = false;
@@ -151,10 +103,6 @@ public class MinimalDialog {
         if (viewParent != null) {
             viewParent.removeView(minimalView);
         }
-        if (floatPermissionDialog != null) {
-            floatPermissionDialog.dismiss();
-        }
-        CallStateManager.getInstance().removeListener(callStateChangedListener);
     }
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {

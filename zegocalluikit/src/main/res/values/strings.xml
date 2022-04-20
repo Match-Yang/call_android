@@ -72,7 +72,7 @@
   <string name="room_settings_page_noise_suppression">Noise suppression</string>
   <string name="room_settings_page_echo_cancellation">Echo cancellation</string>
   <string name="room_settings_page_mic_volume">Mic volume auto-adjustment</string>
-  <string name="room_settings_page_mirroring">Video mirroring</string>
+  <string name="room_settings_page_mirroring">Video minoring</string>
   <string name="room_settings_page_video_resolution">Resolution</string>
   <string name="room_settings_page_audio_bitrate">Audio bitrate</string>
 

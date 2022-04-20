@@ -3,7 +3,6 @@ package im.zego.callsdk.listener;
 import im.zego.callsdk.model.ZegoCallTimeoutType;
 import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoCallingState;
-import im.zego.callsdk.model.ZegoCancelType;
 import im.zego.callsdk.model.ZegoDeclineType;
 import im.zego.callsdk.model.ZegoUserInfo;
 
@@ -17,7 +16,7 @@ public interface ZegoCallServiceListener {
      * @param userInfo refers to the caller information.
      * @param type     indicates the call type.  ZegoCallTypeVoice: Voice call.  ZegoCallTypeVideo: Video call.
      */
-    void onReceiveCallInvite(ZegoUserInfo userInfo, String callID, ZegoCallType type);
+    void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType type);
 
     /**
      * Callback for receive a canceled call
@@ -26,7 +25,7 @@ public interface ZegoCallServiceListener {
      *
      * @param userInfo refers to the caller information.
      */
-    void onReceiveCallCanceled(ZegoUserInfo userInfo, ZegoCancelType cancelType);
+    void onReceiveCallCanceled(ZegoUserInfo userInfo);
 
 
     void onReceiveCallAccept(ZegoUserInfo userInfo);
