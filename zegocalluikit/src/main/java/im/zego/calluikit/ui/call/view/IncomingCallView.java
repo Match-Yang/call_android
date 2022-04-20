@@ -183,4 +183,7 @@ public class IncomingCallView extends ConstraintLayout {
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.start();
     }
+
+    public void onActivityDestroyed() {
+    }
 }

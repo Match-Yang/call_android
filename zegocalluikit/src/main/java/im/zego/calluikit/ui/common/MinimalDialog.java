@@ -1,28 +1,18 @@
 package im.zego.calluikit.ui.common;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
-import androidx.annotation.RequiresApi;
-
-import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.SizeUtils;
-
-import com.lzf.easyfloat.EasyFloat;
-import im.zego.calluikit.R;
-import im.zego.calluikit.ZegoCallManager;
-import im.zego.calluikit.ui.call.CallStateManager;
-import im.zego.calluikit.utils.PermissionHelper;
+import com.jeremyliao.liveeventbus.LiveEventBus;
 import im.zego.callsdk.model.ZegoUserInfo;
+import im.zego.calluikit.ZegoCallManager;
+import im.zego.calluikit.constant.Constants;
+import im.zego.calluikit.ui.call.CallStateManager;
 
 public class MinimalDialog {
 
@@ -30,41 +20,6 @@ public class MinimalDialog {
     private boolean isViewAddedToWindow;
     private WindowManager windowManager;
     private WindowManager.LayoutParams lp;
-
-    private CallStateManager.CallStateChangedListener callStateChangedListener = (callInfo, before, after) -> {
-        minimalView.updateRemoteUserInfo(callInfo);
-        switch (after) {
-            case CallStateManager.TYPE_OUTGOING_CALLING_VOICE:
-            case CallStateManager.TYPE_OUTGOING_CALLING_VIDEO:
-                minimalView.updateStatus(MinimalStatus.Calling);
-                break;
-            case CallStateManager.TYPE_CONNECTED_VOICE:
-            case CallStateManager.TYPE_CONNECTED_VIDEO:
-                minimalView.updateStatus(MinimalStatus.Connected);
-                break;
-            case CallStateManager.TYPE_CALL_CANCELED:
-                minimalView.updateStatus(MinimalStatus.Cancel);
-                minimalView.reset();
-                break;
-            case CallStateManager.TYPE_CALL_COMPLETED:
-                minimalView.updateStatus(MinimalStatus.Ended);
-                minimalView.reset();
-                break;
-            case CallStateManager.TYPE_CALL_MISSED:
-                minimalView.updateStatus(MinimalStatus.Missed);
-                minimalView.reset();
-                break;
-            case CallStateManager.TYPE_CALL_DECLINE:
-                minimalView.updateStatus(MinimalStatus.Decline);
-                minimalView.reset();
-                break;
-        }
-        if (CallStateManager.getInstance().isInACallStream()) {
-            showGlobalWindow();
-        } else {
-            dismissMinimalWindow();
-        }
-    };
 
     public MinimalDialog(Activity activity) {
         windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
@@ -84,10 +39,21 @@ public class MinimalDialog {
         lp.y = SizeUtils.dp2px(66);
 
         minimalView = new MinimalView(activity);
-        CallStateManager.getInstance().addListener(callStateChangedListener);
+
+        LiveEventBus
+            .get(Constants.EVENT_MINIMAL, Boolean.class)
+            .observeForever(isMinimal -> {
+                MinimalView.isShowMinimal = isMinimal;
+                if (isMinimal) {
+                    showMinimalWindow();
+                    minimalView.updateStatus();
+                } else {
+                    dismissMinimalWindow();
+                }
+            });
     }
 
-    private void showGlobalWindow() {
+    private void showMinimalWindow() {
         if (!isViewAddedToWindow) {
             isViewAddedToWindow = true;
             windowManager.addView(minimalView, lp);
@@ -99,6 +65,7 @@ public class MinimalDialog {
             windowManager.removeViewImmediate(minimalView);
             isViewAddedToWindow = false;
         }
+
         ViewGroup viewParent = (ViewGroup) minimalView.getParent();
         if (viewParent != null) {
             viewParent.removeView(minimalView);
@@ -107,5 +74,17 @@ public class MinimalDialog {
 
     public void onUserInfoUpdated(ZegoUserInfo userInfo) {
         minimalView.onUserInfoUpdated(userInfo);
+    }
+
+    public void updateStatus(MinimalStatus next) {
+        minimalView.updateStatus(next);
+    }
+
+    public void updateRemoteUserInfo(ZegoUserInfo userInfo) {
+        minimalView.updateRemoteUserInfo(userInfo);
+    }
+
+    public void reset() {
+        minimalView.reset();
     }
 }

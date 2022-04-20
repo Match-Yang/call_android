@@ -88,9 +88,6 @@ public class ZegoCallManager implements IZegoCallManager {
         ZegoServiceManager.getInstance().uploadLog(callback);
     }
 
-    /**
-     * 启动监听呼叫响应 调用时机：成功登录之后
-     */
     public void startListen(Activity activity) {
         callKitView.init(activity);
         ZegoCallService callService = ZegoServiceManager.getInstance().callService;

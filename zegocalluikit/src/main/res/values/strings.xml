@@ -80,4 +80,7 @@
   <string name="create_user_failed">create user failed,errorCode :%d</string>
   <string name="get_user_list_failed">get user list failed,errorCode :%d</string>
   <string name="response_failed">accept call failed,errorCode: %d</string>
+  <string name="float_window_title">Floating Window Not Enabled</string>
+  <string name="float_window_message">You can\'t minimize a call as app isn\'t authorized to use floating windows</string>
+  <string name="set_now">Set Now</string>
 </resources>

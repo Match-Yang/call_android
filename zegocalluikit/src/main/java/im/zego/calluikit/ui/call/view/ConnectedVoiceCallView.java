@@ -1,18 +1,26 @@
 package im.zego.calluikit.ui.call.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import com.blankj.utilcode.util.ToastUtils;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import im.zego.calluikit.utils.PermissionHelper;
 import java.util.Objects;
 
 import im.zego.calluikit.R;
@@ -34,6 +42,7 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
 
     private LayoutConnectedVoiceCallBinding binding;
     private ZegoUserInfo userInfo;
+    private AlertDialog dialog;
 
     public ConnectedVoiceCallView(@NonNull Context context) {
         super(context);
@@ -86,7 +95,20 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
             deviceService.enableSpeaker(!selected);
         });
         binding.callVoiceMinimal.setOnClickListener(v -> {
-            LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
+            if (PermissionHelper.checkFloatWindowPermission()) {
+                LiveEventBus.get(Constants.EVENT_MINIMAL, Boolean.class).post(true);
+            } else {
+                dialog = PermissionHelper.showMinimizePermissionDialog(getContext(), new SimpleCallback() {
+                    @Override
+                    public void onGranted() {
+                    }
+
+                    @Override
+                    public void onDenied() {
+
+                    }
+                });
+            }
         });
         binding.callVoiceSettings.setOnClickListener(v -> {
             LiveEventBus.get(Constants.EVENT_SHOW_SETTINGS, Boolean.class).post(false);
@@ -122,6 +144,12 @@ public class ConnectedVoiceCallView extends ConstraintLayout {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         if (Objects.equals(userService.getLocalUserInfo(), userInfo)) {
             binding.callVoiceMic.setSelected(userInfo.mic);
+        }
+    }
+
+    public void onActivityDestroyed() {
+        if (dialog != null) {
+            dialog.dismiss();
         }
     }
 }

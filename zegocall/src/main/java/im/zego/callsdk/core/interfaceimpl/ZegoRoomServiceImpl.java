@@ -1,6 +1,7 @@
 package im.zego.callsdk.core.interfaceimpl;
 
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.core.interfaces.ZegoDeviceService;
 import im.zego.callsdk.core.interfaces.ZegoRoomService;
 import im.zego.callsdk.core.interfaces.ZegoUserService;
 import im.zego.callsdk.core.manager.ZegoServiceManager;
@@ -67,11 +68,8 @@ public class ZegoRoomServiceImpl extends ZegoRoomService {
      * Call this method at: After joining a room
      */
     public void leaveRoom() {
-        if (roomInfo != null) {
-            ZegoUserInfo localUserInfo = ZegoServiceManager.getInstance().userService.getLocalUserInfo();
-            String streamID = ZegoCallHelper.getStreamID(localUserInfo.userID, roomInfo.roomID);
-            ZegoExpressEngine.getEngine().stopPlayingStream(streamID);
-        }
+        ZegoDeviceService deviceService = ZegoServiceManager.getInstance().deviceService;
+        deviceService.enableCamera(false);
         ZegoExpressEngine.getEngine().logoutRoom();
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
         userService.userInfoList.clear();

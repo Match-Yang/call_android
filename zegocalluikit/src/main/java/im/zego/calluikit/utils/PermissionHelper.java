@@ -2,14 +2,19 @@ package im.zego.calluikit.utils;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.provider.Settings;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.fragment.app.FragmentActivity;
 import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.PermissionUtils.SimpleCallback;
 import com.blankj.utilcode.util.StringUtils;
 import com.permissionx.guolindev.PermissionX;
 import im.zego.calluikit.R;
@@ -81,6 +86,32 @@ public class PermissionHelper {
         } else {
             return true;
         }
+    }
+
+    public static AlertDialog showMinimizePermissionDialog(Context context, SimpleCallback callback) {
+        androidx.appcompat.app.AlertDialog.Builder builder = new Builder(context);
+        builder.setTitle(R.string.float_window_title);
+        builder.setMessage(R.string.float_window_message);
+        builder.setPositiveButton(R.string.set_now, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (Build.VERSION.SDK_INT >= VERSION_CODES.M) {
+                    PermissionUtils.requestDrawOverlays(callback);
+                }
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(R.string.dialog_login_page_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+        return dialog;
     }
 
     public interface IPermissionCallback {

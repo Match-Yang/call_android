@@ -7,8 +7,6 @@ import im.zego.callsdk.model.ZegoUserInfo;
 
 public interface ZegoCallManagerListener {
 
-    void onReceiveCallingUserDisconnected(ZegoUserInfo userInfo);
-
     void onReceiveCallInvite(ZegoUserInfo userInfo, ZegoCallType callType);
 
     void onReceiveCallCanceled(ZegoUserInfo userInfo);

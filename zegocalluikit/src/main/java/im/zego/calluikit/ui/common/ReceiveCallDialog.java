@@ -24,6 +24,7 @@ import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.callsdk.utils.CallUtils;
 import im.zego.calluikit.R;
+import im.zego.calluikit.ui.call.CallStateManager;
 import im.zego.calluikit.utils.PermissionHelper;
 
 public class ReceiveCallDialog {
@@ -108,19 +109,23 @@ public class ReceiveCallDialog {
                 showFloatPermissionDialog(topActivity, new SimpleCallback() {
                     @Override
                     public void onGranted() {
-                        showGlobalWindow();
+                        if (CallStateManager.getInstance().isIncoming()) {
+                            showGlobalWindow();
+                        }
                     }
 
                     @Override
                     public void onDenied() {
-                        showAppDialog();
+                        if (CallStateManager.getInstance().isIncoming()) {
+                            showAppDialog();
+                        }
                     }
                 });
             }
         }
     }
 
-    public void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {
+    private void showFloatPermissionDialog(Context context, PermissionUtils.SimpleCallback callback) {
         Builder builder = new Builder(context);
         builder.setMessage(R.string.float_permission_tips);
         builder.setPositiveButton(R.string.dialog_login_page_ok, new DialogInterface.OnClickListener() {
@@ -165,10 +170,12 @@ public class ReceiveCallDialog {
             }
             isViewAddedToWindow = false;
         }
+
         ViewGroup viewParent = (ViewGroup) receiveCallView.getParent();
         if (viewParent != null) {
             viewParent.removeView(receiveCallView);
         }
+
         if (floatPermissionDialog != null) {
             floatPermissionDialog.dismiss();
         }
