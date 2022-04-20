@@ -105,6 +105,10 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
     protected void onCreate(Bundle savedInstanceState) {
         userInfo = (ZegoUserInfo) getIntent().getSerializableExtra(USER_INFO);
         isAutoAccept = getIntent().getBooleanExtra(IS_AUTO_ACCEPT, false);
+        if (!CallStateManager.getInstance().isInACallStream()) {
+            finishActivityDelayed();
+            return;
+        }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
             | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
             | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -139,11 +143,6 @@ public class CallActivity extends BaseActivity<ActivityCallBinding> {
         }
         super.onCreate(savedInstanceState);
         ImmersionBar.with(this).reset().init();
-
-        if (!CallStateManager.getInstance().isInACallStream()) {
-            finishActivityDelayed();
-            return;
-        }
 
         VideoConfigViewModel videoConfigViewModel = new ViewModelProvider(this).get(VideoConfigViewModel.class);
         videoConfigViewModel.init();

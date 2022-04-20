@@ -116,7 +116,9 @@ public class ReceiveCallDialog {
 
                     @Override
                     public void onDenied() {
-                        showAppDialog();
+                        if (CallStateManager.getInstance().isIncoming()) {
+                            showAppDialog();
+                        }
                     }
                 });
             }
