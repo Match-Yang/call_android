@@ -72,8 +72,8 @@ public class CallStateManager {
     }
 
     public boolean isIncoming() {
-        return callState == TYPE_CONNECTED_VIDEO ||
-            callState == TYPE_CONNECTED_VOICE;
+        return callState == TYPE_INCOMING_CALLING_VIDEO ||
+            callState == TYPE_INCOMING_CALLING_VOICE;
     }
 
     public void setCallState(ZegoUserInfo userInfo, int callState) {
