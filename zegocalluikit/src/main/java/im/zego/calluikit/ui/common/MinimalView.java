@@ -110,10 +110,10 @@ public class MinimalView extends ConstraintLayout {
             } else if (CallStateManager.getInstance().isConnected()) {
                 if (remoteUserInfo.camera || localUserInfo.camera) {
                     String userID = remoteUserInfo.camera ? remoteUserInfo.userID : localUserInfo.userID;
-                    if (localUserInfo.camera) {
-                        ZegoServiceManager.getInstance().streamService.startPreview(binding.videoTextureView);
-                    } else {
+                    if (remoteUserInfo.camera) {
                         ZegoServiceManager.getInstance().streamService.startPlaying(userID, binding.videoTextureView);
+                    } else {
+                        ZegoServiceManager.getInstance().streamService.startPreview(binding.videoTextureView);
                     }
                     toggleVideo(true);
                 } else {
