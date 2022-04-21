@@ -2,7 +2,7 @@ package im.zego.calluikit;
 
 import android.app.Application;
 import im.zego.callsdk.callback.ZegoCallback;
-import im.zego.callsdk.listener.ZegoCallServiceListener;
+import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 
 public interface IZegoCallManager {
@@ -17,7 +17,7 @@ public interface IZegoCallManager {
 
     void uploadLog(final ZegoCallback callback);
 
-    void callUser(ZegoUserInfo userInfo, int callState);
+    void callUser(ZegoUserInfo userInfo, ZegoCallType zegoCallType);
 
     ZegoUserInfo getLocalUserInfo();
 }

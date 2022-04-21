@@ -282,7 +282,11 @@ public class ZegoCallManager implements IZegoCallManager {
         activity.stopService(new Intent(activity, ForegroundService.class));
     }
 
-    public void callUser(ZegoUserInfo userInfo, int callState) {
+    public void callUser(ZegoUserInfo userInfo, ZegoCallType zegoCallType) {
+        int callState = CallStateManager.TYPE_OUTGOING_CALLING_VOICE;
+        if (zegoCallType == ZegoCallType.Video) {
+            callState = CallStateManager.TYPE_OUTGOING_CALLING_VIDEO;
+        }
         CallStateManager.getInstance().setCallState(userInfo, callState);
         CallActivity.startCallActivity(userInfo);
     }

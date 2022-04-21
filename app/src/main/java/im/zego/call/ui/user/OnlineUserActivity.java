@@ -15,6 +15,7 @@ import im.zego.call.databinding.ActivityOnlineUserBinding;
 import im.zego.call.firebase.FirebaseUserManager;
 import im.zego.call.utils.OnRecyclerViewItemTouchListener;
 import im.zego.callsdk.callback.ZegoCallback;
+import im.zego.callsdk.model.ZegoCallType;
 import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.calluikit.ZegoCallManager;
 import im.zego.calluikit.ui.call.CallStateManager;
@@ -75,11 +76,9 @@ public class OnlineUserActivity extends UIKitActivity<ActivityOnlineUserBinding>
                     return;
                 }
                 if (itemChild.getId() == R.id.item_online_user_voice) {
-                    ZegoCallManager.getInstance()
-                        .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VOICE);
+                    ZegoCallManager.getInstance().callUser(userInfo, ZegoCallType.Voice);
                 } else if (itemChild.getId() == R.id.item_online_user_video) {
-                    ZegoCallManager.getInstance()
-                        .callUser(userInfo, CallStateManager.TYPE_OUTGOING_CALLING_VIDEO);
+                    ZegoCallManager.getInstance().callUser(userInfo, ZegoCallType.Video);
                 }
             }
         });

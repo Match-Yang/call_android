@@ -7,7 +7,6 @@ import com.blankj.utilcode.util.ColorUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
-import com.tencent.mmkv.MMKV;
 import im.zego.call.auth.AuthInfoManager;
 import im.zego.call.token.ZegoTokenManager;
 import im.zego.callsdk.callback.ZegoTokenCallback;
@@ -20,7 +19,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         Utils.init(this);
-        MMKV.initialize(this);
 
         AuthInfoManager.getInstance().init(this);
         long appID = AuthInfoManager.getInstance().getAppID();
