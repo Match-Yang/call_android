@@ -34,7 +34,7 @@ https://developer.android.com/studio/intro/studio-config#jdk
 2. Make sure the developer mode and USB debugging are enabled for the Android device, and connect the Android device to your computer.
 3. If the **Running Devices** box in the upper area changes to the device name you are using, which means you are ready to run the sample code.  
 4. Run the sample code on your device to experience the ZEGO Call service.  
-<img height="500px" src="images/app_android.jpg"/>
+<img height="500px" src="images/app_android.png"/>
 
 ### Project structure
 The project consists of three modules: **app ,zegocalluikit and zegocall**.
