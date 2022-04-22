@@ -236,20 +236,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                     addCallListener(databaseCall);
                 } else {
                     if (databaseCall.call_status == Status.WAIT.getValue()) {
-                        HashMap<String, Object> data = new HashMap<>();
-                        HashMap<String, String> callerData = new HashMap<>();
-                        callerData.put("id", caller.user_id);
-                        callerData.put("name", caller.user_name);
-                        data.put("caller", callerData);
-                        List<HashMap<String, String>> calleeData = new ArrayList<>();
-                        HashMap<String, String> callee = new HashMap<>();
-                        callee.put("id", receiver.user_id);
-                        callee.put("name", receiver.user_name);
-                        calleeData.add(callee);
-                        data.put("callees", calleeData);
-                        data.put("call_id", databaseCall.call_id);
-                        data.put("type", databaseCall.call_type);
-                        updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
+                        onReceiveCallInvite(databaseCall, caller, receiver, databaseCall.call_id);
                     }
                 }
             }
@@ -388,20 +375,7 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
                         data.put("call_id", callID);
                         updater.receiveUpdate(ZegoListenerManager.ACCEPT_CALL, data);
                     } else if (receiver.status == Status.WAIT.getValue()) {
-                        HashMap<String, Object> data = new HashMap<>();
-                        HashMap<String, String> callerData = new HashMap<>();
-                        callerData.put("id", caller.user_id);
-                        callerData.put("name", caller.user_name);
-                        data.put("caller", callerData);
-                        List<HashMap<String, String>> calleeData = new ArrayList<>();
-                        HashMap<String, String> callee = new HashMap<>();
-                        callee.put("id", receiver.user_id);
-                        callee.put("name", receiver.user_name);
-                        calleeData.add(callee);
-                        data.put("callees", calleeData);
-                        data.put("call_id", callID);
-                        data.put("type", changedValue.call_type);
-                        updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
+                        onReceiveCallInvite(changedValue, caller, receiver, callID);
                     }
                 }
             }
@@ -412,6 +386,24 @@ public class ZegoFirebaseManager implements ZegoRequestProtocol {
             }
         };
         addDatabaseListener("call/" + callID, listener);
+    }
+
+    private void onReceiveCallInvite(DatabaseCall changedValue, DatabaseCallUser caller, DatabaseCallUser receiver,
+        String callID) {
+        HashMap<String, Object> data = new HashMap<>();
+        HashMap<String, String> callerData = new HashMap<>();
+        callerData.put("id", caller.user_id);
+        callerData.put("name", caller.user_name);
+        data.put("caller", callerData);
+        List<HashMap<String, String>> calleeData = new ArrayList<>();
+        HashMap<String, String> callee = new HashMap<>();
+        callee.put("id", receiver.user_id);
+        callee.put("name", receiver.user_name);
+        calleeData.add(callee);
+        data.put("callees", calleeData);
+        data.put("call_id", callID);
+        data.put("type", changedValue.call_type);
+        updater.receiveUpdate(ZegoListenerManager.RECEIVE_CALL, data);
     }
 
     private void processCallIDRemoved(String callID) {
