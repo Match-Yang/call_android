@@ -80,6 +80,7 @@ The app module implements the basic UI and logic of call. The following shows th
 Directory path: 
 {your_project_root_path}/call_android/zegocalluikit/src/main/java/im/zego/calluikit:
 
+```
 .
 ├── ForegroundService.java
 ├── IZegoCallManager.java
@@ -125,6 +126,8 @@ Directory path:
 └── view
     ├── VideoSettingCellView.java
     └── ZegoCallKitView.java
+
+```
 
 
 #### zegocall
