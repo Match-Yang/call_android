@@ -4,7 +4,7 @@ ZEGOCLOUD's Voice Call and Video Call let you build high-quality voice and video
 
 ## Getting started 
 
-Before getting started with the ZEGO Call application, **contact us to activate the ZEGO Call (RTC + IM) service**, and then do the following:
+Before getting started with the ZEGO Call application, **contact us to activate the ZEGO Call (RTC) service**, and then do the following:
 
 ### Prerequisites
 
@@ -19,9 +19,11 @@ Before getting started with the ZEGO Call application, **contact us to activate 
 
 1. Clone the ZEGO Call Github repository.
 2. Open Terminal, navigate to the cloned project repository.
-3. Run the configuration script with the `./configure.sh` command. And fill in the AppID, and ServerSecret, which can be obtained in the [ZEGO Admin Console](https://console.zegocloud.com/).  
+3. Run the configuration script with the `./configure.sh` command. And fill in the AppID, and ServerSecret, which can be obtained in the [ZEGO Admin Console](https://console.zegocloud.com/). 
 **Note**: If you are using Windows system, double-click the `configure.bat` to run the configuration script.   
 <img width="700px" src="images/configure_android.png"/>
+4. follow the instruction to config firebase to this project,download the google-services.json to app directory.
+
 
 ### Run the sample code
 Note: To run the sample code successfully, you will need to upgrade to Java 11 if the JRE you are using is Java 8 version. To do so, refer to the following:
@@ -35,46 +37,169 @@ https://developer.android.com/studio/intro/studio-config#jdk
 <img height="500px" src="images/app_android.jpg"/>
 
 ### Project structure
-The project consists of two modules: **app and zegocall**.
+The project consists of three modules: **app ,zegocalluikit and zegocall**.
 
 #### app
-The app module implements the business and UI interaction logic, including login, contact list, calling, and more. The following shows the structure:
+The app module implements the business and UI interaction logic, including login, contact list and more. The following shows the structure:
 
 Directory path: 
 {your_project_root_path}/call_android/app/src/main/java/im/zego/call:
 ```
 .
-├── App.java                ------ App init and SDK initialization
-├── auth                ------ Tools for generating the token used for validating the login, room joining privileges 
-├── http                ------ The logic for initiating network requests to business server
-├── service                ------ Frontend service (to keep the app alive in the backend, prevent the app from being killed)
+├── App.java (application)            
+├── MyFirebaseMessagingService.java (fcm service)
+├── UIKitActivity.java
+├── auth
+│   └── AuthInfoManager.java (read appID from file)
+├── firebase
+│   └── FirebaseUserManager.java (firebase auth)
+├── token
+│   └── ZegoTokenManager.java  (get token from cloud function)
 ├── ui
-│ ├── call                ------ The showing page when making calls
-│ ├── common                ------ Common customizable UI logic
-│ ├── entry                ------ The Welcome page
-│ ├── login                ------ Login
-│ ├── setting                ------ The Settings page
-│ ├── user                ------ The online contacts page
-│ └── webview                ------ Web pages presented within the app
-└── utils           ------ Utilities
+│   ├── entry
+│   │   └── EntryActivity.java (welcome page )
+│   ├── login
+│   │   └── GoogleLoginActivity.java (login)
+│   ├── setting
+│   │   └── SettingActivity.java
+│   ├── user
+│   │   ├── OnlineUserActivity.java  (userlist)
+│   │   └── OnlineUserAdapter.java
+│   └── webview
+│       └── WebViewActivity.java
+└── utils
+    ├── HeadsetMonitor.java
+    └── OnRecyclerViewItemTouchListener.java
+
+
 ```
+#### zegocalluikit
+
+The app module implements the basic UI and logic of call. The following shows the structure:
+
+Directory path: 
+{your_project_root_path}/call_android/zegocalluikit/src/main/java/im/zego/calluikit:
+
+.
+├── ForegroundService.java
+├── IZegoCallManager.java
+├── ZegoCallManager.java     (entry)
+├── ZegoCallManagerListener.java  
+├── ZegoTokenProvider.java
+├── constant
+│   └── Constants.java
+├── ui
+│   ├── BaseActivity.java
+│   ├── call
+│   │   ├── CallActivity.java      (main UI of call)
+│   │   ├── CallStateManager.java
+│   │   └── view
+│   │       ├── ConnectedVideoCallView.java  (video call UI)
+│   │       ├── ConnectedVoiceCallView.java  (voice call UI)
+│   │       ├── IncomingCallView.java        (incoming call UI)
+│   │       └── OutgoingCallView.java        (outgoing call UI)
+│   ├── common
+│   │   ├── FloatDialog.java         
+│   │   ├── LoadingDialog.java
+│   │   ├── MinimalDialog.java      (minimal call dialog)
+│   │   ├── MinimalStatus.java
+│   │   ├── MinimalView.java
+│   │   ├── ReceiveCallDialog.java   (receive call dialog)
+│   │   ├── ReceiveCallView.java
+│   │   └── TipsDialog.java
+│   ├── dialog
+│   │   ├── CommonStringArrayDialog.java
+│   │   ├── VideoSettingsDialog.java     (video config dialog)
+│   │   └── base
+│   │       ├── BaseBottomDialog.java
+│   │       └── BaseDialog.java
+│   ├── model
+│   │   └── VideoSettingConfig.java
+│   └── viewmodel
+│       └── VideoConfigViewModel.java
+├── utils
+│   ├── AudioHelper.java
+│   ├── AvatarHelper.java
+│   ├── PermissionHelper.java
+│   └── RomPermissionCheckUtils.java
+└── view
+    ├── VideoSettingCellView.java
+    └── ZegoCallKitView.java
+
 
 #### zegocall
-The zegocall improves reusability and further encapsulates the RTC, IM for you to integrate easier. The following shows the structure:
+The zegocall improves reusability and further encapsulates the RTC, for you to integrate easier. The following shows the structure:
 
 Directory path: 
 {your_project_root_path}/call_android/zegocall/src/main/java/im/zego/callsdk:
 
 ```
 .
+├── auth
+│   ├── Base64.java
+│   └── TokenServerAssistant.java
 ├── callback
+│   ├── ZegoCallback.java
+│   ├── ZegoNotifyListener.java
+│   ├── ZegoRequestCallback.java
+│   └── ZegoTokenCallback.java
+├── command
+│   ├── ZegoCommandManager.java
+│   └── ZegoRequestProtocol.java
+├── core
+│   ├── commands    (comands to firebase interface)
+│   │   ├── ZegoAcceptCallCommand.java
+│   │   ├── ZegoCallCommand.java
+│   │   ├── ZegoCancelCallCommand.java
+│   │   ├── ZegoCommand.java
+│   │   ├── ZegoDeclineCallCommand.java
+│   │   ├── ZegoEndCallCommand.java
+│   │   └── ZegoHeartBeatCommand.java
+│   ├── interfaceimpl
+│   │   ├── ZegoCallServiceImpl.java    (call relative logic)
+│   │   ├── ZegoDeviceServiceImpl.java  (RTC interface to camera,audio,speakers,etc.)
+│   │   ├── ZegoRoomServiceImpl.java    (RTC interface to joinroom,leave room,etc.)
+│   │   ├── ZegoStreamServiceImpl.java  (RTC interface to stream operation,etc.)
+│   │   └── ZegoUserServiceImpl.java    (user status sync)
+│   ├── interfaces
+│   │   ├── ZegoCallService.java
+│   │   ├── ZegoDeviceService.java
+│   │   ├── ZegoRoomService.java
+│   │   ├── ZegoStreamService.java
+│   │   └── ZegoUserService.java
+│   └── manager
+│       └── ZegoServiceManager.java     (entry of call)
 ├── listener
+│   ├── ZegoCallServiceListener.java
+│   ├── ZegoDeviceServiceListener.java
+│   ├── ZegoListener.java
+│   ├── ZegoListenerManager.java
+│   ├── ZegoListenerUpdater.java
+│   ├── ZegoRoomServiceListener.java
+│   └── ZegoUserServiceListener.java
 ├── model
-├── service
-│ ├── ZegoRoomManager.java                ------ Room related instances that used to initialize the SDK, and provide the capabilities for service implementation.
-│ ├── ZegoRoomService.java                ------ Room related service, such as join/leave a room, update room information, and more.
-│ └── ZegoUserService.java                ------ User related service, such as start/end call, turn on/off the microphone/camera, and more.
+│   ├── DatabaseCall.java
+│   ├── DatabaseUser.java
+│   ├── ZegoAudioBitrate.java
+│   ├── ZegoCallInfo.java
+│   ├── ZegoCallTimeoutType.java
+│   ├── ZegoCallType.java
+│   ├── ZegoCallingState.java
+│   ├── ZegoDeclineType.java
+│   ├── ZegoDevicesType.java
+│   ├── ZegoLocalUserStatus.java
+│   ├── ZegoNetWorkQuality.java
+│   ├── ZegoRoomInfo.java
+│   ├── ZegoUserInfo.java
+│   └── ZegoVideoResolution.java
+├── request
+│   └── ZegoFirebaseManager.java    (firebase implement of interface)
 └── utils
+    ├── CallUtils.java
+    ├── CustomTypeAdapterFactory.java
+    ├── ZegoCallErrorCode.java      (error code define)
+    └── ZegoCallHelper.java
+
 ```
 
 ## More documentation
