@@ -13,6 +13,8 @@ import im.zego.callsdk.model.ZegoUserInfo;
 import im.zego.zegoexpress.ZegoExpressEngine;
 import im.zego.zegoexpress.entity.ZegoRoomConfig;
 import im.zego.zegoexpress.entity.ZegoUser;
+import im.zego.zim.callback.ZIMRoomLeftCallback;
+import im.zego.zim.entity.ZIMError;
 import im.zego.zim.entity.ZIMRoomAdvancedConfig;
 import im.zego.zim.entity.ZIMRoomInfo;
 import im.zego.zim.enums.ZIMErrorCode;
@@ -114,10 +116,13 @@ public class ZegoRoomService {
 
         ZegoExpressEngine.getEngine().logoutRoom(roomInfo.roomID);
 
-        ZegoZIMManager.getInstance().zim.leaveRoom(roomInfo.roomID, errorInfo -> {
-            Log.d(TAG, "leaveRoom() called with: errorInfo = [" + errorInfo.code + "]" + errorInfo.message);
-            if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value());
+        ZegoZIMManager.getInstance().zim.leaveRoom(roomInfo.roomID, new ZIMRoomLeftCallback() {
+            @Override
+            public void onRoomLeft(String roomID, ZIMError errorInfo) {
+                Log.d(TAG, "leaveRoom() called with: errorInfo = [" + errorInfo.code + "]" + errorInfo.message);
+                if (callback != null) {
+                    callback.onRoomCallback(errorInfo.code.value());
+                }
             }
         });
     }

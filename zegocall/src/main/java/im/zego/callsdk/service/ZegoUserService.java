@@ -6,6 +6,7 @@ import android.view.TextureView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import im.zego.zim.callback.ZIMTokenRenewedCallback;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
@@ -38,10 +39,12 @@ import im.zego.zegoexpress.constants.ZegoViewMode;
 import im.zego.zegoexpress.entity.ZegoCanvas;
 import im.zego.zim.ZIM;
 import im.zego.zim.callback.ZIMLoggedInCallback;
-import im.zego.zim.callback.ZIMTokenRenewedCallback;
-import im.zego.zim.entity.ZIMCustomMessage;
+import im.zego.zim.callback.ZIMMessageSentCallback;
+import im.zego.zim.callback.ZIMRoomAttributesOperatedCallback;
+import im.zego.zim.entity.ZIMCommandMessage;
 import im.zego.zim.entity.ZIMError;
 import im.zego.zim.entity.ZIMMessage;
+import im.zego.zim.entity.ZIMMessageSendConfig;
 import im.zego.zim.entity.ZIMRoomAttributesSetConfig;
 import im.zego.zim.entity.ZIMRoomAttributesUpdateInfo;
 import im.zego.zim.entity.ZIMUserInfo;
@@ -158,13 +161,17 @@ public class ZegoUserService {
                     contentBean.callType = callType;
                     callMessage.content = contentBean;
                     String messageJson = mGson.toJson(callMessage);
-                    ZIMCustomMessage custom = new ZIMCustomMessage();
+                    ZIMCommandMessage custom = new ZIMCommandMessage();
                     custom.message = messageJson.getBytes(StandardCharsets.UTF_8);
-                    ZegoZIMManager.getInstance().zim.sendPeerMessage(custom, userID, (message, errorInfo) -> {
-                        if (callback != null) {
-                            callback.onRoomCallback(errorInfo.code.value());
-                        }
-                    });
+                    ZegoZIMManager.getInstance().zim.sendPeerMessage(custom, userID, new ZIMMessageSendConfig(),
+                        new ZIMMessageSentCallback() {
+                            @Override
+                            public void onMessageSent(ZIMMessage message, ZIMError errorInfo) {
+                                if (callback != null) {
+                                    callback.onRoomCallback(errorInfo.code.value());
+                                }
+                            }
+                        });
                     ZegoExpressEngine.getEngine().startPublishingStream(getStreamIDFromUser(localUserInfo.userID));
                 } else {
                     if (callback != null) {
@@ -173,7 +180,7 @@ public class ZegoUserService {
                 }
             });
         } else {
-            callback.onRoomCallback(ZIMErrorCode.NO_LOGIN.value());
+            callback.onRoomCallback(ZIMErrorCode.USER_IS_NOT_LOGGED.value());
         }
     }
 
@@ -201,19 +208,23 @@ public class ZegoUserService {
             contentBean.cancelType = cancelType;
             callMessage.content = contentBean;
             String messageJson = mGson.toJson(callMessage);
-            ZIMCustomMessage custom = new ZIMCustomMessage();
+            ZIMCommandMessage custom = new ZIMCommandMessage();
             custom.message = messageJson.getBytes(StandardCharsets.UTF_8);
-            ZegoZIMManager.getInstance().zim.sendPeerMessage(custom, userID, (message, errorInfo) -> {
-                if (callback != null) {
-                    callback.onRoomCallback(errorInfo.code.value());
-                }
-            });
+            ZegoZIMManager.getInstance().zim.sendPeerMessage(custom, userID, new ZIMMessageSendConfig(),
+                new ZIMMessageSentCallback() {
+                    @Override
+                    public void onMessageSent(ZIMMessage message, ZIMError errorInfo) {
+                        if (callback != null) {
+                            callback.onRoomCallback(errorInfo.code.value());
+                        }
+                    }
+                });
             roomService.leaveRoom(errorCode -> {
 
             });
         } else {
             if (callback != null) {
-                callback.onRoomCallback(ZIMErrorCode.NO_LOGIN.value());
+                callback.onRoomCallback(ZIMErrorCode.USER_IS_NOT_LOGGED.value());
             }
         }
     }
@@ -256,7 +267,7 @@ public class ZegoUserService {
             }
         } else {
             if (callback != null) {
-                callback.onRoomCallback(ZIMErrorCode.NO_LOGIN.value());
+                callback.onRoomCallback(ZIMErrorCode.USER_IS_NOT_LOGGED.value());
             }
         }
     }
@@ -270,15 +281,19 @@ public class ZegoUserService {
         contentBean.responseType = type;
         callMessage.content = contentBean;
         String messageJson = mGson.toJson(callMessage);
-        ZIMCustomMessage custom = new ZIMCustomMessage();
+        ZIMCommandMessage custom = new ZIMCommandMessage();
         custom.message = messageJson.getBytes(StandardCharsets.UTF_8);
-        ZegoZIMManager.getInstance().zim.sendPeerMessage(custom, userID, (message, errorInfo) -> {
-            Log.d(TAG, "responseCallInner() called with: message = [" + message + "], errorInfo = [" + errorInfo.message
-                + "]");
-            if (callback != null) {
-                callback.onRoomCallback(errorInfo.code.value());
-            }
-        });
+        ZegoZIMManager.getInstance().zim.sendPeerMessage(custom, userID, new ZIMMessageSendConfig(),
+            new ZIMMessageSentCallback() {
+                @Override
+                public void onMessageSent(ZIMMessage message, ZIMError errorInfo) {
+                    Log.d(TAG, "responseCallInner() called with: message = [" + message + "], errorInfo = [" + errorInfo.message
+                        + "]");
+                    if (callback != null) {
+                        callback.onRoomCallback(errorInfo.code.value());
+                    }
+                }
+            });
     }
 
     /**
@@ -322,18 +337,22 @@ public class ZegoUserService {
 
         Log.d(TAG, "micOperate() called with: seatAttributes = [" + seatAttributes + "],roomID:" + roomID);
 
-        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig, errorInfo -> {
-            Log.d(TAG, "micOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
-            if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
-                if (listener != null) {
-                    listener.onUserInfoUpdated(localUserInfo);
+        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig,
+            new ZIMRoomAttributesOperatedCallback() {
+                @Override
+                public void onRoomAttributesOperated(String roomID, ArrayList<String> errorKeys, ZIMError errorInfo) {
+                    Log.d(TAG, "micOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
+                    if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
+                        if (listener != null) {
+                            listener.onUserInfoUpdated(localUserInfo);
+                        }
+                    } else {
+                        localUserInfo.mic = micState;
+                    }
+                    ZegoExpressEngine.getEngine().muteMicrophone(!localUserInfo.mic);
+                    callback.onRoomCallback(errorInfo.code.value());
                 }
-            } else {
-                localUserInfo.mic = micState;
-            }
-            ZegoExpressEngine.getEngine().muteMicrophone(!localUserInfo.mic);
-            callback.onRoomCallback(errorInfo.code.value());
-        });
+            });
     }
 
     /**
@@ -359,18 +378,22 @@ public class ZegoUserService {
 
         Log.d(TAG, "cameraOperate() called with: seatAttributes = [" + seatAttributes + "],roomID:" + roomID);
 
-        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig, errorInfo -> {
-            Log.d(TAG, "cameraOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
-            if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
-                if (listener != null) {
-                    listener.onUserInfoUpdated(localUserInfo);
+        ZegoZIMManager.getInstance().zim.setRoomAttributes(seatAttributes, roomID, setConfig,
+            new ZIMRoomAttributesOperatedCallback() {
+                @Override
+                public void onRoomAttributesOperated(String roomID, ArrayList<String> errorKeys, ZIMError errorInfo) {
+                    Log.d(TAG, "cameraOperate: errorInfo " + errorInfo.message + ",localUserInfo:" + localUserInfo);
+                    if (errorInfo.code.equals(ZIMErrorCode.SUCCESS)) {
+                        if (listener != null) {
+                            listener.onUserInfoUpdated(localUserInfo);
+                        }
+                    } else {
+                        localUserInfo.camera = cameraState;
+                    }
+                    ZegoExpressEngine.getEngine().enableCamera(localUserInfo.camera);
+                    callback.onRoomCallback(errorInfo.code.value());
                 }
-            } else {
-                localUserInfo.camera = cameraState;
-            }
-            ZegoExpressEngine.getEngine().enableCamera(localUserInfo.camera);
-            callback.onRoomCallback(errorInfo.code.value());
-        });
+            });
     }
 
     public void setListener(ZegoUserServiceListener listener) {
@@ -390,8 +413,8 @@ public class ZegoUserService {
 
     void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
         for (ZIMMessage zimMessage : messageList) {
-            if (zimMessage.type == ZIMMessageType.CUSTOM) {
-                ZIMCustomMessage customMessage = (ZIMCustomMessage) zimMessage;
+            if (zimMessage.type == ZIMMessageType.COMMAND) {
+                ZIMCommandMessage customMessage = (ZIMCommandMessage) zimMessage;
                 String messageJson = new String(customMessage.message);
                 ZegoCallMessage callMessage = mGson.fromJson(messageJson, ZegoCallMessage.class);
                 if (callMessage.target.contains(localUserInfo.userID)) {
