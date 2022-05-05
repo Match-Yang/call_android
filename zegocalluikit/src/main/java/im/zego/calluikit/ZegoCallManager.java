@@ -371,7 +371,9 @@ public class ZegoCallManager implements IZegoCallManager {
     @Override
     public void setLocalUser(String userID, String userName) {
         ZegoUserService userService = ZegoServiceManager.getInstance().userService;
-        userService.setLocalUser(userID, userName);
+        if (userService != null) {
+            userService.setLocalUser(userID, userName);
+        }
         if (TextUtils.isEmpty(userID) || TextUtils.isEmpty(userName)) {
             callKitView.dismissReceiveCallWindow();
             if (callKitView.getContext() != null) {
