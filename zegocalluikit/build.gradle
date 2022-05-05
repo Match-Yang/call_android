@@ -41,7 +41,7 @@ dependencies {
     api 'com.guolindev.permissionx:permissionx:1.6.1'
 
     // Immersive status bar
-    api 'com.gyf.immersionbar:immersionbar:3.0.0'
+    api 'com.geyifeng.immersionbar:immersionbar:3.2.2'
 
     // live data bus
     api 'io.github.jeremyliao:live-event-bus-x:1.8.0'
