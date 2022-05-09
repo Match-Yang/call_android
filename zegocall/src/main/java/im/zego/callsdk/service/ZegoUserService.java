@@ -413,7 +413,7 @@ public class ZegoUserService {
 
     void onReceivePeerMessage(ZIM zim, ArrayList<ZIMMessage> messageList, String fromUserID) {
         for (ZIMMessage zimMessage : messageList) {
-            if (zimMessage.type == ZIMMessageType.COMMAND) {
+            if (zimMessage.getType() == ZIMMessageType.COMMAND) {
                 ZIMCommandMessage customMessage = (ZIMCommandMessage) zimMessage;
                 String messageJson = new String(customMessage.message);
                 ZegoCallMessage callMessage = mGson.fromJson(messageJson, ZegoCallMessage.class);
