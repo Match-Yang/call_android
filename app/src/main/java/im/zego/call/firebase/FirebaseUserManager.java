@@ -25,7 +25,6 @@ import im.zego.calluikit.ZegoCallManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseUserManager {
@@ -133,8 +132,6 @@ public class FirebaseUserManager {
 
                 makeSelfOnline(pushToken, currentUser);
 
-                addDevicePushTokenToUser(pushToken, currentUser);
-
                 addSelfOnlineListener(currentUser.getUid());
 
                 if (callback != null) {
@@ -145,19 +142,6 @@ public class FirebaseUserManager {
             }
         });
 
-    }
-
-    private void addDevicePushTokenToUser(String pushToken, FirebaseUser currentUser) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference userPushRef = database.getReference("push_token")
-            .child(currentUser.getUid());
-        userPushRef.removeValue();
-        DatabaseReference tokenRef = userPushRef.child(pushToken);
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("device_type", "android");
-        updates.put("user_id", currentUser.getUid());
-        updates.put("token_id", pushToken);
-        tokenRef.setValue(updates);
     }
 
     @NonNull
@@ -184,8 +168,6 @@ public class FirebaseUserManager {
         FirebaseAuth.getInstance().signOut();
 
         makeSelfOffline(userID);
-
-        removePushToken(userID);
 
         removeSelfOnlineListener(userID);
     }
@@ -224,25 +206,6 @@ public class FirebaseUserManager {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference selfRef = database.getReference("online_user").child(userID);
         selfRef.removeValue();
-    }
-
-    private void removePushToken(String userID) {
-        Log.d(TAG, "removePushToken() called with: userID = [" + userID + "]");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-            @Override
-            public void onComplete(@NonNull Task<String> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "Fetching FCM registration databasePushToken failed",
-                        task.getException());
-                    return;
-                }
-                String pushToken = task.getResult();
-                DatabaseReference pushTokenRef = database.getReference("push_token")
-                    .child(userID).child(pushToken);
-                pushTokenRef.removeValue();
-            }
-        });
     }
 
     private ValueEventListener getOnlineUserListener() {
@@ -333,7 +296,7 @@ public class FirebaseUserManager {
                             FirebaseAuth.getInstance().signOut();
                             Log.d(TAG, "sign out because of other device sign in same account");
                             removeSelfOnlineListener(userID);
-                            removePushToken(userID);
+
                             if (signInOtherDeviceListener != null) {
                                 signInOtherDeviceListener.onSignIn();
                             }
